@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="titulo" id="titulo1">
+    Bomberos Voluntarios Villa Carlos Paz
+</h1>
+
+<h3 class="titulo-form">
+
+</h3>
+<div class="imagen_login">
+
+    <h4>Acceso para personal de cuerpo activo</h4>
+<img class="logo_index" src="../static/img/logo1.png">
+    </div>
+
+<div class="box">
+    {% with messages = get_flashed_messages() %}
+  {% if messages %}
+  <div class="mensaa alert alert-light">
+    <ul class="list-unstyled">
+      {% for message in messages %}
+      <li> <h2 id="miH202">{{ message }}</h2></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  {% endwith %}
+
+</div>
+<div class="row">
+
+    <div class="col-12">
+    <form  class=login action="{{ url_for('index') }}" method="post">
+        <input type="text" name="email" placeholder="Email" required="required"/>
+        <input type="password" name="password" placeholder="Password" required="required"/>
+        <button type="submit" class="btn btn-primary btn-lg">Ingresar.</button>
+    </form>
+        </div>
+
+    </div>
+
+
+
+
+<script>
+        setInterval(function() {
+            var h2 = document.getElementById('miH202');
+            h2.classList.toggle('cambio-color');
+        }, 1000);
+</script>
+
+{% endblock %}

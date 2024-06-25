@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="box">
+    <div class="container">
+        <h1 class="titulo">Cargar Datos</h1>
+
+        <!-- Formulario para registrar un bombero -->
+
+        <form action="{{ url_for('cargadatos') }}" method="post">
+            <input type="hidden" name="registrar_bombero" value="1">
+            <h2>Registrar Bombero</h2>
+            <input type="text" name="legajo_numero" placeholder="Número de Legajo" required="required" />
+            <input type="text" name="apellido" placeholder="Apellido" required="required" />
+            <input type="text" name="nombre" placeholder="Nombre" required="required" />
+            <input type="text" name="dni" placeholder="DNI" required="required" />
+            <input type="text" name="telefono" placeholder="Teléfono" required="required" />
+            <input type="text" name="telefono_alternativo" placeholder="Teléfono Alternativo" />
+            <label for="fecha_nacimiento">Fecha Nacimiento</label>
+            <input type="date" name="fecha_nacimiento" placeholder="Fecha de Nacimiento" required="required" />
+            <input type="text" name="domicilio" placeholder="Domicilio" required="required" />
+            <input type="email" name="email" placeholder="Email" required="required" />
+            <input type="text" name="rol" placeholder="Rol" required="required" />
+            <input type="text" name="grupo_sanguineo" placeholder="Grupo Sanguíneo" required="required" />
+            <input type="text" name="alergia" placeholder="Alergia" />
+            <input type="text" name="camada" placeholder="Camada" />
+            <textarea name="registro" placeholder="Registro"></textarea>
+            <button type="submit" class="btn btn-primary btn-lg">Registrar Bombero</button>
+        </form>
+
+        <hr>
+
+        <!-- Formulario para registrar indumentaria -->
+
+        <form action="{{ url_for('cargadatos') }}" method="post">
+            <input type="hidden" name="registrar_indumentaria" value="1">
+            <h2>Registrar Indumentaria</h2>
+            <input type="text" name="numero_legajo" placeholder="Número de Legajo" required="required" />
+            <input type="number" name="gorra" placeholder="Cantidad de Gorras" required="required" />
+            <input type="number" name="remera_azul" placeholder="Cantidad de Remeras Azules" required="required" />
+            <input type="number" name="pantalon_fajina" placeholder="Cantidad de Pantalones de Fajina" required="required" />
+            <input type="number" name="borcegos" placeholder="Cantidad de Borcegos" required="required" />
+            <input type="number" name="rompe_viento" placeholder="Cantidad de Rompe Vientos" required="required" />
+            <input type="number" name="camp_neopren" placeholder="Cantidad de Camp Neopren" required="required" />
+            <input type="number" name="bermuda" placeholder="Cantidad de Bermudas" required="required" />
+            <button type="submit" class="btn btn-primary btn-lg">Registrar Indumentaria</button>
+        </form>
+
+
+        <form action="{{ url_for('cargadatos') }}" method="post">
+    <input type="hidden" name="registrar_epp" value="1">
+    <h2>Registrar EPP</h2>
+    <input type="text" name="numero_legajo" placeholder="Número de Legajo" required="required" />
+    <input type="number" name="casco_estructural" placeholder="Cantidad de Casco Estructural" required="required" />
+    <input type="number" name="monja_estructural" placeholder="Cantidad de Monja Estructural" required="required" />
+    <input type="number" name="guantes_estructural" placeholder="Cantidad de Guantes Estructural" required="required" />
+    <input type="number" name="chaqueton_estructural" placeholder="Cantidad de Chaquetón Estructural" required="required" />
+    <input type="number" name="pantalon_estructural" placeholder="Cantidad de Pantalón Estructural" required="required" />
+    <input type="number" name="botas_estructural" placeholder="Cantidad de Botas Estructural" required="required" />
+    <input type="number" name="monja_forestal" placeholder="Cantidad de Monja Forestal" required="required" />
+    <input type="number" name="camisa_forestal" placeholder="Cantidad de Camisa Forestal" required="required" />
+    <input type="number" name="guantes_forestal" placeholder="Cantidad de Guantes Forestal" required="required" />
+    <input type="number" name="pantalon_forestal" placeholder="Cantidad de Pantalón Forestal" required="required" />
+    <input type="number" name="antiparras_forestal" placeholder="Cantidad de Antiparras Forestal" required="required" />
+    <input type="number" name="linterna_forestal" placeholder="Cantidad de Linterna Forestal" required="required" />
+    <button type="submit" class="btn btn-primary btn-lg">Registrar EPP</button>
+</form>
+
+
+
+
+    </div>
+</div>
+
+{% endblock %}

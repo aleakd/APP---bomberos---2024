@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="titulo">Materiales y equipo</h1>
+
+<!-- Tabla Indumentaria Provista -->
+{% if indu %}
+    <h2>Indumentaria Provista</h2>
+    <table class="table tabla_bomberos table-responsive" id="induTable">
+        <thead>
+            <tr>
+                <th>Legajo Número</th>
+                <th>Apellido</th>
+                <th>Nombre</th>
+                <th>Gorra</th>
+                <th>Remera Azul</th>
+                <th>Pantalon Fajina</th>
+                <th>Borcegos</th>
+                <th>Rompeviento</th>
+                <th>Campera Neopren</th>
+                <th>Bermuda</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for ind in indu %}
+            {% for bombero in bomberos %}
+                {% if ind.numero_legajo == bombero.legajo_numero %}
+                    <tr>
+                        <td>{{ bombero.legajo_numero }}</td>
+                        <td>{{ bombero.apellido }}</td>
+                        <td>{{ bombero.nombre }}</td>
+                        <td>{{ ind.gorra }}</td>
+                        <td>{{ ind.remera_azul }}</td>
+                        <td>{{ ind.pantalon_fajina }}</td>
+                        <td>{{ ind.borcegos }}</td>
+                        <td>{{ ind.rompeviento }}</td>
+                        <td>{{ ind.camp_neopren }}</td>
+                        <td>{{ ind.bermuda }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No hay Registro.</p>
+{% endif %}
+
+<!-- Tabla EPP Provisto -->
+{% if provisto %}
+    <h2>EPP Provisto</h2>
+    <table class="table tabla_bomberos table-responsive" id="eppTable">
+        <thead>
+            <tr>
+                <th>Legajo Número</th>
+                <th>Apellido</th>
+                <th>Nombre</th>
+                <th>Casco Estructural</th>
+                <th>Monja Estructural</th>
+                <th>Guantes Estructural</th>
+                <th>Chaqueton Estructural</th>
+                <th>Pantalon Estructural</th>
+                <th>Botas Estructural</th>
+                <th>Monja Forestal</th>
+                <th>Camisa Forestal</th>
+                <th>Guantes Forestal</th>
+                <th>Pantalon Forestal</th>
+                <th>Antiparras Forestal</th>
+                <th>Linterna Forestal</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for epp in provisto %}
+            {% for bombero in bomberos %}
+                {% if epp.numero_legajo == bombero.legajo_numero %}
+                    <tr>
+                        <td>{{ bombero.legajo_numero }}</td>
+                        <td>{{ bombero.apellido }}</td>
+                        <td>{{ bombero.nombre }}</td>
+                        <td>{{ epp.casco_estructural }}</td>
+                        <td>{{ epp.monja_estructural }}</td>
+                        <td>{{ epp.guantes__estructural }}</td>
+                        <td>{{ epp.chaqueton_estructural }}</td>
+                        <td>{{ epp.pantalon_estructural }}</td>
+                        <td>{{ epp.botas_estructural }}</td>
+                        <td>{{ epp.monja_forestal }}</td>
+                        <td>{{ epp.camisa_forestal }}</td>
+                        <td>{{ epp.guantes_forestal }}</td>
+                        <td>{{ epp.pantalon_forestal }}</td>
+                        <td>{{ epp.antiparras_forestal }}</td>
+                        <td>{{ epp.linterna_forestal }}</td>
+                        <td>
+                            <a href="{{ url_for('edit_matyequipo', id=bombero.legajo_numero) }}" class="btn btn-warning">Editar</a>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No hay Registro.</p>
+{% endif %}
+
+<script>
+    $(document).ready(function () {
+        $('#induTable').DataTable();
+        $('#eppTable').DataTable();
+    });
+</script>
+
+{% endblock %}

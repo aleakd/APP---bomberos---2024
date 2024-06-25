@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if name %}
+
+      <h1 class="usuario_online titulo"><strong>Bienvenido:</strong>{{ name }}</h1> <br>
+  <br>
+
+
+  {% endif %}
+
+
+<section class="menu">
+   <div class="row">
+       <div class="col-md-6">
+           <a href="{{ url_for('legajosvcp') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/legajos.jpg') }}'); background-size: cover;">Legajos</a>
+       </div>
+
+
+       <div class="col-md-6">
+           <a href="{{ url_for('cambiosguardia') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/cambios.jpg') }}'); background-size: cover;">Cambios de Guardia</a>
+
+       </div>
+   </div>
+    <br>
+
+
+    <div class="row">
+       <div class="col-md-6">
+          <button type="button" class="btn btn-info boton " style="background-image: url('{{ url_for('static', filename='img/partes.jpg') }}'); background-size: cover;">Partes</button>
+       </div>
+
+
+       <div class="col-md-6">
+           <a href="{{ url_for('cargadatos') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/contacto.jpg') }}'); background-size: cover;">Carga de datos</a>
+
+       </div>
+   </div>
+    <br>
+
+
+    <div class="row">
+             <div class="col-md-6">
+           <a href="{{ url_for('matyequipo') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/541.jpg') }}'); background-size: cover;">Materiales & Equipo</a>
+
+
+
+
+
+       </div>
+   </div>
+
+
+</section>
+
+
+
+
+{% endblock %}

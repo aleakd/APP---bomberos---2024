@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Listado de BOMBERO</h1>
+
+    {% if bomberos %}
+        <table class="table tabla_bomberos table-responsive" id="bomberosTable">
+            <thead>
+                <tr>
+                    <th>Legajo Número</th>
+                    <th>Apellido</th>
+                    <th>Nombre</th>
+                    <th>DNI</th>
+                    <th>Teléfono</th>
+                    <th>Teléfono Alternativo</th>
+                    <th>Fecha de Nacimiento</th>
+                    <th>Domicilio</th>
+                    <th>Email</th>
+                    <th>Jerarquía</th>
+                    <th>Grupo Sanguíneo</th>
+                    <th>Alergia</th>
+                    <th>Camada</th>
+                    <th>Registro</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bombero in bomberos %}
+                    <tr>
+                        <td>{{ bombero.legajo_numero }}</td>
+                        <td>{{ bombero.apellido }}</td>
+                        <td>{{ bombero.nombre }}</td>
+                        <td>{{ bombero.dni }}</td>
+                        <td>{{ bombero.telefono }}</td>
+                        <td>{{ bombero.telefono_alternativo }}</td>
+                        <td>{{ bombero.fecha_nacimiento }}</td>
+                        <td>{{ bombero.domicilio }}</td>
+                        <td>{{ bombero.email }}</td>
+                        <td>{{ bombero.rol }}</td>
+                        <td>{{ bombero.grupo_sanguineo }}</td>
+                        <td>{{ bombero.alergia }}</td>
+                        <td>{{ bombero.camada }}</td>
+                        <td>{{ bombero.registro }}</td>
+                        <td>
+                            <a href="{{ url_for('edit_legajo', id=bombero.legajo_numero) }}" class="btn btn-warning">Editar</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hay bomberos registrados.</p>
+    {% endif %}
+
+    <script>
+        $(document).ready(function () {
+            $('#bomberosTable').DataTable();
+        });
+    </script>
+{% endblock %}

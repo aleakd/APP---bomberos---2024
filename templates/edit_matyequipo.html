@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Editar EPP Provisto</h1>
+<form method="POST">
+    <div class="form-group">
+        <label for="casco_estructural">Casco Estructural:</label>
+        <input type="text" class="form-control" id="casco_estructural" name="casco_estructural" value="{{ provisto.casco_estructural }}">
+    </div>
+    <div class="form-group">
+        <label for="monja_estructural">Monja Estructural:</label>
+        <input type="text" class="form-control" id="monja_estructural" name="monja_estructural" value="{{ provisto.monja_estructural }}">
+    </div>
+    <div class="form-group">
+        <label for="guantes_estructural">Guantes Estructural:</label>
+        <input type="text" class="form-control" id="guantes_estructural" name="guantes_estructural" value="{{ provisto.guantes_estructural }}">
+    </div>
+    <div class="form-group">
+        <label for="chaqueton_estructural">Chaquetón Estructural:</label>
+        <input type="text" class="form-control" id="chaqueton_estructural" name="chaqueton_estructural" value="{{ provisto.chaqueton_estructural }}">
+    </div>
+    <div class="form-group">
+        <label for="pantalon_estructural">Pantalón Estructural:</label>
+        <input type="text" class="form-control" id="pantalon_estructural" name="pantalon_estructural" value="{{ provisto.pantalon_estructural }}">
+    </div>
+    <div class="form-group">
+        <label for="botas_estructural">Botas Estructural:</label>
+        <input type="text" class="form-control" id="botas_estructural" name="botas_estructural" value="{{ provisto.botas_estructural }}">
+    </div>
+    <div class="form-group">
+        <label for="monja_forestal">Monja Forestal:</label>
+        <input type="text" class="form-control" id="monja_forestal" name="monja_forestal" value="{{ provisto.monja_forestal }}">
+    </div>
+    <div class="form-group">
+        <label for="camisa_forestal">Camisa Forestal:</label>
+        <input type="text" class="form-control" id="camisa_forestal" name="camisa_forestal" value="{{ provisto.camisa_forestal }}">
+    </div>
+    <div class="form-group">
+        <label for="guantes_forestal">Guantes Forestal:</label>
+        <input type="text" class="form-control" id="guantes_forestal" name="guantes_forestal" value="{{ provisto.guantes_forestal }}">
+    </div>
+    <div class="form-group">
+        <label for="pantalon_forestal">Pantalón Forestal:</label>
+        <input type="text" class="form-control" id="pantalon_forestal" name="pantalon_forestal" value="{{ provisto.pantalon_forestal }}">
+    </div>
+    <div class="form-group">
+        <label for="antiparras_forestal">Antiparras Forestal:</label>
+        <input type="text" class="form-control" id="antiparras_forestal" name="antiparras_forestal" value="{{ provisto.antiparras_forestal }}">
+    </div>
+    <div class="form-group">
+        <label for="linterna_forestal">Linterna Forestal:</label>
+        <input type="text" class="form-control" id="linterna_forestal" name="linterna_forestal" value="{{ provisto.linterna_forestal }}">
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+</form>
+{% endblock %}

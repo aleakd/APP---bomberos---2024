@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Bomberos - VCP</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cookie&family=Lobster&family=Lora:ital,wght@0,400..700;1,400..700&family=Oxygen:wght@300;400;700&family=Sacramento&display=swap" rel="stylesheet">
+
+
+    <script src="sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="sweetalert2.min.css">
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+
+
+
+    <script src="https://kit.fontawesome.com/ee489e928a.js" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+
+   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+
+</head>
+
+<body>
+
+<header>
+<nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme='dark'>
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{{ url_for('index') }}">
+        <img class="logo" src="../static/img/logo1.png">
+      </a>
+      <button class="navbar-toggler byb" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon boton-colapso"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+            <!--
+            <li class="nav-item">
+            <a class="nav-link" href="movimientos">Movimientos</a>
+          </li>
+            <li class="nav-item">
+            <a class="nav-link" href="salidas">Salidas</a>
+          </li>-->
+
+          {% if not current_user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="">Acceso</a>
+          </li>
+
+          {% endif %}
+          {% if current_user.is_authenticated %}
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('acces') }}">Accesos</a>
+          </li>
+
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('register') }}">Registrar Usuario</a>
+          </li>
+
+
+
+
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+
+{% block content %}
+{% endblock %}
+
+<footer class="piepag">
+
+     <a href="https://api.whatsapp.com/send?phone=5493541609426" target="_blank"><i class="icono-final fa-brands fa-whatsapp fa-4x"></i></a>
+
+
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

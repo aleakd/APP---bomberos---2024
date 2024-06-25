@@ -1,0 +1,66 @@
+  {% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ form_title }}</h1>
+    <form action="" method="post">
+        <div class="form-group">
+            <label for="legajo_numero">Número de Legajo</label>
+            <input type="text" class="form-control" id="legajo_numero" name="legajo_numero" value="{{ legajo.legajo_numero if legajo else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="apellido">Apellido</label>
+            <input type="text" class="form-control" id="apellido" name="apellido" value="{{ legajo.apellido if legajo else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="nombre">Nombre</label>
+            <input type="text" class="form-control" id="nombre" name="nombre" value="{{ legajo.nombre if legajo else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="dni">DNI</label>
+            <input type="text" class="form-control" id="dni" name="dni" value="{{ legajo.dni if legajo else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="telefono">Teléfono</label>
+            <input type="text" class="form-control" id="telefono" name="telefono" value="{{ legajo.telefono if legajo else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="telefono_alternativo">Teléfono Alternativo</label>
+            <input type="text" class="form-control" id="telefono_alternativo" name="telefono_alternativo" value="{{ legajo.telefono_alternativo if legajo else '' }}">
+        </div>
+        <div class="form-group">
+            <label for="fecha_nacimiento">Fecha de Nacimiento</label>
+            <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ legajo.fecha_nacimiento if legajo else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="domicilio">Domicilio</label>
+            <input type="text" class="form-control" id="domicilio" name="domicilio" value="{{ legajo.domicilio if legajo else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" name="email" value="{{ legajo.email if legajo else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="rol">Rol</label>
+            <input type="text" class="form-control" id="rol" name="rol" value="{{ legajo.rol if legajo else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="grupo_sanguineo">Grupo Sanguíneo</label>
+            <input type="text" class="form-control" id="grupo_sanguineo" name="grupo_sanguineo" value="{{ legajo.grupo_sanguineo if legajo else '' }}">
+        </div>
+        <div class="form-group">
+            <label for="alergia">Alergia</label>
+            <input type="text" class="form-control" id="alergia" name="alergia" value="{{ legajo.alergia if legajo else '' }}">
+        </div>
+        <div class="form-group">
+            <label for="camada">Camada</label>
+            <input type="text" class="form-control" id="camada" name="camada" value="{{ legajo.camada if legajo else '' }}">
+        </div>
+        <div class="form-group">
+            <label for="registro">Registro</label>
+            <textarea class="form-control" id="registro" name="registro">{{ legajo.registro if legajo else '' }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </form>
+</div>
+{% endblock %}

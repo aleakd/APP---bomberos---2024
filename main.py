@@ -1,0 +1,375 @@
+from flask import Flask, render_template, request, redirect, url_for, flash
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
+from functools import wraps
+import pytz
+import os
+from werkzeug.utils import secure_filename
+from datetime import datetime
+
+
+UPLOAD_FOLDER = 'static/uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+
+
+app = Flask(__name__)
+app.config['TIMEZONE'] = pytz.timezone('America/Argentina/Buenos_Aires')
+app.config['SECRET_KEY'] = 'ale14541ale'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bomberoscarlospaz.db'
+db = SQLAlchemy(app)
+
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.template_filter('replace_backslash')
+def replace_backslash(value):
+    return value.replace('\\', '/')
+
+app.jinja_env.filters['replace_backslash'] = replace_backslash
+
+
+
+
+
+#----------------------------------------------#----------------------------------------------
+
+class Bomberos(db.Model):
+    legajo_numero = db.Column(db.Integer, primary_key=True, unique=True)
+    apellido = db.Column(db.String(100))
+    nombre = db.Column(db.String(100))
+    dni = db.Column(db.Integer)
+    telefono = db.Column(db.Integer)
+    telefono_alternativo = db.Column(db.Integer)
+    fecha_nacimiento = db.Column(db.Date)
+    domicilio = db.Column(db.String(300))
+    email = db.Column(db.String(100))
+    rol = db.Column(db.String(100))
+    grupo_sanguineo = db.Column(db.String(100))
+    alergia = db.Column(db.String(100))
+    camada = db.Column(db.String(10))
+    registro = db.Column(db.String(1000))
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), unique=True)
+
+    password = db.Column(db.String(100))
+    name = db.Column(db.String(1000))
+    telefono = db.Column(db.String(15))
+    rol = db.Column(db.String(10), default='usuario')  # Add the role field
+
+class IndumentariaProvista(UserMixin, db.Model):
+    numero_legajo = db.Column(db.Integer, primary_key=True)
+    gorra = db.Column(db.Integer)
+    remera_azul = db.Column(db.Integer)
+    pantalon_fajina = db.Column(db.Integer)
+    borcegos = db.Column(db.Integer)
+    rompeviento = db.Column(db.Integer)
+    camp_neopren = db.Column(db.Integer)
+    bermuda = db.Column(db.Integer)
+
+class Epp_provisto(UserMixin, db.Model):
+    numero_legajo=db.Column(db.Integer, primary_key=True)
+    casco_estructural=db.Column(db.Integer)
+    monja_estructural=db.Column(db.Integer)
+    guantes__estructural=db.Column(db.Integer)
+    chaqueton_estructural=db.Column(db.Integer)
+    pantalon_estructural=db.Column(db.Integer)
+    botas_estructural=db.Column(db.Integer)
+    monja_forestal=db.Column(db.Integer)
+    camisa_forestal=db.Column(db.Integer)
+    guantes_forestal=db.Column(db.Integer)
+    pantalon_forestal=db.Column(db.Integer)
+    antiparras_forestal=db.Column(db.Integer)
+    linterna_forestal=db.Column(db.Integer)
+
+class Cambios_Guardia(UserMixin, db.Model):
+    cambio_guardia_id=db.Column(db.Integer, unique=True)
+    numero_legajo=db.Column(db.Integer, primary_key=True)
+    fecha_solicitud=db.Column(db.Date)
+    rengo_horario=db.Column(db.Time)
+    legajo_quien_cubre= db.Column(db.Integer)
+    motivo=db.Column(db.String(100))
+    fecha_devolucion=db.Column(db.Date)
+    imagen = db.Column(db.String(300))
+
+# Line below only required once, when creating DB.
+with app.app_context():
+    db.create_all()
+
+
+
+#------------------------------------------#------------------------------------------
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+#------------------------------------------#----------------------------------------------
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+#------------------------------------------#------------------------------------------
+
+def role_required(rol):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if not current_user.is_authenticated or current_user.rol != rol:
+                flash('No tienes permiso para acceder a esta página.')
+                return redirect(url_for('index'))
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+
+#----------------------------------------------#----------------------------------------------
+@app.route('/', methods=["GET", "POST"])
+def index():
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        user = User.query.filter_by(email=email).first()
+
+        if not user:
+            flash("Usuario no encontrado")
+            return redirect(url_for('index'))
+
+        elif not check_password_hash(user.password, password):
+            flash("Contraseña incorrecta")
+            return redirect(url_for('index'))
+        else:
+            login_user(user)
+            return redirect(url_for("acces"))
+    return render_template("index.html")
+
+#----------------------------------------------#----------------------------------------------
+@app.route('/acces')
+@login_required
+def acces():
+    return render_template("acces.html", name=current_user.name)
+
+#----------------------------------------------#----------------------------------------------
+
+@app.route('/register', methods=["GET", "POST"])
+@login_required
+@role_required('admin')
+def register():
+    if request.method == "POST":
+        hash_password = generate_password_hash(request.form.get("password"),
+                                               method='pbkdf2:sha256',
+                                               salt_length=6)
+        new_user = User(
+            email=request.form.get("email"),
+            name=request.form.get("name"),
+            password=hash_password,
+            telefono=request.form.get("telefono"),
+            rol=request.form.get("role")  # Make sure your form includes a role field
+        )
+        db.session.add(new_user)
+        db.session.commit()
+
+        return redirect(url_for("acces"))
+    return render_template("register.html")
+
+#----------------------------------------------#----------------------------------------------
+
+@app.route('/cargadatos', methods=["GET", "POST"])
+@login_required
+@role_required('admin')
+def cargadatos():
+    if request.method == "POST":
+        if 'registrar_bombero' in request.form:
+            fecha_nac_str = request.form.get("fecha_nacimiento")
+            try:
+                fecha_nacimiento = datetime.strptime(fecha_nac_str, '%Y-%m-%d').date()
+            except ValueError:
+                flash("Error: Formato de fecha incorrecto. Asegúrate de que las fechas estén en el formato 'YYYY-MM-DD'")
+                return redirect(url_for("cargadatos"))
+
+            nuevo_bombero = Bomberos(
+                legajo_numero=request.form.get("legajo_numero"),
+                apellido=request.form.get("apellido"),
+                nombre=request.form.get("nombre"),
+                dni=request.form.get("dni"),
+                telefono=request.form.get("telefono"),
+                telefono_alternativo=request.form.get("telefono_alternativo"),
+                fecha_nacimiento=fecha_nacimiento,
+                domicilio=request.form.get("domicilio"),
+                email=request.form.get("email"),
+                rol=request.form.get("rol"),
+                grupo_sanguineo=request.form.get("grupo_sanguineo"),
+                alergia=request.form.get("alergia"),
+                camada=request.form.get("camada"),
+                registro=current_user.name
+            )
+            db.session.add(nuevo_bombero)
+            db.session.commit()
+            flash("Bombero registrado exitosamente")
+            return redirect(url_for("acces"))
+
+        if 'registrar_indumentaria' in request.form:
+            nueva_indumentaria = IndumentariaProvista(
+                numero_legajo=request.form.get("numero_legajo"),
+                gorra=request.form.get("gorra"),
+                remera_azul=request.form.get("remera_azul"),
+                pantalon_fajina=request.form.get("pantalon_fajina"),
+                borcegos=request.form.get("borcegos"),
+                rompeviento=request.form.get("rompe_viento"),
+                camp_neopren=request.form.get("camp_neopren"),
+                bermuda=request.form.get("bermuda")
+            )
+            db.session.add(nueva_indumentaria)
+            db.session.commit()
+            flash("Indumentaria registrada exitosamente")
+            return redirect(url_for("acces"))
+
+    return render_template("cargadatos.html")
+#----------------------------------------------#----------------------------------------------
+@app.route('/legajosvcp')
+@login_required
+def legajosvcp():
+    bomberos= Bomberos.query.order_by(Bomberos.legajo_numero).all()
+    return render_template("legajosvcp.html", bomberos=bomberos)
+
+#------------------------------------------#----------------------------------------------
+
+
+
+@app.route('/legajosvcp/edit/<int:id>', methods=["GET", "POST"])
+@role_required('admin')
+@login_required
+def edit_legajo(id):
+    legajo = Bomberos.query.get_or_404(id)
+    if request.method == "POST":
+        legajo.legajo_numero = request.form.get("legajo_numero")
+        legajo.apellido = request.form.get("apellido")
+        legajo.nombre = request.form.get("nombre")
+        legajo.dni = request.form.get("dni")
+        legajo.telefono = request.form.get("telefono")
+        legajo.telefono_alternativo = request.form.get("telefono_alternativo")
+
+        fecha_nacimiento_str = request.form.get("fecha_nacimiento")
+        if fecha_nacimiento_str:
+            legajo.fecha_nacimiento = datetime.strptime(fecha_nacimiento_str, '%Y-%m-%d').date()
+
+        legajo.domicilio = request.form.get("domicilio")
+        legajo.email = request.form.get("email")
+        legajo.rol = request.form.get("rol")
+        legajo.grupo_sanguineo = request.form.get("grupo_sanguineo")
+        legajo.alergia = request.form.get("alergia")
+        legajo.camada = request.form.get("camada")
+        legajo.registro = request.form.get("registro")
+
+        db.session.commit()
+        return redirect(url_for('acces'))
+    return render_template('edit_legajo.html', legajo=legajo)
+
+
+
+
+#----------------------------------------------#----------------------------------------------
+
+@app.route('/cambiosguardia', methods=["GET", "POST"])
+@login_required
+
+def cambiosguardia():
+    cambios = Cambios_Guardia.query.order_by(Cambios_Guardia.fecha_solicitud).all()
+
+    if request.method == "POST":
+        if 'registrar_cambio_guardia' in request.form:
+            fecha_sol_str = request.form.get("fecha_solicitud")
+            try:
+                fecha_solicitud = datetime.strptime(fecha_sol_str, '%Y-%m-%d').date()
+                fecha_devolucion = datetime.strptime(request.form.get("fecha_devolucion"), '%Y-%m-%d').date()
+                rengo_horario = datetime.strptime(request.form.get("rengo_horario"), '%H:%M').time()
+            except ValueError:
+                flash(
+                    "Error: Formato de fecha u hora incorrecto. Asegúrate de que las fechas estén en el formato 'YYYY-MM-DD' y las horas en 'HH:MM'")
+                return redirect(url_for("cargadatos"))
+
+            file = request.files['imagen']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+                file.save(file_path)
+                relative_file_path = os.path.join('uploads', filename)
+            else:
+                relative_file_path = None
+
+            nuevo_cambio_guardia = Cambios_Guardia(
+                numero_legajo=request.form.get("numero_legajo"),
+                fecha_solicitud=fecha_solicitud,
+                rengo_horario=rengo_horario,
+                legajo_quien_cubre=request.form.get("legajo_quien_cubre"),
+                motivo=request.form.get("motivo"),
+                fecha_devolucion=fecha_devolucion,
+                imagen=relative_file_path  # Guarda la ruta del archivo
+            )
+            db.session.add(nuevo_cambio_guardia)
+            db.session.commit()
+            flash("Cambio de Guardia registrado exitosamente")
+            return redirect(url_for("cambiosguardia"))  # Redirigir a cambiosguardia
+
+
+    return render_template("cambiosguardia.html", cambios=cambios)
+
+
+#----------------------------------------------#----------------------------------------------
+
+
+@app.route('/matyequipo', methods=["GET", "POST"])
+@login_required
+def matyequipo():
+    indumentaria= IndumentariaProvista.query.order_by(IndumentariaProvista.numero_legajo).all()
+    bomber = Bomberos.query.order_by(Bomberos.legajo_numero).all()
+    provisto=Epp_provisto.query.order_by(Epp_provisto.numero_legajo).all()
+
+    return render_template("matyequipo.html", indu=indumentaria, bomberos=bomber, provisto=provisto)
+
+
+#----------------------------------------------#----------------------------------------------
+
+@app.route('/matyequipo/edit/<int:id>', methods=["GET", "POST"])
+@role_required('admin')
+@login_required
+def edit_matyequipo(id):
+    provisto = Epp_provisto.query.get_or_404(id)
+    if request.method == "POST":
+        provisto.casco_estructural = request.form.get("casco_estructural")
+        provisto.monja_estructural = request.form.get("monja_estructural")
+        provisto.guantes__estructural = request.form.get("guantes_estructural")
+        provisto.chaqueton_estructural = request.form.get("chaqueton_estructural")
+        provisto.pantalon_estructural = request.form.get("pantalon_estructural")
+        provisto.botas_estructural = request.form.get("botas_estructural")
+        provisto.monja_forestal = request.form.get("monja_forestal")
+        provisto.camisa_forestal = request.form.get("camisa_forestal")
+        provisto.guantes_forestal = request.form.get("guantes_forestal")
+        provisto.pantalon_forestal = request.form.get("pantalon_forestal")
+        provisto.antiparras_forestal = request.form.get("antiparras_forestal")
+        provisto.linterna_forestal = request.form.get("linterna_forestal")
+
+        db.session.commit()
+        flash("Registro de EPP actualizado exitosamente")
+        return redirect(url_for('matyequipo'))
+    return render_template('edit_matyequipo.html', provisto=provisto)
+
+
+#----------------------------------------------#----------------------------------------------
+
+if __name__ == '__main__':
+    app.run(debug=True, port=8080)  # Cambia 8080 al puerto que prefieras
