@@ -104,6 +104,15 @@ class Cambios_Guardia(UserMixin, db.Model):
     fecha_devolucion=db.Column(db.Date)
     imagen = db.Column(db.String(300))
 
+class Licencias_Conducir(UserMixin, db.Model):
+    numero_legajo=db.Column(db.Integer, primary_key=True)
+    tipo= db.Column(db.Integer)
+    fecha_otorgacion= db.Column(db.Date)
+    fecha_vencimiento = db.Column(db.Date)
+    observacion=db.Column(db.String(300))
+    lic_frente= db.Column(db.String(300))
+    lic_dorso= db.Column(db.String(300))
+
 # Line below only required once, when creating DB.
 with app.app_context():
     db.create_all()
@@ -237,17 +246,61 @@ def cargadatos():
             flash("Indumentaria registrada exitosamente")
             return redirect(url_for("acces"))
 
+        if 'registrar_licencia' in request.form:
+            fecha_otorgacion_str = request.form.get("fecha_otorgacion")
+            fecha_vencimiento_str = request.form.get("fecha_vencimiento")
+            try:
+                fecha_otorgacion = datetime.strptime(fecha_otorgacion_str, '%Y-%m-%d').date()
+                fecha_vencimiento = datetime.strptime(fecha_vencimiento_str, '%Y-%m-%d').date()
+            except ValueError:
+                flash(
+                    "Error: Formato de fecha incorrecto. Asegúrate de que las fechas estén en el formato 'YYYY-MM-DD'")
+                return redirect(url_for("cargadatos"))
+
+            file_frente = request.files['lic_frente']
+            file_dorso = request.files['lic_dorso']
+            if file_frente and allowed_file(file_frente.filename):
+                filename_frente = secure_filename(file_frente.filename)
+                file_path_frente = os.path.join(app.config['UPLOAD_FOLDER'], 'licencias', filename_frente)
+                os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'licencias'), exist_ok=True)
+                file_frente.save(file_path_frente)
+                relative_file_path_frente = os.path.join('uploads', 'licencias', filename_frente)
+            else:
+                relative_file_path_frente = None
+
+            if file_dorso and allowed_file(file_dorso.filename):
+                filename_dorso = secure_filename(file_dorso.filename)
+                file_path_dorso = os.path.join(app.config['UPLOAD_FOLDER'], 'licencias', filename_dorso)
+                os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'licencias'), exist_ok=True)
+                file_dorso.save(file_path_dorso)
+                relative_file_path_dorso = os.path.join('uploads', 'licencias', filename_dorso)
+            else:
+                relative_file_path_dorso = None
+
+            nueva_licencia = Licencias_Conducir(
+                numero_legajo=request.form.get("numero_legajo"),
+                tipo=request.form.get("tipo"),
+                fecha_otorgacion=fecha_otorgacion,
+                fecha_vencimiento=fecha_vencimiento,
+                observacion=request.form.get("observacion"),
+                lic_frente=relative_file_path_frente,
+                lic_dorso=relative_file_path_dorso
+            )
+            db.session.add(nueva_licencia)
+            db.session.commit()
+            flash("Licencia de conducir registrada exitosamente")
+            return redirect(url_for("acces"))
+
     return render_template("cargadatos.html")
 #----------------------------------------------#----------------------------------------------
 @app.route('/legajosvcp')
 @login_required
 def legajosvcp():
     bomberos= Bomberos.query.order_by(Bomberos.legajo_numero).all()
-    return render_template("legajosvcp.html", bomberos=bomberos)
+    licencias = Licencias_Conducir.query.order_by(Licencias_Conducir.numero_legajo).all()
+    return render_template("legajosvcp.html", bomberos=bomberos, licencias=licencias)
 
 #------------------------------------------#----------------------------------------------
-
-
 
 @app.route('/legajosvcp/edit/<int:id>', methods=["GET", "POST"])
 @role_required('admin')

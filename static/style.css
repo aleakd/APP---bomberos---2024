@@ -5,6 +5,13 @@ background: linear-gradient(to right, #FFFFFF, #ECE9E6); /* W3C, IE 10+/ Edge, F
 text-align:center;
 font-family:"Oxygen";
 }
+.separadorhr{
+color:red;
+background-color:blue;
+margin: 10px 20px;
+height:10px;
+
+}
 
 .byb{
 background: #3E5151;  /* fallback for old browsers */

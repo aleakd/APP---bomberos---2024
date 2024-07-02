@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Listado de BOMBERO</h1>
+    <h1>Listado de BOMBEROS</h1>
 
     {% if bomberos %}
         <table class="table tabla_bomberos table-responsive" id="bomberosTable">
@@ -48,13 +48,76 @@
                 {% endfor %}
             </tbody>
         </table>
+<br>
+<hr class="separadorhr">
+
+<h2>Licencias de Conducir</h2>
+    <table class="table tabla_bomberos+ table-responsive" id="licenciaTable">
+        <thead>
+            <tr>
+                <th>Número de Legajo</th>
+                <th>Tipo</th>
+                <th>Fecha de Otorgación</th>
+                <th>Fecha de Vencimiento</th>
+                <th>Observación</th>
+                <th>Licencia Frente</th>
+                <th>Licencia Dorso</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for licencia in licencias %}
+            <tr>
+                <td>{{ licencia.numero_legajo }}</td>
+                <td>{{ licencia.tipo }}</td>
+                <td>{{ licencia.fecha_otorgacion }}</td>
+                <td>{{ licencia.fecha_vencimiento }}</td>
+                <td>{{ licencia.observacion }}</td>
+                <td>
+                    {% if licencia.lic_frente %}
+                    <a href="{{ url_for('static', filename=licencia.lic_frente|replace_backslash) }}" target="_blank">
+                    <img src="{{ url_for('static', filename=licencia.lic_frente|replace_backslash) }}" alt="Licencia Frente" style="width:100px;">
+                    {% else %}
+                    No disponible
+                    {% endif %}
+                 </td>
+                <td>
+                    {% if licencia.lic_dorso %}
+                    <a href="{{ url_for('static', filename=licencia.lic_dorso|replace_backslash) }}" target="_blank">
+                    <img src="{{ url_for('static', filename=licencia.lic_dorso|replace_backslash) }}" alt="Licencia Dorso" style="width:100px;">
+                    </a>
+                    {% else %}
+                    No disponible
+                    {% endif %}
+                 </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
     {% else %}
         <p>No hay bomberos registrados.</p>
     {% endif %}
+
+
+
+
+
+
 
     <script>
         $(document).ready(function () {
             $('#bomberosTable').DataTable();
         });
     </script>
+
+
+<script>
+        $(document).ready(function () {
+            $('#licenciaTable').DataTable();
+        });
+    </script>
+
+
+
+
+
 {% endblock %}
