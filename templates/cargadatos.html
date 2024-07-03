@@ -70,20 +70,17 @@
 
 
 
-    </div>
-</div>
 
-<div class="form-section">
+
         <h3>Registrar Licencia de Conducir</h3>
         <form method="POST" action="{{ url_for('cargadatos') }}" enctype="multipart/form-data">
-            <label for="numero_legajo">Número de Legajo:</label>
-            <input type="text" id="numero_legajo" name="numero_legajo" required><br>
 
-            <label for="tipo">Tipo:</label>
-            <input type="text" id="tipo" name="tipo" required><br>
+            <input type="text" id="numero_legajo" name="numero_legajo" placeholder="Numero de legajo" required><br>
+
+            <input type="text" id="tipo" name="tipo" placeholder="Tipo de licencia" required><br>
 
             <label for="fecha_otorgacion">Fecha de Otorgación (YYYY-MM-DD):</label>
-            <input type="date" id="fecha_otorgacion" name="fecha_otorgacion" required><br>
+            <input type="date" id="fecha_otorgacion" name="fecha_otorgacion"  required><br>
 
             <label for="fecha_vencimiento">Fecha de Vencimiento (YYYY-MM-DD):</label>
             <input type="date" id="fecha_vencimiento" name="fecha_vencimiento" required><br>
@@ -100,6 +97,7 @@
             <input type="hidden" name="registrar_licencia" value="true">
             <button type="submit">Registrar Licencia</button>
         </form>
-    </div>
+        </div>
+</div>
 
 {% endblock %}

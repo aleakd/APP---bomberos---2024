@@ -2,6 +2,20 @@
 
 {% block content %}
     <h1>Listado de BOMBEROS</h1>
+<div class="box">
+    {% with messages = get_flashed_messages() %}
+  {% if messages %}
+  <div class="mensaa alert alert-light">
+    <ul class="list-unstyled">
+      {% for message in messages %}
+      <li> <h2 id="miH202">{{ message }}</h2></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  {% endwith %}
+
+</div>
 
     {% if bomberos %}
         <table class="table tabla_bomberos table-responsive" id="bomberosTable">
@@ -89,6 +103,9 @@
                     No disponible
                     {% endif %}
                  </td>
+                <td>
+                    <a href="{{ url_for('edit_licencia', id=licencia.numero_legajo) }}" class="btn btn-warning">Editar</a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>

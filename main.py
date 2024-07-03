@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
@@ -95,14 +95,15 @@ class Epp_provisto(UserMixin, db.Model):
     linterna_forestal=db.Column(db.Integer)
 
 class Cambios_Guardia(UserMixin, db.Model):
-    cambio_guardia_id=db.Column(db.Integer, unique=True)
-    numero_legajo=db.Column(db.Integer, primary_key=True)
+    cambio_guardia_id=db.Column(db.Integer, unique=True,primary_key=True)
+    numero_legajo=db.Column(db.Integer)
     fecha_solicitud=db.Column(db.Date)
-    rengo_horario=db.Column(db.Time)
+    rango_horario=db.Column(db.Time)
     legajo_quien_cubre= db.Column(db.Integer)
     motivo=db.Column(db.String(100))
     fecha_devolucion=db.Column(db.Date)
     imagen = db.Column(db.String(300))
+    aprovado = db.Column(db.String(300))
 
 class Licencias_Conducir(UserMixin, db.Model):
     numero_legajo=db.Column(db.Integer, primary_key=True)
@@ -301,7 +302,6 @@ def legajosvcp():
     return render_template("legajosvcp.html", bomberos=bomberos, licencias=licencias)
 
 #------------------------------------------#----------------------------------------------
-
 @app.route('/legajosvcp/edit/<int:id>', methods=["GET", "POST"])
 @role_required('admin')
 @login_required
@@ -335,51 +335,117 @@ def edit_legajo(id):
 
 
 #----------------------------------------------#----------------------------------------------
-
-@app.route('/cambiosguardia', methods=["GET", "POST"])
+@app.route('/legajosvcp/edit_licencia/<int:id>', methods=["GET", "POST"])
+@role_required('admin')
 @login_required
-
-def cambiosguardia():
-    cambios = Cambios_Guardia.query.order_by(Cambios_Guardia.fecha_solicitud).all()
-
+def edit_licencia(id):
+    licencia = Licencias_Conducir.query.get_or_404(id)
     if request.method == "POST":
-        if 'registrar_cambio_guardia' in request.form:
-            fecha_sol_str = request.form.get("fecha_solicitud")
-            try:
-                fecha_solicitud = datetime.strptime(fecha_sol_str, '%Y-%m-%d').date()
-                fecha_devolucion = datetime.strptime(request.form.get("fecha_devolucion"), '%Y-%m-%d').date()
-                rengo_horario = datetime.strptime(request.form.get("rengo_horario"), '%H:%M').time()
-            except ValueError:
-                flash(
-                    "Error: Formato de fecha u hora incorrecto. Asegúrate de que las fechas estén en el formato 'YYYY-MM-DD' y las horas en 'HH:MM'")
-                return redirect(url_for("cargadatos"))
+        licencia.tipo = request.form.get("tipo")
 
-            file = request.files['imagen']
+        fecha_otorgacion_str = request.form.get("fecha_otorgacion")
+        fecha_vencimiento_str = request.form.get("fecha_vencimiento")
+
+        if fecha_otorgacion_str:
+            licencia.fecha_otorgacion = datetime.strptime(fecha_otorgacion_str, '%Y-%m-%d').date()
+        if fecha_vencimiento_str:
+            licencia.fecha_vencimiento = datetime.strptime(fecha_vencimiento_str, '%Y-%m-%d').date()
+
+        licencia.observacion = request.form.get("observacion")
+
+        if 'lic_frente' in request.files:
+            file = request.files['lic_frente']
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'],'licencias',  filename)
                 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
                 file.save(file_path)
-                relative_file_path = os.path.join('uploads', filename)
-            else:
-                relative_file_path = None
+                licencia.lic_frente = os.path.join('uploads','licencias', filename)
 
-            nuevo_cambio_guardia = Cambios_Guardia(
-                numero_legajo=request.form.get("numero_legajo"),
-                fecha_solicitud=fecha_solicitud,
-                rengo_horario=rengo_horario,
-                legajo_quien_cubre=request.form.get("legajo_quien_cubre"),
-                motivo=request.form.get("motivo"),
-                fecha_devolucion=fecha_devolucion,
-                imagen=relative_file_path  # Guarda la ruta del archivo
+        if 'lic_dorso' in request.files:
+            file = request.files['lic_dorso']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'],'licencias', filename)
+                os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+                file.save(file_path)
+                licencia.lic_dorso = os.path.join('uploads','licencias', filename)
+
+        db.session.commit()
+        flash("Licencia actualizada exitosamente")
+        return redirect(url_for('legajosvcp'))
+
+    return render_template('edit_licencia.html', licencia=licencia)
+
+#----------------------------------------------#----------------------------------------------
+@app.route('/cambiosguardia', methods=['GET', 'POST'])
+@login_required
+def cambiosguardia():
+    if request.method == 'POST':
+        if 'registrar_cambio_guardia' in request.form:
+            numero_legajo = request.form.get("numero_legajo")
+            fecha_solicitud = request.form.get("fecha_solicitud")
+            rango_horario = request.form.get("rango_horario")
+            legajo_quien_cubre = request.form.get("legajo_quien_cubre")
+            motivo = request.form.get("motivo")
+            fecha_devolucion = request.form.get("fecha_devolucion")
+            imagen = request.files.get("imagen")
+            imagen_filename = None
+
+            if imagen and allowed_file(imagen.filename):
+                filename = secure_filename(imagen.filename)
+                imagen_filename = os.path.join(app.config['UPLOAD_FOLDER'], 'licencias', filename)
+                os.makedirs(os.path.dirname(imagen_filename), exist_ok=True)
+                imagen.save(imagen_filename)
+                imagen_filename = os.path.join('uploads', 'licencias', filename)  # Guardar la ruta relativa
+
+            nuevo_cambio = Cambios_Guardia(
+                numero_legajo=numero_legajo,
+                fecha_solicitud=datetime.strptime(fecha_solicitud, '%Y-%m-%d').date(),
+                rango_horario=datetime.strptime(rango_horario, '%H:%M').time(),
+                legajo_quien_cubre=legajo_quien_cubre,
+                motivo=motivo,
+                fecha_devolucion=datetime.strptime(fecha_devolucion, '%Y-%m-%d').date(),
+                imagen=imagen_filename
+
             )
-            db.session.add(nuevo_cambio_guardia)
+            db.session.add(nuevo_cambio)
             db.session.commit()
-            flash("Cambio de Guardia registrado exitosamente")
-            return redirect(url_for("cambiosguardia"))  # Redirigir a cambiosguardia
+            flash("Cambio de guardia registrado exitosamente")
+            return redirect(url_for("cambiosguardia"))
 
-
+    cambios = Cambios_Guardia.query.all()
     return render_template("cambiosguardia.html", cambios=cambios)
+
+
+
+#----------------------------------------------#----------------------------------------------
+#----------------------------------------------#----------------------------------------------
+@app.route('/editar_cambio_guardia/<int:id>', methods=["GET", "POST"])
+@login_required
+@role_required('admin')
+def editar_cambio_guardia(id):
+    cambio_guardia = Cambios_Guardia.query.get_or_404(id)
+
+    if request.method == "POST":
+        rango_horario_str = request.form.get("rango_horario")
+        try:
+            rango_horario = datetime.strptime(rango_horario_str, '%H:%M').time()
+        except ValueError:
+            flash("Formato de hora incorrecto. Asegúrate de que la hora esté en el formato 'HH:MM'")
+            return redirect(url_for('editar_cambio_guardia', id=id))
+
+        cambio_guardia.legajo_quien_cubre = request.form.get("legajo_quien_cubre")
+        cambio_guardia.motivo = request.form.get("motivo")
+        cambio_guardia.fecha_devolucion = datetime.strptime(request.form.get("fecha_devolucion"), '%Y-%m-%d').date()
+        cambio_guardia.rango_horario = rango_horario
+        cambio_guardia.aprovado = request.form.get("aprovado")
+
+        db.session.commit()
+        flash("Solicitud de cambio de guardia actualizada exitosamente")
+        return redirect(url_for("cambiosguardia"))
+
+    return render_template("editar_cambio_guardia.html", cambio_guardia=cambio_guardia)
 
 
 #----------------------------------------------#----------------------------------------------

@@ -14,20 +14,6 @@
 <img class="logo_index" src="../static/img/logo1.png">
     </div>
 
-<div class="box">
-    {% with messages = get_flashed_messages() %}
-  {% if messages %}
-  <div class="mensaa alert alert-light">
-    <ul class="list-unstyled">
-      {% for message in messages %}
-      <li> <h2 id="miH202">{{ message }}</h2></li>
-      {% endfor %}
-    </ul>
-  </div>
-  {% endif %}
-  {% endwith %}
-
-</div>
 <div class="row">
 
     <div class="col-12">

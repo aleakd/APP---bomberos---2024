@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+ <div class="container">
+        <h2>Editar Solicitud de Cambio de Guardia</h2>
+        <form action="{{ url_for('editar_cambio_guardia', id=cambio_guardia.cambio_guardia_id) }}" method="POST">
+            <label for="fecha_solicitud">Fecha de Solicitud:</label>
+            <input type="date" id="fecha_solicitud" name="fecha_solicitud" value="{{ cambio_guardia.fecha_solicitud }}" disabled>
+
+            <label for="rango_horario">Rango Horario (HH:MM):</label>
+            <input type="time" id="rango_horario" name="rango_horario" value="{{ cambio_guardia.rango_horario }}" required>
+
+            <label for="legajo_quien_cubre">Legajo de Quién Cubre:</label>
+            <input type="number" id="legajo_quien_cubre" name="legajo_quien_cubre" value="{{ cambio_guardia.legajo_quien_cubre }}" required>
+
+            <label for="motivo">Motivo:</label>
+            <textarea id="motivo" name="motivo" required>{{ cambio_guardia.motivo }}</textarea>
+
+            <label for="fecha_devolucion">Fecha de Devolución:</label>
+            <input type="date" id="fecha_devolucion" name="fecha_devolucion" value="{{ cambio_guardia.fecha_devolucion }}" required>
+
+            <label for="aprovado">Aprobar:</label>
+            <textarea id="aprovado" name="aprovado"></textarea>
+
+            <button type="submit">Actualizar Solicitud</button>
+        </form>
+    </div>
+
+
+ {% endblock %}

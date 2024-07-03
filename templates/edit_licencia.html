@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+ <h1>Editar Licencia de Conducir</h1>
+
+    <form method="POST" action="{{ url_for('edit_licencia', id=licencia.numero_legajo) }}" enctype="multipart/form-data">
+        <label for="tipo">Tipo:</label>
+        <input type="text" id="tipo" name="tipo" value="{{ licencia.tipo }}" required><br>
+
+        <label for="fecha_otorgacion">Fecha de Otorgación (YYYY-MM-DD):</label>
+        <input type="date" id="fecha_otorgacion" name="fecha_otorgacion" value="{{ licencia.fecha_otorgacion }}" required><br>
+
+        <label for="fecha_vencimiento">Fecha de Vencimiento (YYYY-MM-DD):</label>
+        <input type="date" id="fecha_vencimiento" name="fecha_vencimiento" value="{{ licencia.fecha_vencimiento }}" required><br>
+
+        <label for="observacion">Observación:</label>
+        <input type="text" id="observacion" name="observacion" value="{{ licencia.observacion }}"><br>
+
+        <label for="lic_frente">Licencia Frente:</label>
+        <input type="file" id="lic_frente" name="lic_frente"><br>
+        {% if licencia.lic_frente %}
+            <img src="{{ url_for('static', filename=licencia.lic_frente|replace_backslash) }}" alt="Licencia Frente" width="200">
+        {% endif %}
+
+        <label for="lic_dorso">Licencia Dorso:</label>
+        <input type="file" id="lic_dorso" name="lic_dorso"><br>
+        {% if licencia.lic_dorso %}
+            <img src="{{ url_for('static', filename=licencia.lic_dorso|replace_backslash) }}" alt="Licencia Dorso" width="200">
+        {% endif %}
+
+        <button type="submit">Actualizar Licencia</button>
+    </form>
+
+    <a href="{{ url_for('legajosvcp') }}">Volver</a>
+
+{% endblock %}

@@ -1,71 +1,71 @@
 {% extends "base.html" %}
 
 {% block content %}
-
 <div class="box">
     <div class="container">
         <h1 class="titulo">Cambios de Guardia</h1>
 
-      <form action="{{ url_for('cambiosguardia') }}" method="post" enctype="multipart/form-data">
-    <input type="hidden" name="registrar_cambio_guardia" value="1">
-    <input type="text" name="numero_legajo" placeholder="Número de Legajo" required="required" />
-    <input type="date" name="fecha_solicitud" placeholder="Fecha de Solicitud" required="required" />
-    <input type="time" name="rengo_horario" placeholder="Rango Horario" required="required" />
-    <input type="text" name="legajo_quien_cubre" placeholder="Legajo de Quien Cubre" required="required" />
-    <input type="text" name="motivo" placeholder="Motivo" required="required" />
-    <input type="date" name="fecha_devolucion" placeholder="Fecha de Devolución" required="required" />
-    <input type="file" name="imagen" accept="image/*" />
-    <button type="submit" class="btn btn-primary btn-lg">Registrar Cambio de Guardia</button>
-</form>
-
-
-
-
-
+        <form action="{{ url_for('cambiosguardia') }}" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="registrar_cambio_guardia" value="1">
+            <input type="text" name="numero_legajo" placeholder="Número de Legajo" required="required" />
+            <input type="date" name="fecha_solicitud" placeholder="Fecha de Solicitud" required="required" />
+            <input type="time" name="rango_horario" placeholder="Rango Horario" required="required" />
+            <input type="text" name="legajo_quien_cubre" placeholder="Legajo de Quien Cubre" required="required" />
+            <input type="text" name="motivo" placeholder="Motivo" required="required" />
+            <input type="date" name="fecha_devolucion" placeholder="Fecha de Devolución" required="required" />
+            <input type="file" name="imagen" accept="image/*" />
+            <button type="submit" class="btn btn-primary btn-lg">Registrar Cambio de Guardia</button>
+        </form>
     </div>
 </div>
 
-
-
 <div class="container mt-5">
-        <h1>Cambios de Guardia</h1>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Número de Legajo</th>
-                    <th>Fecha de Solicitud</th>
-                    <th>Rango Horario</th>
-                    <th>Legajo de Quien Cubre</th>
-                    <th>Motivo</th>
-                    <th>Fecha de Devolución</th>
-                    <th>Imagen</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for cambio in cambios %}
-                <tr>
-                    <td>{{ cambio.numero_legajo }}</td>
-                    <td>{{ cambio.fecha_solicitud }}</td>
-                    <td>{{ cambio.rengo_horario }}</td>
-                    <td>{{ cambio.legajo_quien_cubre }}</td>
-                    <td>{{ cambio.motivo }}</td>
-                    <td>{{ cambio.fecha_devolucion }}</td>
-                    <td>
-    {% if cambio.imagen %}
-    <a href="{{ url_for('static', filename=cambio.imagen|replace_backslash) }}" target="_blank">
-        <img src="{{ url_for('static', filename=cambio.imagen|replace_backslash) }}" alt="Imagen" width="100">
-    </a>
-    {% else %}
-    No Image
-    {% endif %}
-</td>
+    <h1>Cambios de Guardia</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Número de Legajo</th>
+                <th>Fecha de Solicitud</th>
+                <th>Rango Horario</th>
+                <th>Legajo de Quien Cubre</th>
+                <th>Motivo</th>
+                <th>Fecha de Devolución</th>
+                <th>Imagen</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cambio in cambios %}
 
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-
+                <td>{{ cambio.numero_legajo }}</td>
+                <td>{{ cambio.fecha_solicitud }}</td>
+                <td>{{ cambio.rango_horario }}</td>
+                <td>{{ cambio.legajo_quien_cubre }}</td>
+                <td>{{ cambio.motivo }}</td>
+                <td>{{ cambio.fecha_devolucion }}</td>
+                <td>
+                    {% if cambio.imagen %}
+                    <a href="{{ url_for('static', filename=cambio.imagen|replace_backslash) }}" target="_blank">
+                        <img src="{{ url_for('static', filename=cambio.imagen|replace_backslash) }}" alt="Imagen" width="100">
+                    </a>
+                    {% else %}
+                    No Image
+                    {% endif %}
+                </td>
+                <td>
+                    {{ cambio.aprovado }}
+                </td>
+                <td>
+                    {% if current_user.rol == 'admin' %}
+                     <td>
+                        <a href="{{ url_for('editar_cambio_guardia', id=cambio.cambio_guardia_id) }}" class="btn btn-primary">Editar</a>
+                    </td>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 {% endblock %}

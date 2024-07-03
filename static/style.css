@@ -13,6 +13,8 @@ height:10px;
 
 }
 
+
+
 .byb{
 background: #3E5151;  /* fallback for old browsers */
 background: -webkit-linear-gradient(to right, #DECBA4, #3E5151);  /* Chrome 10-25, Safari 5.1-6 */
@@ -143,6 +145,9 @@ cursor: pointer;
 font-size:1rem;
 }
 
+label{
+color:white;
+}
 /* Estilo de la tabla */
 
 div.dataTables_wrapper input[type="search"] {
