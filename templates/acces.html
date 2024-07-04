@@ -26,9 +26,11 @@
 
 <section class="menu">
    <div class="row">
+       {% if current_user.rol == 'admin' %}
        <div class="col-md-6">
            <a href="{{ url_for('legajosvcp') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/legajos.jpg') }}'); background-size: cover;">Legajos</a>
        </div>
+       {% endif %}
 
 
        <div class="col-md-6">
@@ -44,11 +46,12 @@
           <button type="button" class="btn btn-info boton " style="background-image: url('{{ url_for('static', filename='img/partes.jpg') }}'); background-size: cover;">Partes</button>
        </div>
 
-
+        {% if current_user.rol == 'admin' %}
        <div class="col-md-6">
            <a href="{{ url_for('cargadatos') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/contacto.jpg') }}'); background-size: cover;">Carga de datos</a>
 
        </div>
+        {% endif %}
    </div>
     <br>
 

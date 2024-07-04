@@ -63,7 +63,6 @@ class Bomberos(db.Model):
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True)
-
     password = db.Column(db.String(100))
     name = db.Column(db.String(1000))
     telefono = db.Column(db.String(15))
@@ -145,7 +144,7 @@ def role_required(rol):
         return decorated_function
     return decorator
 
-#----------------------------------------------#----------------------------------------------
+#----------------------------------------------#-----------PAGINA DE INICIO-----------------------------------
 @app.route('/', methods=["GET", "POST"])
 def index():
     if request.method == "POST":
@@ -166,13 +165,13 @@ def index():
             return redirect(url_for("acces"))
     return render_template("index.html")
 
-#----------------------------------------------#----------------------------------------------
+#----------------------------------------------#---PAGINA DEL MENU-------------------------------------------
 @app.route('/acces')
 @login_required
 def acces():
     return render_template("acces.html", name=current_user.name)
 
-#----------------------------------------------#----------------------------------------------
+#----------------------------------------------#---------REGISTRAR UN NUEVO USUARIO-------------------------------------
 
 @app.route('/register', methods=["GET", "POST"])
 @login_required
@@ -195,7 +194,7 @@ def register():
         return redirect(url_for("acces"))
     return render_template("register.html")
 
-#----------------------------------------------#----------------------------------------------
+#----------------------------------------------#-------PAGINA PARA CARGAR LOS DATOS---------------------------------------
 
 @app.route('/cargadatos', methods=["GET", "POST"])
 @login_required
@@ -292,8 +291,30 @@ def cargadatos():
             flash("Licencia de conducir registrada exitosamente")
             return redirect(url_for("acces"))
 
+        if 'registrar_epp' in request.form:
+            print("Registrar EPP")
+            nuevo_epp = Epp_provisto(
+                numero_legajo=request.form.get("numero_legajo"),
+                casco_estructural=request.form.get("casco_estructural"),
+                monja_estructural=request.form.get("monja_estructural"),
+                guantes__estructural=request.form.get("guantes_estructural"),
+                chaqueton_estructural=request.form.get("chaqueton_estructural"),
+                pantalon_estructural=request.form.get("pantalon_estructural"),
+                botas_estructural=request.form.get("botas_estructural"),
+                monja_forestal=request.form.get("monja_forestal"),
+                camisa_forestal=request.form.get("camisa_forestal"),
+                guantes_forestal=request.form.get("guantes_forestal"),
+                pantalon_forestal=request.form.get("pantalon_forestal"),
+                antiparras_forestal=request.form.get("antiparras_forestal"),
+                linterna_forestal=request.form.get("linterna_forestal")
+            )
+            db.session.add(nuevo_epp)
+            db.session.commit()
+            flash("Epp registrado exitosamente")
+            return redirect(url_for("acces"))
+
     return render_template("cargadatos.html")
-#----------------------------------------------#----------------------------------------------
+#----------------------------------------------#-------PAGINA DE LEGAJOS---------------------------------------
 @app.route('/legajosvcp')
 @login_required
 def legajosvcp():
@@ -301,7 +322,7 @@ def legajosvcp():
     licencias = Licencias_Conducir.query.order_by(Licencias_Conducir.numero_legajo).all()
     return render_template("legajosvcp.html", bomberos=bomberos, licencias=licencias)
 
-#------------------------------------------#----------------------------------------------
+#------------------------------------------#------EDICION DE LOS LEGAJOS----------------------------------------
 @app.route('/legajosvcp/edit/<int:id>', methods=["GET", "POST"])
 @role_required('admin')
 @login_required
@@ -334,7 +355,7 @@ def edit_legajo(id):
 
 
 
-#----------------------------------------------#----------------------------------------------
+#----------------------------------------------#-----EDITAR LICENCIAS DE CONDUCIR-----------------------------------------
 @app.route('/legajosvcp/edit_licencia/<int:id>', methods=["GET", "POST"])
 @role_required('admin')
 @login_required
@@ -377,7 +398,7 @@ def edit_licencia(id):
 
     return render_template('edit_licencia.html', licencia=licencia)
 
-#----------------------------------------------#----------------------------------------------
+#----------------------------------------------#--------------CAMBIOS DE GUARDIA--------------------------------
 @app.route('/cambiosguardia', methods=['GET', 'POST'])
 @login_required
 def cambiosguardia():
@@ -419,8 +440,8 @@ def cambiosguardia():
 
 
 
-#----------------------------------------------#----------------------------------------------
-#----------------------------------------------#----------------------------------------------
+
+#----------------------------------------------#-----------EDITAR CAMBIOS DE GUARDIA-----------------------------------
 @app.route('/editar_cambio_guardia/<int:id>', methods=["GET", "POST"])
 @login_required
 @role_required('admin')
@@ -448,7 +469,7 @@ def editar_cambio_guardia(id):
     return render_template("editar_cambio_guardia.html", cambio_guardia=cambio_guardia)
 
 
-#----------------------------------------------#----------------------------------------------
+#----------------------------------------------#---------MATERIALES Y EQUIPO-------------------------------------
 
 
 @app.route('/matyequipo', methods=["GET", "POST"])
@@ -461,7 +482,7 @@ def matyequipo():
     return render_template("matyequipo.html", indu=indumentaria, bomberos=bomber, provisto=provisto)
 
 
-#----------------------------------------------#----------------------------------------------
+#----------------------------------------------#---EDITAR  EPP------------------------------------------
 
 @app.route('/matyequipo/edit/<int:id>', methods=["GET", "POST"])
 @role_required('admin')

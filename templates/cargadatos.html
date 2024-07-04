@@ -21,7 +21,7 @@
             <input type="date" name="fecha_nacimiento" placeholder="Fecha de Nacimiento" required="required" />
             <input type="text" name="domicilio" placeholder="Domicilio" required="required" />
             <input type="email" name="email" placeholder="Email" required="required" />
-            <input type="text" name="rol" placeholder="Rol" required="required" />
+            <input type="text" name="rol" placeholder="Jerarquia" required="required" />
             <input type="text" name="grupo_sanguineo" placeholder="Grupo Sanguíneo" required="required" />
             <input type="text" name="alergia" placeholder="Alergia" />
             <input type="text" name="camada" placeholder="Camada" />
@@ -72,9 +72,9 @@
 
 
 
-        <h3>Registrar Licencia de Conducir</h3>
-        <form method="POST" action="{{ url_for('cargadatos') }}" enctype="multipart/form-data">
 
+        <form method="POST" action="{{ url_for('cargadatos') }}" enctype="multipart/form-data">
+        <h2>Registrar Licencia de Conducir</h2>
             <input type="text" id="numero_legajo" name="numero_legajo" placeholder="Numero de legajo" required><br>
 
             <input type="text" id="tipo" name="tipo" placeholder="Tipo de licencia" required><br>
@@ -85,8 +85,7 @@
             <label for="fecha_vencimiento">Fecha de Vencimiento (YYYY-MM-DD):</label>
             <input type="date" id="fecha_vencimiento" name="fecha_vencimiento" required><br>
 
-            <label for="observacion">Observación:</label>
-            <input type="text" id="observacion" name="observacion"><br>
+            <input type="text" id="observacion" name="observacion" placeholder="Observación"><br>
 
             <label for="lic_frente">Licencia Frente:</label>
             <input type="file" id="lic_frente" name="lic_frente"><br>

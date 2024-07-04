@@ -1,16 +1,18 @@
 body {
-background: #ECE9E6;  /* fallback for old browsers */
-background: -webkit-linear-gradient(to right, #FFFFFF, #ECE9E6);  /* Chrome 10-25, Safari 5.1-6 */
-background: linear-gradient(to right, #FFFFFF, #ECE9E6); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+background: #f12711;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #f5af19, #f12711);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #f5af19, #f12711); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
 text-align:center;
 font-family:"Oxygen";
 }
+
+
+
 .separadorhr{
-color:red;
 background-color:blue;
 margin: 10px 20px;
-height:10px;
-
+height:12px;
 }
 
 
@@ -58,7 +60,7 @@ padding:3rem;
 }
 
 .mensaa{
-margin:100px;
+margin:20px;
 background-color:green;
 color:black;
 }
@@ -86,9 +88,11 @@ color:black;
 }
 
 .usuario_online{
-color:red;
+color:yellow;
 margin-top:2%;
-font-family:}
+font-family:"Cookie";
+font-size:3rem;
+}
 
 
 .piepag{
@@ -110,14 +114,11 @@ color:#34E207;
 
 
 form {
-background: #232526;  /* fallback for old browsers */
-background: -webkit-linear-gradient(to right, #414345, #232526);  /* Chrome 10-25, Safari 5.1-6 */
-background: linear-gradient(to right, #414345, #232526); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
-margin:2% 3%;
-border: 9px solid #ccc;
+background-color:#ACB9B9;
+margin:2% 20%;
+border: 9px solid #FDFDFD;
 padding: 20px;
-width: 60%;
+width: 65%;
 border-radius: 5px;
 box-shadow: 3px 6px 110px #ccc;
 }
@@ -134,12 +135,10 @@ box-sizing: border-box;
 
 /* Estilos para el botón del formulario */
 button[type=submit] {
-background: #1A2980;  /* fallback for old browsers */
-background: -webkit-linear-gradient(to right, #26D0CE, #1A2980);  /* Chrome 10-25, Safari 5.1-6 */
-background: linear-gradient(to right, #26D0CE, #1A2980); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-color: black;
+background-color:#3B693D;
+color: white;
 padding: 20px 20px;
-border: none;
+border: 1px solid black;
 border-radius: 4px;
 cursor: pointer;
 font-size:1rem;
@@ -148,11 +147,11 @@ font-size:1rem;
 label{
 color:white;
 }
-/* Estilo de la tabla */
 
+
+/* Estilo de la tabla */
 div.dataTables_wrapper input[type="search"] {
     background-color: #DAF7A6; /* Cambia este color al que desees */
-
 }
 
 table {
@@ -176,7 +175,7 @@ td {
 
 /* Estilo para resaltar filas impares */
 tr:nth-child(odd) {
-    background-color: #84E8EC;
+    background-color: #84EC8F;
 }
 
 /* Estilo para resaltar filas al pasar el cursor por encima */
@@ -184,7 +183,7 @@ tr:hover {
     background-color: #e0e0e0;
 }
 .tabla_bomberos th{
-background-color: #84E8EC;
+background-color: #508D57;
     text-align: left;
     padding: 10px;
 }
@@ -196,7 +195,7 @@ background-color: #84E8EC;
 
 /* Estilo para resaltar filas impares */
 .tabla_bomberos tr:nth-child(odd) {
-    background-color: #84E8EC;
+    background-color: #84EC8F;
 }
 
 /* Estilo para resaltar filas al pasar el cursor por encima */
