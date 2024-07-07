@@ -1,7 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Listado de BOMBEROS</h1>
+
+<div class="portada_legajos">
+    <h1>Legajos de BOMBEROS</h1>
+
+    </div>
+
 <div class="box">
     {% with messages = get_flashed_messages() %}
   {% if messages %}
@@ -22,19 +27,23 @@
             <thead>
                 <tr>
                     <th>Legajo Número</th>
+                    <th>Jerarquía</th>
                     <th>Apellido</th>
                     <th>Nombre</th>
                     <th>DNI</th>
+                    <th>Estado</th>
                     <th>Teléfono</th>
                     <th>Teléfono Alternativo</th>
                     <th>Fecha de Nacimiento</th>
                     <th>Domicilio</th>
                     <th>Email</th>
-                    <th>Jerarquía</th>
                     <th>Grupo Sanguíneo</th>
                     <th>Alergia</th>
                     <th>Camada</th>
+                    <th>Obra Social</th>
+                    <th>Nivel Educativo</th>
                     <th>Registro</th>
+
                     {% if current_user.rol == 'admin' %}
                     <th>Acciones</th>
                     {% endif %}
@@ -44,18 +53,23 @@
                 {% for bombero in bomberos %}
                     <tr>
                         <td>{{ bombero.legajo_numero }}</td>
+                        <td>{{ bombero.rol }}</td>
                         <td>{{ bombero.apellido }}</td>
                         <td>{{ bombero.nombre }}</td>
                         <td>{{ bombero.dni }}</td>
+                        <td>{{ bombero.estado }}</td>
+
                         <td>{{ bombero.telefono }}</td>
                         <td>{{ bombero.telefono_alternativo }}</td>
                         <td>{{ bombero.fecha_nacimiento }}</td>
                         <td>{{ bombero.domicilio }}</td>
                         <td>{{ bombero.email }}</td>
-                        <td>{{ bombero.rol }}</td>
+
                         <td>{{ bombero.grupo_sanguineo }}</td>
                         <td>{{ bombero.alergia }}</td>
                         <td>{{ bombero.camada }}</td>
+                        <td>{{ bombero.obra_scocial }}</td>
+                        <td>{{ bombero.nivel_educativo }}</td>
                         <td>{{ bombero.registro }}</td>
                         {% if current_user.rol == 'admin' %}
                         <td>
@@ -67,9 +81,12 @@
             </tbody>
         </table>
 <br>
+
 <hr class="separadorhr">
 
-<h2>Licencias de Conducir</h2>
+<div class="portada_licencias">
+<h1>Licencias de Conducir</h1>
+    </div>
     <table class="table tabla_bomberos table-responsive" id="licenciaTable">
         <thead>
             <tr>
@@ -97,7 +114,7 @@
                     {% else %}
                     No disponible
                     {% endif %}
-                 </td>
+                   </td>
                 <td>
                     {% if licencia.lic_dorso %}
                     <a href="{{ url_for('static', filename=licencia.lic_dorso|replace_backslash) }}" target="_blank">
@@ -133,11 +150,11 @@
     </script>
 
 
-<script>
-        $(document).ready(function () {
-            $('#licenciaTable').DataTable();
-        });
-    </script>
+    <script>
+            $(document).ready(function () {
+                $('#licenciaTable').DataTable();
+            });
+        </script>
 
 
 

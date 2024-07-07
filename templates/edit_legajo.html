@@ -56,10 +56,29 @@
             <label for="camada">Camada</label>
             <input type="text" class="form-control" id="camada" name="camada" value="{{ legajo.camada if legajo else '' }}">
         </div>
+
+        <div class="form-group">
+            <label for="estado">Estado</label>
+            <input type="text" class="form-control" id="estado" name="estado" value="{{ legajo.estado if legajo else '' }}">
+        </div>
+
+        <div class="form-group">
+            <label for="obra_social">Obra Social</label>
+            <input type="text" class="form-control" id="obra_social" name="obra_social" value="{{ legajo.obra_social if legajo else '' }}">
+        </div>
+<!--
         <div class="form-group">
             <label for="registro">Registro</label>
             <textarea class="form-control" id="registro" name="registro">{{ legajo.registro if legajo else '' }}</textarea>
         </div>
+        -->
+
+        <div class="form-group">
+            <label for="nivel_educativo">Nivel Educativo</label>
+            <input type="text" class="form-control" id="nivel_educativo" name="nivel_educativo" value="{{ legajo.nivel_educativo if legajo else '' }}">
+        </div>
+
+
         <button type="submit" class="btn btn-primary">Guardar</button>
     </form>
 </div>

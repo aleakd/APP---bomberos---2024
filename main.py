@@ -58,7 +58,10 @@ class Bomberos(db.Model):
     grupo_sanguineo = db.Column(db.String(100))
     alergia = db.Column(db.String(100))
     camada = db.Column(db.String(10))
+    estado= db.Column(db.String(100))
+    obra_scocial=db.Column(db.String(10))
     registro = db.Column(db.String(1000))
+    nivel_educativo=db.Column(db.String(1000))
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -112,6 +115,8 @@ class Licencias_Conducir(UserMixin, db.Model):
     observacion=db.Column(db.String(300))
     lic_frente= db.Column(db.String(300))
     lic_dorso= db.Column(db.String(300))
+
+
 
 # Line below only required once, when creating DB.
 with app.app_context():
@@ -223,7 +228,9 @@ def cargadatos():
                 grupo_sanguineo=request.form.get("grupo_sanguineo"),
                 alergia=request.form.get("alergia"),
                 camada=request.form.get("camada"),
-                registro=current_user.name
+                obra_scocial=request.form.get("social"),
+                registro=current_user.name,
+                nivel_educativo=request.form.get("nivel_educativo")
             )
             db.session.add(nuevo_bombero)
             db.session.commit()
@@ -346,7 +353,10 @@ def edit_legajo(id):
         legajo.grupo_sanguineo = request.form.get("grupo_sanguineo")
         legajo.alergia = request.form.get("alergia")
         legajo.camada = request.form.get("camada")
+        legajo.estado = request.form.get("estado")
+        legajo.obra_social = request.form.get("obra_social")
         legajo.registro = request.form.get("registro")
+        legajo.nivel_educativo = request.form.get("nivel_educativo")
 
         db.session.commit()
         return redirect(url_for('acces'))
@@ -449,17 +459,10 @@ def editar_cambio_guardia(id):
     cambio_guardia = Cambios_Guardia.query.get_or_404(id)
 
     if request.method == "POST":
-        rango_horario_str = request.form.get("rango_horario")
-        try:
-            rango_horario = datetime.strptime(rango_horario_str, '%H:%M').time()
-        except ValueError:
-            flash("Formato de hora incorrecto. Asegúrate de que la hora esté en el formato 'HH:MM'")
-            return redirect(url_for('editar_cambio_guardia', id=id))
 
         cambio_guardia.legajo_quien_cubre = request.form.get("legajo_quien_cubre")
         cambio_guardia.motivo = request.form.get("motivo")
         cambio_guardia.fecha_devolucion = datetime.strptime(request.form.get("fecha_devolucion"), '%Y-%m-%d').date()
-        cambio_guardia.rango_horario = rango_horario
         cambio_guardia.aprovado = request.form.get("aprovado")
 
         db.session.commit()
@@ -510,6 +513,18 @@ def edit_matyequipo(id):
 
 
 #----------------------------------------------#----------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=8080)  # Cambia 8080 al puerto que prefieras

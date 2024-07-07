@@ -7,10 +7,36 @@ text-align:center;
 font-family:"Oxygen";
 }
 
+.portada_legajos {
+    background-image: url('/static/img/iiff.jpg');
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+    padding: 10rem;
+}
+
+.portada_legajos h1{
+color:white;
+font-family:"Montserrat"
+}
+
+.portada_licencias{
+background-image: url('/static/img/portlic1.jpg');
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+    padding: 10rem;
+}
+
+.portada_licencias h1{
+color:white;
+font-family:"Montserrat"
+}
+
 
 
 .separadorhr{
-background-color:blue;
+background-color:red;
 margin: 10px 20px;
 height:12px;
 }
