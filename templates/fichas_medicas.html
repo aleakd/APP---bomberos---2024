@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+
+    <form action="{{ url_for('fichas_medicas') }}" method="POST" enctype="multipart/form-data">
+        <h1>Cargar Nueva Ficha Médica</h1>
+        <input type="number" id="numero_legajo" name="numero_legajo" required placeholder="Numero de Legajo"><br>
+
+        <label for="fecha_ficha">Fecha de Ficha:</label>
+        <input type="date" id="fecha_ficha" name="fecha_ficha" required><br>
+
+        <textarea id="observaciones" name="observaciones" rows="4" cols="22" placeholder="Observaciones"></textarea><br>
+
+        <label for="pdf_ficha_medica">Adjuntar Ficha Médica (PDF):</label>
+        <input type="file" id="pdf_ficha_medica" name="pdf_ficha_medica" accept="application/pdf" required><br>
+
+        <button type="submit" name="registrar_ficha">Enviar</button>
+    </form>
+</div>
+
+<div>
+    <h1>Fichas Médicas</h1>
+    <table border="1" class="table tabla_bomberos table-responsive">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Número de Legajo</th>
+                <th>Fecha de Realización</th>
+                <th>Observaciones</th>
+                <th>Ficha Médica</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ficha in fichas %}
+            <tr>
+                <td>{{ ficha.id_ficha_medica }}</td>
+                <td>{{ ficha.numero_legajo }}</td>
+                <td>{{ ficha.fecha_ficha }}</td>
+                <td>{{ ficha.observaciones }}</td>
+                <td><a href="{{ url_for('download_files', filename=ficha.pdf_ficha_medica) }}" target="_blank">Ver Ficha</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

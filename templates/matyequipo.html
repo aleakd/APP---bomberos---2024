@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="portada_matyequipos">
 
-<h1 class="titulo">Materiales y equipo</h1>
+</div>
 
+<h1 class="">Materiales y equipo</h1>
 <!-- Tabla Indumentaria Provista -->
 {% if indu %}
     <h2>Indumentaria Provista</h2>
@@ -102,6 +104,19 @@
 {% else %}
     <p>No hay Registro.</p>
 {% endif %}
+
+<div class="row">
+    <div class="col-md-6">
+        <a href="{{ url_for('talles') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/legajos.jpg') }}'); background-size: cover;">Talles</a>
+    </div>
+
+
+
+</div>
+
+
+
+
 
 <script>
     $(document).ready(function () {

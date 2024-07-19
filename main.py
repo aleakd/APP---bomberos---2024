@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify,send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
@@ -10,7 +10,7 @@ from datetime import datetime
 
 
 UPLOAD_FOLDER = 'static/uploads'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
 
 
 
@@ -115,6 +115,33 @@ class Licencias_Conducir(UserMixin, db.Model):
     observacion=db.Column(db.String(300))
     lic_frente= db.Column(db.String(300))
     lic_dorso= db.Column(db.String(300))
+
+
+class Partes_Licencia(UserMixin, db.Model):
+    id_licencia=db.Column(db.Integer, primary_key=True)
+    numero_legajo=db.Column(db.Integer)
+    tipo_licencia = db.Column(db.String(300))
+    fecha_solicitud=db.Column(db.Date)
+    fecha_inicio_licencia=db.Column(db.Date)
+    fecha_fin_licencia=db.Column(db.Date)
+    parte_licencia=db.Column(db.String(300))
+
+class Ficha_Medica(UserMixin, db.Model):
+    id_ficha_medica=db.Column(db.Integer, primary_key=True)
+    numero_legajo = db.Column(db.Integer)
+    fecha_ficha = db.Column(db.Date)
+    observaciones=db.Column(db.String(300))
+    pdf_ficha_medica = db.Column(db.String(300))
+
+
+class Talles(UserMixin, db.Model):
+    numero_legajo = db.Column(db.Integer, primary_key=True)
+    remera_fajina = db.Column(db.String(10))
+    pantalon_fajina = db.Column(db.Integer)
+    campera_fajina= db.Column(db.String(10))
+    borcegos = db.Column(db.Integer)
+
+
 
 
 
@@ -512,15 +539,138 @@ def edit_matyequipo(id):
     return render_template('edit_matyequipo.html', provisto=provisto)
 
 
+#--------------------------------------PARTES DE LICENCIA--------#----------------------------------------------
+@app.route('/partes', methods=['GET', 'POST'])
+@login_required
+def partes_licencia():
+    if request.method == "POST":
+        if 'registrar_parte' in request.form:
+            archivo_parte = request.files['parte_licencia']
+
+            if archivo_parte and allowed_file(archivo_parte.filename):
+                filename_parte = secure_filename(archivo_parte.filename)
+                archivo_parte.save(os.path.join(app.config['UPLOAD_FOLDER'],"partes", filename_parte))
+                #   parte_path = os.path.join(app.config['UPLOAD_FOLDER'],"licencias", filename_parte)
+
+
+                try:
+                    fecha_solicitud = datetime.strptime(request.form.get("fecha_solicitud"), '%Y-%m-%d').date()
+                    fecha_inicio_licencia = datetime.strptime(request.form.get("fecha_inicio_licencia"), '%Y-%m-%d').date()
+                    fecha_fin_licencia = datetime.strptime(request.form.get("fecha_fin_licencia"), '%Y-%m-%d').date()
+                except ValueError:
+                    flash("Error: Formato de fecha incorrecto.")
+                    return redirect(url_for("partes_licencia"))
+
+                nuevo_parte = Partes_Licencia(
+                    numero_legajo=request.form.get("numero_legajo"),
+                    tipo_licencia=request.form.get("tipo_licencia"),
+                    fecha_solicitud=fecha_solicitud,
+                    fecha_inicio_licencia=fecha_inicio_licencia,
+                    fecha_fin_licencia=fecha_fin_licencia,
+                    parte_licencia=filename_parte
+                )
+                db.session.add(nuevo_parte)
+                db.session.commit()
+                flash("Parte de licencia registrado exitosamente")
+                return redirect(url_for("acces"))
+            else:
+                print("error")
+                flash("Error: Formato de archivo no permitido.")
+                return redirect(url_for("partes_licencia"))
+    solicitudes = Partes_Licencia.query.all()
+    return render_template("partes.html", solicitudes=solicitudes)
+
 #----------------------------------------------#----------------------------------------------
+@app.route('/uploads/partes/<filename>')
+def download_file(filename):
+    subdirectory = "partes"
+    return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], subdirectory), filename)
 
 
+@app.route('/uploads/fichas_medicas/<filename>')
+def download_files(filename):
+    subdirectory = "ficha_medica"
+    return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], subdirectory), filename)
+
+#----------------------------------------FICHA MEDICA------#----------------------------------------------
+
+@app.route('/fichas_medicas', methods=['GET', 'POST'])
+@login_required
+def fichas_medicas():
+    if request.method == "POST":
+        if 'registrar_ficha' in request.form:
+            archivo_ficha = request.files['pdf_ficha_medica']
+
+            if archivo_ficha and allowed_file(archivo_ficha.filename):
+                filename_ficha = secure_filename(archivo_ficha.filename)
+                archivo_ficha.save(os.path.join(app.config['UPLOAD_FOLDER'],'ficha_medica', filename_ficha))
+                #ficha_path = os.path.join(app.config['UPLOAD_FOLDER'], filename_ficha)
+
+                try:
+                    fecha_ficha = datetime.strptime(request.form.get("fecha_ficha"), '%Y-%m-%d').date()
+                except ValueError:
+                    flash("Error: Formato de fecha incorrecto.")
+                    return redirect(url_for("fichas_medicas"))
+
+                nueva_ficha = Ficha_Medica(
+                    numero_legajo=request.form.get("numero_legajo"),
+                    fecha_ficha=fecha_ficha,
+                    observaciones=request.form.get("observaciones"),
+                    pdf_ficha_medica=filename_ficha
+                )
+                db.session.add(nueva_ficha)
+                db.session.commit()
+                flash("Ficha médica registrada exitosamente")
+                return redirect(url_for("fichas_medicas"))
+            else:
+                flash("Error: Formato de archivo no permitido.")
+                return redirect(url_for("fichas_medicas"))
+    fichas = Ficha_Medica.query.all()
+    return render_template("fichas_medicas.html", fichas=fichas)
+
+#----------------------------------------TALLES------#----------------------------------------------
+
+@app.route('/talles', methods=['GET', 'POST'])
+@login_required
+def talles():
+    if request.method == "POST":
+        numero_legajo = request.form.get("numero_legajo")
+        remera_fajina = request.form.get("remera_fajina")
+        pantalon_fajina = request.form.get("pantalon_fajina")
+        campera_fajina = request.form.get("campera_fajina")
+        borcegos = request.form.get("borcegos")
+
+        # Validaciones
+        if not numero_legajo or not remera_fajina or not pantalon_fajina or not campera_fajina or not borcegos:
+            flash("Todos los campos son obligatorios.")
+            return redirect(url_for("talles"))
+
+        try:
+            numero_legajo = int(numero_legajo)
+            pantalon_fajina = int(pantalon_fajina)
+            borcegos = int(borcegos)
+        except ValueError:
+            flash("Número de legajo, pantalón y borcegos deben ser números enteros.")
+            return redirect(url_for("talles"))
+
+        nuevo_talle = Talles(
+            numero_legajo=numero_legajo,
+            remera_fajina=remera_fajina,
+            pantalon_fajina=pantalon_fajina,
+            campera_fajina=campera_fajina,
+            borcegos=borcegos
+        )
+        db.session.add(nuevo_talle)
+        db.session.commit()
+        flash("Talle registrado exitosamente")
+        return redirect(url_for("talles"))
+
+    bomberos = Bomberos.query.all()
+    talles = Talles.query.all()
+    return render_template("tallesbv.html", bomberos=bomberos, talles=talles)
 
 
-
-
-
-
+#----------------------------------------------#----------------------------------------------
 
 
 

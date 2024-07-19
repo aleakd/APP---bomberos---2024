@@ -43,7 +43,7 @@
 
     <div class="row">
        <div class="col-md-6">
-          <button type="button" class="btn btn-info boton " style="background-image: url('{{ url_for('static', filename='img/partes.jpg') }}'); background-size: cover;">Partes</button>
+          <a href="{{ url_for('partes_licencia') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/partes.jpg') }}'); background-size: cover;">Partes</a>
        </div>
 
         {% if current_user.rol == 'admin' %}
@@ -60,11 +60,15 @@
              <div class="col-md-6">
            <a href="{{ url_for('matyequipo') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/541.jpg') }}'); background-size: cover;">Materiales & Equipo</a>
 
+       </div>
 
 
-
+        {% if current_user.rol == 'admin' %}
+       <div class="col-md-6">
+           <a href="{{ url_for('fichas_medicas') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/ficha_medica.jpg') }}'); background-size: cover;">Ficha Medica</a>
 
        </div>
+        {% endif %}
    </div>
 
 

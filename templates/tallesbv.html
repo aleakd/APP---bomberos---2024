@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+    <h1>Registrar Nuevos Talles</h1>
+    <form action="{{ url_for('talles') }}" method="POST">
+        <label for="numero_legajo">Número de Legajo:</label>
+        <input type="number" id="numero_legajo" name="numero_legajo" required placeholder="Numero de Legajo"><br>
+
+
+        <label for="remera_fajina">Talle Remera Fajina:</label>
+        <input type="text" id="remera_fajina" name="remera_fajina" required><br>
+
+        <label for="pantalon_fajina">Talle Pantalón Fajina:</label>
+        <input type="number" id="pantalon_fajina" name="pantalon_fajina" required><br>
+
+        <label for="campera_fajina">Talle Campera Fajina:</label>
+        <input type="text" id="campera_fajina" name="campera_fajina" required><br>
+
+        <label for="borcegos">Talle Borcegos:</label>
+        <input type="number" id="borcegos" name="borcegos" required><br>
+
+        <button type="submit">Registrar</button>
+    </form>
+</div>
+
+<div>
+    <h1>Lista de Talles</h1>
+    <table border="1" class="table tabla_bomberos table-responsive">
+        <thead>
+            <tr>
+                <th>Número de Legajo</th>
+                <th>Apellido</th>
+                <th>Remera Fajina</th>
+                <th>Pantalón Fajina</th>
+                <th>Campera Fajina</th>
+                <th>Borcegos</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for talle in talles %}
+            <tr>
+                <td>{{ talle.numero_legajo }}</td>
+                <td>
+                    {% for bombero in bomberos %}
+                        {% if bombero.legajo_numero == talle.numero_legajo %}
+                            {{ bombero.apellido }}
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                <td>{{ talle.remera_fajina }}</td>
+                <td>{{ talle.pantalon_fajina }}</td>
+                <td>{{ talle.campera_fajina }}</td>
+                <td>{{ talle.borcegos }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

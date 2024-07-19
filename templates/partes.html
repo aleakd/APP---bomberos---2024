@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<div>
+        <form action="{{ url_for('partes_licencia') }}" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="registrar_parte" value="1">
+            <h1>Cargar Nueva Solicitud de Licencia</h1>
+
+            <label for="numero_legajo">Número de Legajo:</label>
+            <input type="number" id="numero_legajo" name="numero_legajo" required><br>
+
+            <label for="tipo_licencia">Tipo de Licencia:</label>
+            <input type="text" id="tipo_licencia" name="tipo_licencia" required><br>
+
+            <label for="fecha_solicitud">Fecha de Solicitud:</label>
+            <input type="date" id="fecha_solicitud" name="fecha_solicitud" required><br>
+
+            <label for="fecha_inicio_licencia">Fecha de Inicio de Licencia:</label>
+            <input type="date" id="fecha_inicio_licencia" name="fecha_inicio_licencia" required><br>
+
+            <label for="fecha_fin_licencia">Fecha de Fin de Licencia:</label>
+            <input type="date" id="fecha_fin_licencia" name="fecha_fin_licencia" required><br>
+
+            <label for="parte_licencia">Adjuntar Parte (PDF):</label>
+            <input type="file" id="parte_licencia" name="parte_licencia" accept="application/pdf" required><br>
+
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
+    <div>
+        <h1>Solicitudes de Licencia</h1>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Número de Legajo</th>
+                    <th>Tipo de Licencia</th>
+                    <th>Fecha de Solicitud</th>
+                    <th>Fecha de Inicio</th>
+                    <th>Fecha de Fin</th>
+                    <th>Parte</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for solicitud in solicitudes %}
+                <tr>
+                    <td>{{ solicitud.id_licencia }}</td>
+                    <td>{{ solicitud.numero_legajo }}</td>
+                    <td>{{ solicitud.tipo_licencia }}</td>
+                    <td>{{ solicitud.fecha_solicitud }}</td>
+                    <td>{{ solicitud.fecha_inicio_licencia }}</td>
+                    <td>{{ solicitud.fecha_fin_licencia }}</td>
+                    <td><a href="{{ url_for('download_file', filename=solicitud.parte_licencia) }}">Ver Parte</a></td>                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+{% endblock %}
