@@ -351,6 +351,7 @@ def cargadatos():
 #----------------------------------------------#-------PAGINA DE LEGAJOS---------------------------------------
 @app.route('/legajosvcp')
 @login_required
+@role_required('admin')
 def legajosvcp():
     bomberos= Bomberos.query.order_by(Bomberos.legajo_numero).all()
     licencias = Licencias_Conducir.query.order_by(Licencias_Conducir.numero_legajo).all()
@@ -435,8 +436,20 @@ def edit_licencia(id):
 
     return render_template('edit_licencia.html', licencia=licencia)
 
+
+#----------------------------------------------#--------------ELIMINAR BOMBERO--------------------------------
+
+@app.route('/eliminar_bombero/<int:legajo>', methods=['POST'])
+@login_required
+def eliminar_bombero(legajo):
+    bombero = Bomberos.query.get_or_404(legajo)
+    db.session.delete(bombero)
+    db.session.commit()
+    return jsonify({'success': True})
+
 #----------------------------------------------#--------------CAMBIOS DE GUARDIA--------------------------------
 @app.route('/cambiosguardia', methods=['GET', 'POST'])
+@role_required('admin')
 @login_required
 def cambiosguardia():
     if request.method == 'POST':
@@ -499,6 +512,16 @@ def editar_cambio_guardia(id):
     return render_template("editar_cambio_guardia.html", cambio_guardia=cambio_guardia)
 
 
+#----------------------------------------------#---------ELIMINAR CAMBIO GUARDIA-------------------------------------
+@app.route('/eliminar_cambio/<int:id>', methods=['POST'])
+@role_required('admin')
+@login_required
+def eliminar_cambio_guardia(id):
+    cambiog = Cambios_Guardia.query.get_or_404(id)
+    db.session.delete(cambiog)
+    db.session.commit()
+    flash("Registro de cambio de guardia eliminado exitosamente.")
+    return redirect(url_for('cambiosguardia'))
 #----------------------------------------------#---------MATERIALES Y EQUIPO-------------------------------------
 
 
@@ -595,6 +618,7 @@ def download_files(filename):
 #----------------------------------------FICHA MEDICA------#----------------------------------------------
 
 @app.route('/fichas_medicas', methods=['GET', 'POST'])
+@role_required('admin')
 @login_required
 def fichas_medicas():
     if request.method == "POST":

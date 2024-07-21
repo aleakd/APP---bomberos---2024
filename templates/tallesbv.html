@@ -4,21 +4,12 @@
 <div>
     <h1>Registrar Nuevos Talles</h1>
     <form action="{{ url_for('talles') }}" method="POST">
-        <label for="numero_legajo">Número de Legajo:</label>
+
         <input type="number" id="numero_legajo" name="numero_legajo" required placeholder="Numero de Legajo"><br>
-
-
-        <label for="remera_fajina">Talle Remera Fajina:</label>
-        <input type="text" id="remera_fajina" name="remera_fajina" required><br>
-
-        <label for="pantalon_fajina">Talle Pantalón Fajina:</label>
-        <input type="number" id="pantalon_fajina" name="pantalon_fajina" required><br>
-
-        <label for="campera_fajina">Talle Campera Fajina:</label>
-        <input type="text" id="campera_fajina" name="campera_fajina" required><br>
-
-        <label for="borcegos">Talle Borcegos:</label>
-        <input type="number" id="borcegos" name="borcegos" required><br>
+        <input type="text" id="remera_fajina" name="remera_fajina" required placeholder="Talle Remera Fajina"><br>
+        <input type="number" id="pantalon_fajina" name="pantalon_fajina" required placeholder="Talle pantalon Fajina"><br>
+        <input type="text" id="campera_fajina" name="campera_fajina" required placeholder="Talle Campera Fajina"><br>
+        <input type="number" id="borcegos" name="borcegos" required placeholder="Talle de Borcegos"><br>
 
         <button type="submit">Registrar</button>
     </form>

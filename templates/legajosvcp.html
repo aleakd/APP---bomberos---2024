@@ -2,164 +2,177 @@
 
 {% block content %}
 
-<div class="portada_legajos">
-
-
-    </div>
+<div class="portada_legajos"></div>
 
 <div class="box">
     {% with messages = get_flashed_messages() %}
-  {% if messages %}
-  <div class="mensaa alert alert-light">
-    <ul class="list-unstyled">
-      {% for message in messages %}
-      <li> <h2 id="miH202">{{ message }}</h2></li>
-      {% endfor %}
-    </ul>
-  </div>
-  {% endif %}
-  {% endwith %}
-
+    {% if messages %}
+    <div class="mensaa alert alert-light">
+        <ul class="list-unstyled">
+        {% for message in messages %}
+        <li> <h2 id="miH202">{{ message }}</h2></li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% endwith %}
 </div>
 
-    {% if bomberos %}
-<h1>Legajos de BOMBEROS</h1>
-        <table class="table tabla_bomberos table-responsive" id="bomberosTable">
-            <thead>
-                <tr>
-                    <th>Legajo Número</th>
-                    <th>Jerarquía</th>
-                    <th>Apellido</th>
-                    <th>Nombre</th>
-                    <th>DNI</th>
-                    <th>Estado</th>
-                    <th>Teléfono</th>
-                    <th>Teléfono Alternativo</th>
-                    <th>Fecha de Nacimiento</th>
-                    <th>Domicilio</th>
-                    <th>Email</th>
-                    <th>Grupo Sanguíneo</th>
-                    <th>Alergia</th>
-                    <th>Camada</th>
-                    <th>Obra Social</th>
-                    <th>Nivel Educativo</th>
-                    <th>Registro</th>
-
-                    {% if current_user.rol == 'admin' %}
-                    <th>Acciones</th>
-                    {% endif %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for bombero in bomberos %}
-                    <tr>
-                        <td>{{ bombero.legajo_numero }}</td>
-                        <td>{{ bombero.rol }}</td>
-                        <td>{{ bombero.apellido }}</td>
-                        <td>{{ bombero.nombre }}</td>
-                        <td>{{ bombero.dni }}</td>
-                        <td>{{ bombero.estado }}</td>
-
-                        <td>{{ bombero.telefono }}</td>
-                        <td>{{ bombero.telefono_alternativo }}</td>
-                        <td>{{ bombero.fecha_nacimiento }}</td>
-                        <td>{{ bombero.domicilio }}</td>
-                        <td>{{ bombero.email }}</td>
-
-                        <td>{{ bombero.grupo_sanguineo }}</td>
-                        <td>{{ bombero.alergia }}</td>
-                        <td>{{ bombero.camada }}</td>
-                        <td>{{ bombero.obra_scocial }}</td>
-                        <td>{{ bombero.nivel_educativo }}</td>
-                        <td>{{ bombero.registro }}</td>
-                        {% if current_user.rol == 'admin' %}
-                        <td>
-                            <a href="{{ url_for('edit_legajo', id=bombero.legajo_numero) }}" class="btn btn-primary">Editar</a>
-                        </td>
-                        {% endif %}
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+{% if bomberos %}
+<h1 class="titulo">Legajos de BOMBEROS</h1>
+<table class="table tabla_bomberos table-responsive" id="bomberosTable">
+    <thead>
+        <tr>
+            <th>Legajo Número</th>
+            <th>Jerarquía</th>
+            <th>Apellido</th>
+            <th>Nombre</th>
+            <th>DNI</th>
+            <th>Estado</th>
+            <th>Teléfono</th>
+            <th>Teléfono Alternativo</th>
+            <th>Fecha de Nacimiento</th>
+            <th>Domicilio</th>
+            <th>Email</th>
+            <th>Grupo Sanguíneo</th>
+            <th>Alergia</th>
+            <th>Camada</th>
+            <th>Obra Social</th>
+            <th>Nivel Educativo</th>
+            <th>Registro</th>
+            {% if current_user.rol == 'admin' %}
+            <th>Acciones</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for bombero in bomberos %}
+        <tr>
+            <td>{{ bombero.legajo_numero }}</td>
+            <td>{{ bombero.rol }}</td>
+            <td>{{ bombero.apellido }}</td>
+            <td>{{ bombero.nombre }}</td>
+            <td>{{ bombero.dni }}</td>
+            <td>{{ bombero.estado }}</td>
+            <td>{{ bombero.telefono }}</td>
+            <td>{{ bombero.telefono_alternativo }}</td>
+            <td>{{ bombero.fecha_nacimiento }}</td>
+            <td>{{ bombero.domicilio }}</td>
+            <td>{{ bombero.email }}</td>
+            <td>{{ bombero.grupo_sanguineo }}</td>
+            <td>{{ bombero.alergia }}</td>
+            <td>{{ bombero.camada }}</td>
+            <td>{{ bombero.obra_scocial }}</td>
+            <td>{{ bombero.nivel_educativo }}</td>
+            <td>{{ bombero.registro }}</td>
+            {% if current_user.rol == 'admin' %}
+            <td>
+                <a href="{{ url_for('edit_legajo', id=bombero.legajo_numero) }}" class="btn btn-primary">Editar</a>
+                <button class="btn btn-danger" onclick="confirmarEliminacion({{ bombero.legajo_numero }})">Eliminar</button>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 <br>
 
 <hr class="separadorhr">
 
-<div class="portada_licencias">
-
-    </div>
-<h1>Licencias de Conducir</h1>
-    <table class="table tabla_bomberos table-responsive" id="licenciaTable">
-        <thead>
-            <tr>
-                <th>Número de Legajo</th>
-                <th>Tipo</th>
-                <th>Fecha de Otorgación</th>
-                <th>Fecha de Vencimiento</th>
-                <th>Observación</th>
-                <th>Licencia Frente</th>
-                <th>Licencia Dorso</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for licencia in licencias %}
-            <tr>
-                <td>{{ licencia.numero_legajo }}</td>
-                <td>{{ licencia.tipo }}</td>
-                <td>{{ licencia.fecha_otorgacion }}</td>
-                <td>{{ licencia.fecha_vencimiento }}</td>
-                <td>{{ licencia.observacion }}</td>
-                <td>
-                    {% if licencia.lic_frente %}
-                    <a href="{{ url_for('static', filename=licencia.lic_frente|replace_backslash) }}" target="_blank">
-                    <img src="{{ url_for('static', filename=licencia.lic_frente|replace_backslash) }}" alt="Licencia Frente" style="width:100px;">
-                    {% else %}
-                    No disponible
-                    {% endif %}
-                   </td>
-                <td>
-                    {% if licencia.lic_dorso %}
-                    <a href="{{ url_for('static', filename=licencia.lic_dorso|replace_backslash) }}" target="_blank">
-                    <img src="{{ url_for('static', filename=licencia.lic_dorso|replace_backslash) }}" alt="Licencia Dorso" style="width:100px;">
-                    </a>
-                    {% else %}
-                    No disponible
-                    {% endif %}
-                 </td>
-                {% if current_user.rol == 'admin' %}
-                <td>
-                    <a href="{{ url_for('edit_licencia', id=licencia.numero_legajo) }}" class="btn btn-primary">Editar</a>
-                </td>
+<div class="portada_licencias"></div>
+<h1 class="titulo">Licencias de Conducir</h1>
+<table class="table tabla_bomberos table-responsive" id="licenciaTable">
+    <thead>
+        <tr>
+            <th>Número de Legajo</th>
+            <th>Tipo</th>
+            <th>Fecha de Otorgación</th>
+            <th>Fecha de Vencimiento</th>
+            <th>Observación</th>
+            <th>Licencia Frente</th>
+            <th>Licencia Dorso</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for licencia in licencias %}
+        <tr>
+            <td>{{ licencia.numero_legajo }}</td>
+            <td>{{ licencia.tipo }}</td>
+            <td>{{ licencia.fecha_otorgacion }}</td>
+            <td>{{ licencia.fecha_vencimiento }}</td>
+            <td>{{ licencia.observacion }}</td>
+            <td>
+                {% if licencia.lic_frente %}
+                <a href="{{ url_for('static', filename=licencia.lic_frente|replace_backslash) }}" target="_blank">
+                <img src="{{ url_for('static', filename=licencia.lic_frente|replace_backslash) }}" alt="Licencia Frente" style="width:100px;">
+                {% else %}
+                No disponible
                 {% endif %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-        <p>No hay bomberos registrados.</p>
-    {% endif %}
+                </a>
+            </td>
+            <td>
+                {% if licencia.lic_dorso %}
+                <a href="{{ url_for('static', filename=licencia.lic_dorso|replace_backslash) }}" target="_blank">
+                <img src="{{ url_for('static', filename=licencia.lic_dorso|replace_backslash) }}" alt="Licencia Dorso" style="width:100px;">
+                {% else %}
+                No disponible
+                {% endif %}
+                </a>
+            </td>
+            {% if current_user.rol == 'admin' %}
+            <td>
+                <a href="{{ url_for('edit_licencia', id=licencia.numero_legajo) }}" class="btn btn-primary">Editar</a>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No hay bomberos registrados.</p>
+{% endif %}
 
+<script>
+    $(document).ready(function () {
+        $('#bomberosTable').DataTable();
+        $('#licenciaTable').DataTable();
+    });
 
-
-
-
-
-
-    <script>
-        $(document).ready(function () {
-            $('#bomberosTable').DataTable();
-        });
-    </script>
-
-
-    <script>
-            $(document).ready(function () {
-                $('#licenciaTable').DataTable();
-            });
-        </script>
-
-
-
-
+    function confirmarEliminacion(legajo) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡No podrás revertir esto!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminarlo',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/eliminar_bombero/' + legajo,
+                    type: 'POST',
+                    success: function(response) {
+                        Swal.fire(
+                            '¡Eliminado!',
+                            'El registro ha sido eliminado.',
+                            'success'
+                        ).then(() => {
+                            location.reload();
+                        });
+                    },
+                    error: function(error) {
+                        Swal.fire(
+                            'Error',
+                            'Hubo un problema al eliminar el registro.',
+                            'error'
+                        );
+                    }
+                });
+            }
+        })
+    }
+</script>
 
 {% endblock %}

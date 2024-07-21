@@ -47,6 +47,7 @@
                 <th>Fecha de Devolución</th>
                 <th>Imagen</th>
                 <th>Estado</th>
+                <th>Eliminar</th>
             </tr>
         </thead>
         <tbody>
@@ -75,6 +76,13 @@
                      <td>
                         <a href="{{ url_for('editar_cambio_guardia', id=cambio.cambio_guardia_id) }}" class="btn btn-primary">Editar</a>
                     </td>
+            <td><form action="{{ url_for('eliminar_cambio_guardia', id=cambio.cambio_guardia_id) }}" method="POST" style="display:inline;">
+                    <button type="danger" class="btn btn-danger">Eliminar</button>
+                </form>
+
+            </td>
+
+
                     {% endif %}
                 </td>
             </tr>

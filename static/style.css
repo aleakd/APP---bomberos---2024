@@ -8,7 +8,7 @@ font-family:"Oxygen";
 }
 
 .portada_legajos {
-    background-image: url('/static/img/iiff.jpg');
+    background-image: url('/static/img/legajos.jpg');
     background-attachment: fixed;
     background-size: cover;
     background-position: center;
@@ -21,8 +21,8 @@ font-family:"Montserrat"
 }
 
 .portada_licencias{
-background-image: url('/static/img/portlic1.jpg');
-    background-attachment: fixed;
+background-image: url('/static/img/portlic.jpg');
+    background-attachment: ;
     background-size: cover;
     background-position: center;
     padding: 10rem;
@@ -209,10 +209,13 @@ tr:nth-child(odd) {
 tr:hover {
     background-color: #e0e0e0;
 }
+
+
 .tabla_bomberos th{
-background-color: #E59866;
+background-color: #E7E3E2;
     text-align: left;
     padding: 10px;
+
 }
 
 .tabla_bomberos td {
@@ -222,7 +225,7 @@ background-color: #E59866;
 
 /* Estilo para resaltar filas impares */
 .tabla_bomberos tr:nth-child(odd) {
-    background-color: #96908E;
+    background-color: #87F1E1;
 }
 
 /* Estilo para resaltar filas al pasar el cursor por encima */
