@@ -22,14 +22,34 @@
 
         <form action="{{ url_for('cambiosguardia') }}" method="post" enctype="multipart/form-data">
             <input type="hidden" name="registrar_cambio_guardia" value="1">
-            <input type="text" name="numero_legajo" placeholder="Número de Legajo" required="required" />
-            <input type="date" name="fecha_solicitud" placeholder="Fecha de Solicitud" required="required" />
-            <input type="time" name="rango_horario" placeholder="Rango Horario" required="required" />
+
+            <label for="fecha_solicitud">Fecha de Solicitud</label>
+            <input type="date" name="fecha_solicitud" id="fecha_solicitud" placeholder="Fecha de Solicitud" required="required" />
+
+            <label for="rango_horario" >Horario inicio</label>
+            <input type="time" name="rango_horario" id="rango_horario" placeholder="Rango Horario" required="required" />
+
+            <label for="rango_horario2" >Horario fin</label>
+            <input type="time" name="rango_horario2" id="rango_horario2" placeholder="Rango Horario" required="required" />
             <input type="text" name="legajo_quien_cubre" placeholder="Legajo de Quien Cubre" required="required" />
-            <input type="text" name="motivo" placeholder="Motivo" required="required" />
-            <input type="date" name="fecha_devolucion" placeholder="Fecha de Devolución" required="required" />
+
+            <select class="form-control" name="motivo" placeholder="Motivo" required="required">
+                <option value=""disabled selected>Seleccione un motivo</option>
+                <option value="Fuera de jurisdicción">Fuera de juridccion</option>
+                <option value="Personal">Personal</option>
+                <option value="Familiar">Familiar</option>
+                <option value="Medico">Medico</option>
+                <option value="Laboral">Laboral</option>
+                <option value="Estudio">Estudio</option>
+                <option value="Otros">Otros</option>
+"
+            </select>
+            <!--         <input type="text" name="motivo" placeholder="Motivo" required="required" />       -->
+            <label for="fecha_devolucion">Fecha Devolución</label>
+            <input type="date" name="fecha_devolucion" id="fecha_devolucion" placeholder="Fecha de Devolución" required="required" />
             <input type="file" name="imagen" accept="image/*" />
             <button type="submit" class="btn btn-primary btn-lg">Registrar Cambio de Guardia</button>
+
         </form>
     </div>
 </div>
@@ -41,12 +61,14 @@
             <tr>
                 <th>Número de Legajo</th>
                 <th>Fecha de Solicitud</th>
-                <th>Rango Horario</th>
+                <th>desde Horario</th>
+                <th>Hasta Horario</th>
                 <th>Legajo de Quien Cubre</th>
                 <th>Motivo</th>
                 <th>Fecha de Devolución</th>
                 <th>Imagen</th>
                 <th>Estado</th>
+                <th>Editar</th>
                 <th>Eliminar</th>
             </tr>
         </thead>
@@ -56,6 +78,7 @@
                 <td>{{ cambio.numero_legajo }}</td>
                 <td>{{ cambio.fecha_solicitud }}</td>
                 <td>{{ cambio.rango_horario }}</td>
+                <td>{{ cambio.rango_horario2 }}</td>
                 <td>{{ cambio.legajo_quien_cubre }}</td>
                 <td>{{ cambio.motivo }}</td>
                 <td>{{ cambio.fecha_devolucion }}</td>
@@ -73,10 +96,10 @@
                 </td>
                 <td>
                     {% if current_user.rol == 'admin' %}
-                     <td>
+
                         <a href="{{ url_for('editar_cambio_guardia', id=cambio.cambio_guardia_id) }}" class="btn btn-primary">Editar</a>
                     </td>
-            <td><form action="{{ url_for('eliminar_cambio_guardia', id=cambio.cambio_guardia_id) }}" method="POST" style="display:inline;">
+            <td><form  action="{{ url_for('eliminar_cambio_guardia', id=cambio.cambio_guardia_id) }}" method="POST" style="display:inline;">
                     <button type="danger" class="btn btn-danger">Eliminar</button>
                 </form>
 
@@ -94,9 +117,9 @@
 
 
 <script>
-        $(document).ready(function () {
-            $('#cambiosguardiatable').DataTable();
-        });
-    </script>
+    $(document).ready(function () {
+        $('#cambiosguardiatable').DataTable();
+    });
+</script>
 
 {% endblock %}

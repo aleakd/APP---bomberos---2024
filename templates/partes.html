@@ -8,12 +8,19 @@
             <input type="hidden" name="registrar_parte" value="1">
             <h1>Cargar Nueva Solicitud de Licencia</h1>
 
+            <select class="form-control" name="tipo_licencia" placeholder="Tipo licencia" required="required">
+                <option value=""disabled selected>Seleccione un motivo</option>
+                <option value="ordinaria">Ordinaria</option>
+                <option value="extraordinaria">Extraordinaria</option>
+                <option value="familiar">Familiar</option>
+                <option value="medica">Medica</option>
+                <option value="reserva">Reserva</option>
+                <option value="pase">Pase</option>
+                <option value="baja">Baja</option>
+"
+            </select>
 
-            <input type="number" id="numero_legajo" name="numero_legajo" required placeholder="Número de legajo"><br>
-            <input type="text" id="tipo_licencia" name="tipo_licencia" required placeholder="Tipo de Licencia"><br>
 
-            <label for="fecha_solicitud">Fecha de Solicitud:</label>
-            <input type="date" id="fecha_solicitud" name="fecha_solicitud" required><br>
 
             <label for="fecha_inicio_licencia">Fecha de Inicio de Licencia:</label>
             <input type="date" id="fecha_inicio_licencia" name="fecha_inicio_licencia" required><br>
@@ -22,14 +29,14 @@
             <input type="date" id="fecha_fin_licencia" name="fecha_fin_licencia" required><br>
 
             <label for="parte_licencia">Adjuntar Parte (PDF):</label>
-            <input type="file" id="parte_licencia" name="parte_licencia" accept="application/pdf" required><br>
+            <input type="file" id="parte_licencia" name="parte_licencia" accept="application/pdf"><br>
 
             <button type="submit">Enviar</button>
         </form>
     </div>
     <div>
         <h1>Solicitudes de Licencia</h1>
-        <table border="1">
+        <table border="1" id="partestable" class="tabla_bomberos">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -57,6 +64,11 @@
     </div>
 
 
+<script>
+    $(document).ready(function () {
+        $('#partestable').DataTable();
+    });
+</script>
 
 
 {% endblock %}

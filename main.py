@@ -68,6 +68,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
     name = db.Column(db.String(1000))
+    numero_legajo=db.Column(db.Integer)
     telefono = db.Column(db.String(15))
     rol = db.Column(db.String(10), default='usuario')  # Add the role field
 
@@ -101,6 +102,7 @@ class Cambios_Guardia(UserMixin, db.Model):
     numero_legajo=db.Column(db.Integer)
     fecha_solicitud=db.Column(db.Date)
     rango_horario=db.Column(db.Time)
+    rango_horario2=db.Column(db.Time)
     legajo_quien_cubre= db.Column(db.Integer)
     motivo=db.Column(db.String(100))
     fecha_devolucion=db.Column(db.Date)
@@ -216,6 +218,7 @@ def register():
         new_user = User(
             email=request.form.get("email"),
             name=request.form.get("name"),
+            numero_legajo=request.form.get("numero_legajo"),
             password=hash_password,
             telefono=request.form.get("telefono"),
             rol=request.form.get("role")  # Make sure your form includes a role field
@@ -454,9 +457,10 @@ def eliminar_bombero(legajo):
 def cambiosguardia():
     if request.method == 'POST':
         if 'registrar_cambio_guardia' in request.form:
-            numero_legajo = request.form.get("numero_legajo")
+            numero_legajo = current_user.numero_legajo
             fecha_solicitud = request.form.get("fecha_solicitud")
             rango_horario = request.form.get("rango_horario")
+            rango_horario2 = request.form.get("rango_horario2")
             legajo_quien_cubre = request.form.get("legajo_quien_cubre")
             motivo = request.form.get("motivo")
             fecha_devolucion = request.form.get("fecha_devolucion")
@@ -470,10 +474,12 @@ def cambiosguardia():
                 imagen.save(imagen_filename)
                 imagen_filename = os.path.join('uploads', 'licencias', filename)  # Guardar la ruta relativa
 
+
             nuevo_cambio = Cambios_Guardia(
                 numero_legajo=numero_legajo,
                 fecha_solicitud=datetime.strptime(fecha_solicitud, '%Y-%m-%d').date(),
                 rango_horario=datetime.strptime(rango_horario, '%H:%M').time(),
+                rango_horario2=datetime.strptime(rango_horario2, '%H:%M').time(),
                 legajo_quien_cubre=legajo_quien_cubre,
                 motivo=motivo,
                 fecha_devolucion=datetime.strptime(fecha_devolucion, '%Y-%m-%d').date(),
@@ -583,11 +589,11 @@ def partes_licencia():
                 except ValueError:
                     flash("Error: Formato de fecha incorrecto.")
                     return redirect(url_for("partes_licencia"))
-
+                fecha_actual = datetime.now().date()
                 nuevo_parte = Partes_Licencia(
-                    numero_legajo=request.form.get("numero_legajo"),
+                    numero_legajo=current_user.numero_legajo,
                     tipo_licencia=request.form.get("tipo_licencia"),
-                    fecha_solicitud=fecha_solicitud,
+                    fecha_solicitud=fecha_actual,
                     fecha_inicio_licencia=fecha_inicio_licencia,
                     fecha_fin_licencia=fecha_fin_licencia,
                     parte_licencia=filename_parte
