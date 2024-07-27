@@ -9,7 +9,7 @@
 
   {% endif %}
 
-<div class="box">
+<div class="container">
     {% with messages = get_flashed_messages() %}
   {% if messages %}
   <div class="mensaa alert alert-light">
@@ -74,7 +74,12 @@
 
 </section>
 
-
+<script>
+        setInterval(function() {
+            var h2 = document.getElementById('miH202');
+            h2.classList.toggle('cambio-color');
+        }, 1000);
+</script>
 
 
 {% endblock %}

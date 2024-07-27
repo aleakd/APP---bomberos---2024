@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+    <form action="{{ url_for('actualizar_ficha_medica', id=ficha.id_ficha_medica) }}" method="POST" enctype="multipart/form-data">
+        <h1>Editar Ficha Médica</h1>
+        <input type="number" id="numero_legajo" name="numero_legajo" value="{{ ficha.numero_legajo }}" required placeholder="Numero de Legajo"><br>
+
+        <label for="fecha_ficha">Fecha de Ficha:</label>
+        <input type="date" id="fecha_ficha" name="fecha_ficha" value="{{ ficha.fecha_ficha }}" required><br>
+
+        <textarea id="observaciones" name="observaciones" rows="4" cols="22" placeholder="Observaciones">{{ ficha.observaciones }}</textarea><br>
+
+        <label for="pdf_ficha_medica">Adjuntar Ficha Médica (PDF):</label>
+        <input type="file" id="pdf_ficha_medica" name="pdf_ficha_medica" accept="application/pdf"><br>
+
+        <button type="submit" name="actualizar_ficha">Actualizar</button>
+    </form>
+</div>
+{% endblock %}

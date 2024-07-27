@@ -41,7 +41,8 @@
             <th>Nivel Educativo</th>
             <th>Registro</th>
             {% if current_user.rol == 'admin' %}
-            <th>Acciones</th>
+            <th>Editar</th>
+            <th>Eliminar</th>
             {% endif %}
         </tr>
     </thead>
@@ -68,6 +69,9 @@
             {% if current_user.rol == 'admin' %}
             <td>
                 <a href="{{ url_for('edit_legajo', id=bombero.legajo_numero) }}" class="btn btn-primary">Editar</a>
+
+            </td>
+            <td>
                 <button class="btn btn-danger" onclick="confirmarEliminacion({{ bombero.legajo_numero }})">Eliminar</button>
             </td>
             {% endif %}
@@ -85,18 +89,24 @@
     <thead>
         <tr>
             <th>Número de Legajo</th>
+            <th>Apellido</th>
             <th>Tipo</th>
             <th>Fecha de Otorgación</th>
             <th>Fecha de Vencimiento</th>
             <th>Observación</th>
-            <th>Licencia Frente</th>
-            <th>Licencia Dorso</th>
+            <th>Licencia PDF</th>
+            <th>Editar</th>
+            <th>Eliminar</th>
+
         </tr>
     </thead>
     <tbody>
         {% for licencia in licencias %}
+        {% set bombero = bomberos | selectattr("legajo_numero", "equalto", licencia.numero_legajo) | first %}
+        {% if bombero %}
         <tr>
             <td>{{ licencia.numero_legajo }}</td>
+            <td> {{ bombero.apellido }}</td>
             <td>{{ licencia.tipo }}</td>
             <td>{{ licencia.fecha_otorgacion }}</td>
             <td>{{ licencia.fecha_vencimiento }}</td>
@@ -104,13 +114,13 @@
             <td>
                 {% if licencia.lic_frente %}
                 <a href="{{ url_for('static', filename=licencia.lic_frente|replace_backslash) }}" target="_blank">
-                <img src="{{ url_for('static', filename=licencia.lic_frente|replace_backslash) }}" alt="Licencia Frente" style="width:100px;">
+                Archivo PDF
                 {% else %}
                 No disponible
                 {% endif %}
                 </a>
             </td>
-            <td>
+            <!--<td>
                 {% if licencia.lic_dorso %}
                 <a href="{{ url_for('static', filename=licencia.lic_dorso|replace_backslash) }}" target="_blank">
                 <img src="{{ url_for('static', filename=licencia.lic_dorso|replace_backslash) }}" alt="Licencia Dorso" style="width:100px;">
@@ -118,14 +128,20 @@
                 No disponible
                 {% endif %}
                 </a>
-            </td>
+            </td> -->
             {% if current_user.rol == 'admin' %}
             <td>
                 <a href="{{ url_for('edit_licencia', id=licencia.numero_legajo) }}" class="btn btn-primary">Editar</a>
             </td>
+
+            <td>
+                <button class="btn btn-danger" onclick="confirmarEliminacion({{ licencia.numero_legajo }})">Eliminar</button>
+            </td>
             {% endif %}
         </tr>
+        {% endif %}
         {% endfor %}
+
     </tbody>
 </table>
 {% else %}
@@ -173,6 +189,13 @@
             }
         })
     }
+</script>
+
+<script>
+        setInterval(function() {
+            var h2 = document.getElementById('miH202');
+            h2.classList.toggle('cambio-color');
+        }, 1000);
 </script>
 
 {% endblock %}

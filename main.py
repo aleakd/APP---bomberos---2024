@@ -6,8 +6,7 @@ from functools import wraps
 import pytz
 import os
 from werkzeug.utils import secure_filename
-from datetime import datetime
-
+from datetime import datetime, date
 
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
@@ -395,6 +394,15 @@ def edit_legajo(id):
 
 
 
+#----------------------------------------------#--------------ELIMINAR BOMBERO--------------------------------
+
+@app.route('/eliminar_bombero/<int:legajo>', methods=['POST'])
+@login_required
+def eliminar_bombero(legajo):
+    bombero = Bomberos.query.get_or_404(legajo)
+    db.session.delete(bombero)
+    db.session.commit()
+    return jsonify({'success': True})
 
 #----------------------------------------------#-----EDITAR LICENCIAS DE CONDUCIR-----------------------------------------
 @app.route('/legajosvcp/edit_licencia/<int:id>', methods=["GET", "POST"])
@@ -439,14 +447,13 @@ def edit_licencia(id):
 
     return render_template('edit_licencia.html', licencia=licencia)
 
-
 #----------------------------------------------#--------------ELIMINAR BOMBERO--------------------------------
 
-@app.route('/eliminar_bombero/<int:legajo>', methods=['POST'])
+@app.route('/eliminar_licencia/<int:legajo>', methods=['POST'])
 @login_required
-def eliminar_bombero(legajo):
-    bombero = Bomberos.query.get_or_404(legajo)
-    db.session.delete(bombero)
+def eliminar_licencia(id):
+    licencia = Licencias_Conducir.query.get_or_404(id)
+    db.session.delete(licencia)
     db.session.commit()
     return jsonify({'success': True})
 
@@ -519,15 +526,19 @@ def editar_cambio_guardia(id):
 
 
 #----------------------------------------------#---------ELIMINAR CAMBIO GUARDIA-------------------------------------
-@app.route('/eliminar_cambio/<int:id>', methods=['POST'])
+@app.route('/eliminar_cambio_guardia/<int:id>', methods=['POST'])
 @role_required('admin')
 @login_required
 def eliminar_cambio_guardia(id):
-    cambiog = Cambios_Guardia.query.get_or_404(id)
-    db.session.delete(cambiog)
-    db.session.commit()
-    flash("Registro de cambio de guardia eliminado exitosamente.")
-    return redirect(url_for('cambiosguardia'))
+    try:
+        cambiog = Cambios_Guardia.query.get_or_404(id)
+        db.session.delete(cambiog)
+        db.session.commit()
+        return jsonify({"success": True, "message": "Registro de cambio de guardia eliminado exitosamente."})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "message": "Hubo un problema al eliminar el registro."}), 500
+
 #----------------------------------------------#---------MATERIALES Y EQUIPO-------------------------------------
 
 
@@ -634,7 +645,7 @@ def fichas_medicas():
             if archivo_ficha and allowed_file(archivo_ficha.filename):
                 filename_ficha = secure_filename(archivo_ficha.filename)
                 archivo_ficha.save(os.path.join(app.config['UPLOAD_FOLDER'],'ficha_medica', filename_ficha))
-                #ficha_path = os.path.join(app.config['UPLOAD_FOLDER'], filename_ficha)
+                ficha_path = os.path.join(app.config['UPLOAD_FOLDER'], filename_ficha)
 
                 try:
                     fecha_ficha = datetime.strptime(request.form.get("fecha_ficha"), '%Y-%m-%d').date()
@@ -657,6 +668,55 @@ def fichas_medicas():
                 return redirect(url_for("fichas_medicas"))
     fichas = Ficha_Medica.query.all()
     return render_template("fichas_medicas.html", fichas=fichas)
+
+
+
+
+@app.route('/eliminar_ficha_medica/<int:id>', methods=['POST'])
+@role_required('admin')
+@login_required
+def eliminar_ficha_medica(id):
+    try:
+        ficha = Ficha_Medica.query.get_or_404(id)
+        db.session.delete(ficha)
+        db.session.commit()
+        return jsonify({"success": True, "message": "Ficha médica eliminada exitosamente."})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "message": "Hubo un problema al eliminar la ficha médica."}), 500
+
+
+
+@app.route('/editar_ficha_medica/<int:id>', methods=['GET'])
+@role_required('admin')
+@login_required
+def editar_ficha_medica(id):
+    ficha = Ficha_Medica.query.get_or_404(id)
+    return render_template('editar_ficha_medica.html', ficha=ficha)
+
+
+@app.route('/actualizar_ficha_medica/<int:id>', methods=['POST'])
+@role_required('admin')
+@login_required
+def actualizar_ficha_medica(id):
+    ficha = Ficha_Medica.query.get_or_404(id)
+    ficha.numero_legajo = request.form['numero_legajo']
+    ficha.fecha_ficha = date.fromisoformat(request.form['fecha_ficha'])
+    ficha.observaciones = request.form['observaciones']
+
+    if 'pdf_ficha_medica' in request.files:
+        file = request.files['pdf_ficha_medica']
+        if file.filename != '':
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            ficha.pdf_ficha_medica = filename
+
+    db.session.commit()
+    flash("Ficha médica actualizada exitosamente.")
+    return redirect(url_for('fichas_medicas'))
+
+
+
 
 #----------------------------------------TALLES------#----------------------------------------------
 

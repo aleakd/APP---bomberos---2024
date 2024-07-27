@@ -2,7 +2,6 @@
 
 {% block content %}
 <div>
-
     <form action="{{ url_for('fichas_medicas') }}" method="POST" enctype="multipart/form-data">
         <h1>Cargar Nueva Ficha Médica</h1>
         <input type="number" id="numero_legajo" name="numero_legajo" required placeholder="Numero de Legajo"><br>
@@ -13,7 +12,7 @@
         <textarea id="observaciones" name="observaciones" rows="4" cols="22" placeholder="Observaciones"></textarea><br>
 
         <label for="pdf_ficha_medica">Adjuntar Ficha Médica (PDF):</label>
-        <input type="file" id="pdf_ficha_medica" name="pdf_ficha_medica" accept="application/pdf" required><br>
+        <input type="file" id="pdf_ficha_medica" name="pdf_ficha_medica" accept="application/pdf"><br>
 
         <button type="submit" name="registrar_ficha">Enviar</button>
     </form>
@@ -29,19 +28,78 @@
                 <th>Fecha de Realización</th>
                 <th>Observaciones</th>
                 <th>Ficha Médica</th>
+                <th>Editar</th>
+                <th>Eliminar</th>
             </tr>
         </thead>
         <tbody>
             {% for ficha in fichas %}
+
+
             <tr>
                 <td>{{ ficha.id_ficha_medica }}</td>
                 <td>{{ ficha.numero_legajo }}</td>
+
                 <td>{{ ficha.fecha_ficha }}</td>
                 <td>{{ ficha.observaciones }}</td>
                 <td><a href="{{ url_for('download_files', filename=ficha.pdf_ficha_medica) }}" target="_blank">Ver Ficha</a></td>
+                <td>
+                    <a href="{{ url_for('editar_ficha_medica', id=ficha.id_ficha_medica) }}" class="btn btn-primary">Editar</a>
+                </td>
+                <td>
+                    <button class="btn btn-danger" onclick="confirmarEliminacion({{ ficha.id_ficha_medica }})">Eliminar</button>
+                </td>
             </tr>
+
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<script>
+    function confirmarEliminacion(id) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡No podrás revertir esto!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminarlo',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/eliminar_ficha_medica/' + id,
+                    type: 'POST',
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire(
+                                '¡Eliminado!',
+                                response.message,
+                                'success'
+                            ).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error',
+                                response.message,
+                                'error'
+                            );
+                        }
+                    },
+                    error: function(error) {
+                        Swal.fire(
+                            'Error',
+                            'Hubo un problema al eliminar el registro.',
+                            'error'
+                        );
+                    }
+                });
+            }
+        })
+    }
+</script>
+
 {% endblock %}

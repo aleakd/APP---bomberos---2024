@@ -6,19 +6,18 @@
         <h1 class="titulo">Cambios de Guardia</h1>
 
         <div class="box">
-    {% with messages = get_flashed_messages() %}
-  {% if messages %}
-  <div class="mensaa alert alert-light">
-    <ul class="list-unstyled">
-      {% for message in messages %}
-      <li> <h2 id="miH202">{{ message }}</h2></li>
-      {% endfor %}
-    </ul>
-  </div>
-  {% endif %}
-  {% endwith %}
-
-</div>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="mensaa alert alert-light">
+                <ul class="list-unstyled">
+                    {% for message in messages %}
+                    <li> <h2 id="miH202">{{ message }}</h2></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            {% endwith %}
+        </div>
 
         <form action="{{ url_for('cambiosguardia') }}" method="post" enctype="multipart/form-data">
             <input type="hidden" name="registrar_cambio_guardia" value="1">
@@ -26,30 +25,27 @@
             <label for="fecha_solicitud">Fecha de Solicitud</label>
             <input type="date" name="fecha_solicitud" id="fecha_solicitud" placeholder="Fecha de Solicitud" required="required" />
 
-            <label for="rango_horario" >Horario inicio</label>
+            <label for="rango_horario">Horario inicio</label>
             <input type="time" name="rango_horario" id="rango_horario" placeholder="Rango Horario" required="required" />
 
-            <label for="rango_horario2" >Horario fin</label>
+            <label for="rango_horario2">Horario fin</label>
             <input type="time" name="rango_horario2" id="rango_horario2" placeholder="Rango Horario" required="required" />
             <input type="text" name="legajo_quien_cubre" placeholder="Legajo de Quien Cubre" required="required" />
 
             <select class="form-control" name="motivo" placeholder="Motivo" required="required">
-                <option value=""disabled selected>Seleccione un motivo</option>
-                <option value="Fuera de jurisdicción">Fuera de juridccion</option>
+                <option value="" disabled selected>Seleccione un motivo</option>
+                <option value="Fuera de jurisdicción">Fuera de jurisdicción</option>
                 <option value="Personal">Personal</option>
                 <option value="Familiar">Familiar</option>
                 <option value="Medico">Medico</option>
                 <option value="Laboral">Laboral</option>
                 <option value="Estudio">Estudio</option>
                 <option value="Otros">Otros</option>
-"
             </select>
-            <!--         <input type="text" name="motivo" placeholder="Motivo" required="required" />       -->
             <label for="fecha_devolucion">Fecha Devolución</label>
             <input type="date" name="fecha_devolucion" id="fecha_devolucion" placeholder="Fecha de Devolución" required="required" />
             <input type="file" name="imagen" accept="image/*" />
             <button type="submit" class="btn btn-primary btn-lg">Registrar Cambio de Guardia</button>
-
         </form>
     </div>
 </div>
@@ -74,7 +70,7 @@
         </thead>
         <tbody>
             {% for cambio in cambios %}
-
+            <tr>
                 <td>{{ cambio.numero_legajo }}</td>
                 <td>{{ cambio.fecha_solicitud }}</td>
                 <td>{{ cambio.rango_horario }}</td>
@@ -91,35 +87,68 @@
                     No Image
                     {% endif %}
                 </td>
-                <td>
-                    {{ cambio.aprovado }}
-                </td>
+                <td>{{ cambio.aprovado }}</td>
                 <td>
                     {% if current_user.rol == 'admin' %}
-
-                        <a href="{{ url_for('editar_cambio_guardia', id=cambio.cambio_guardia_id) }}" class="btn btn-primary">Editar</a>
-                    </td>
-            <td><form  action="{{ url_for('eliminar_cambio_guardia', id=cambio.cambio_guardia_id) }}" method="POST" style="display:inline;">
-                    <button type="danger" class="btn btn-danger">Eliminar</button>
-                </form>
-
-            </td>
-
-
-                    {% endif %}
+                    <a href="{{ url_for('editar_cambio_guardia', id=cambio.cambio_guardia_id) }}" class="btn btn-primary">Editar</a>
                 </td>
+                <td>
+                    <button class="btn btn-danger" onclick="confirmarEliminacion({{ cambio.cambio_guardia_id }})">Eliminar</button>
+                </td>
+                {% endif %}
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
 
-
-
 <script>
     $(document).ready(function () {
         $('#cambiosguardiatable').DataTable();
     });
+
+    function confirmarEliminacion(id) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡No podrás revertir esto!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminarlo',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/eliminar_cambio_guardia/' + id,
+                    type: 'POST',
+                    success: function(response) {
+                        Swal.fire(
+                            '¡Eliminado!',
+                            'El registro ha sido eliminado.',
+                            'success'
+                        ).then(() => {
+                            location.reload();
+                        });
+                    },
+                    error: function(error) {
+                        Swal.fire(
+                            'Error',
+                            'Hubo un problema al eliminar el registro.',
+                            'error'
+                        );
+                    }
+                });
+            }
+        })
+    }
+</script>
+
+<script>
+        setInterval(function() {
+            var h2 = document.getElementById('miH202');
+            h2.classList.toggle('cambio-color');
+        }, 1000);
 </script>
 
 {% endblock %}
