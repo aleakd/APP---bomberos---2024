@@ -384,7 +384,7 @@ def edit_legajo(id):
         legajo.alergia = request.form.get("alergia")
         legajo.camada = request.form.get("camada")
         legajo.estado = request.form.get("estado")
-        legajo.obra_social = request.form.get("obra_social")
+        legajo.obra_scocial = request.form.get("obra_social")
         legajo.registro = request.form.get("registro")
         legajo.nivel_educativo = request.form.get("nivel_educativo")
 
@@ -670,6 +670,7 @@ def fichas_medicas():
     return render_template("fichas_medicas.html", fichas=fichas)
 
 
+#----------------------------------------ELIMINAR FICHA MEDICA------#----------------------------------------------
 
 
 @app.route('/eliminar_ficha_medica/<int:id>', methods=['POST'])
@@ -686,6 +687,7 @@ def eliminar_ficha_medica(id):
         return jsonify({"success": False, "message": "Hubo un problema al eliminar la ficha médica."}), 500
 
 
+#---------------------------------------- EDITAR FICHA MEDICA------#----------------------------------------------
 
 @app.route('/editar_ficha_medica/<int:id>', methods=['GET'])
 @role_required('admin')
@@ -760,7 +762,14 @@ def talles():
     return render_template("tallesbv.html", bomberos=bomberos, talles=talles)
 
 
-#----------------------------------------------#----------------------------------------------
+#----------------------------------------------CONTACTOS#----------------------------------------------
+@app.route('/contactos')
+@login_required
+def contactos():
+    return render_template('contactos.html')
+
+
+#----------------------------------------------CONTACTOS#----------------------------------------------
 
 
 

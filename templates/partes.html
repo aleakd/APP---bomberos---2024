@@ -2,8 +2,63 @@
 
 {% block content %}
 
+<div class="organig">
+        <h1 class="titulo">Partes</h1>
+        <h4>Modelos de Partes:</h4>
+    <hr>
+        <div class="row justify-content-center">
+            <div class="col-md-4 col-sm-6 file-icon">
+                <i class="fa-sharp-duotone fa-solid fa-file-word fa-2x" style="--fa-primary-color: #0a398a; --fa-secondary-color: #6c7584;"></i>
+                <a href="{{ url_for('download_file', filename='Informar_cambio_datos.doc') }}">Informar cambio datos</a>
+            </div>
+            <div class="col-md-4 col-sm-6 file-icon">
+                <i class="fa-sharp-duotone fa-solid fa-file-word fa-2x" style="--fa-primary-color: #0a398a; --fa-secondary-color: #6c7584;"></i>
+                <a href="{{ url_for('download_file', filename='Informar_fuera_juridiccion.doc') }}">Informar fuera de juridiccion</a>
+            </div>
+            <div class="col-md-4 col-sm-6 file-icon">
+                <i class="fa-sharp-duotone fa-solid fa-file-word fa-2x" style="--fa-primary-color: #0a398a; --fa-secondary-color: #6c7584;"></i>
+                <a href="{{ url_for('download_file', filename='Solicitar_baja.doc') }}">Solicitar Baja</a>
+            </div>
+        </div>
+        <hr>
+        <div class="row justify-content-center">
+            <div class="col-md-4 col-sm-6 file-icon">
+                <i class="fa-sharp-duotone fa-solid fa-file-word fa-2x" style="--fa-primary-color: #0a398a; --fa-secondary-color: #6c7584;"></i>
+                <a href="{{ url_for('download_file', filename='Solicitar_certificado.doc') }}">Solicitar Certificado</a>
+            </div>
+            <div class="col-md-4 col-sm-6 file-icon">
+                <i class="fa-sharp-duotone fa-solid fa-file-word fa-2x" style="--fa-primary-color: #0a398a; --fa-secondary-color: #6c7584;"></i>
+                <a href="{{ url_for('download_file', filename='Solicitar_legajo.doc') }}">Solicitar Legajo</a>
+            </div>
+            <div class="col-md-4 col-sm-6 file-icon">
+                <i class="fa-sharp-duotone fa-solid fa-file-word fa-2x" style="--fa-primary-color: #0a398a; --fa-secondary-color: #6c7584;"></i>
+                <a href="{{ url_for('download_file', filename='Solicitar_licencia_ordinaria.doc') }}">Solicitar licencia Ordinaria</a>
+            </div>
+        </div>
+        <hr>
+        <div class="row justify-content-right">
+            <div class="col-md-4 col-sm-6 file-icon">
+                <i class="fa-sharp-duotone fa-solid fa-file-word fa-2x" style="--fa-primary-color: #0a398a; --fa-secondary-color: #6c7584;"></i>
+                <a href="{{ url_for('download_file', filename='Solicitar_licencia_extraordinaria.doc') }}">Solicitar licencia Extraordinaria</a>
+            </div>
+            <div class="col-md-4 col-sm-6 file-icon">
+                <i class="fa-sharp-duotone fa-solid fa-file-word fa-2x" style="--fa-primary-color: #0a398a; --fa-secondary-color: #6c7584;"></i>
+                <a href="{{ url_for('download_file', filename='Solicitar_reserva.doc') }}">Solicitar Reserva</a>
+            </div>
+            <div class="col-md-4 col-sm-6 file-icon">
+                <i class="fa-sharp-duotone fa-solid fa-file-word fa-2x" style="--fa-primary-color: #0a398a; --fa-secondary-color: #6c7584;"></i>
+                <a href="{{ url_for('download_file', filename='Solicitar_retirar_elementos.doc') }}">Solicitar retirar Elementos</a>
+            </div>
+        </div>
+    </div>
 
-<div>
+
+
+
+
+
+
+
         <form action="{{ url_for('partes_licencia') }}" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="registrar_parte" value="1">
             <h1>Cargar Nueva Solicitud de Licencia</h1>
@@ -62,6 +117,14 @@
             </tbody>
         </table>
     </div>
+
+
+
+
+
+
+
+
 
 
 <script>

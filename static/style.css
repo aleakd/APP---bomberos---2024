@@ -8,6 +8,10 @@ font-family:"Oxygen";
 
 }
 
+a{
+color:black;
+}
+
 .portada_legajos {
     background-image: url('/static/img/legajos.jpg');
     background-attachment: fixed;
@@ -236,3 +240,39 @@ background-attachment: fixed;
 background-size: cover;
 background-position: center;
 }
+
+
+
+.organig{
+margin:20px;
+}
+
+.organigrama {
+width: 70%;
+height: 90%;
+}
+
+
+
+
+.accordion-custom {
+    margin: 0 auto;
+    width: 30rem;
+    border: 3px solid black;
+    background-color: #f8f9fa;
+}
+.accordion-header .accordion-button {
+    background-color: #e9ecef;
+}
+.accordion-header .accordion-button.collapsed {
+    background-color: #f8f9fa;
+}
+.accordion-body {
+    background-color: #f8f9fa;
+}
+
+
+
+
+
+
