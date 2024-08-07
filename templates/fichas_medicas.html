@@ -20,7 +20,7 @@
 
 <div>
     <h1>Fichas Médicas</h1>
-    <table border="1" class="table tabla_bomberos table-responsive">
+    <table border="1" class="table tabla_bomberos table-responsive" id="fichas_medicas_table">
         <thead>
             <tr>
                 <th>ID</th>
@@ -102,4 +102,10 @@
     }
 </script>
 
+
+<script>
+    $(document).ready(function () {
+        $('#fichas_medicas_table').DataTable();
+    });
+</script>
 {% endblock %}

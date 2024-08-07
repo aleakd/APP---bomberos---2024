@@ -17,7 +17,7 @@
 
 <div>
     <h1>Lista de Talles</h1>
-    <table border="1" class="table tabla_bomberos table-responsive">
+    <table border="1" class="table tabla_bomberos table-responsive" id="tallestable">
         <thead>
             <tr>
                 <th>Número de Legajo</th>
@@ -48,4 +48,13 @@
         </tbody>
     </table>
 </div>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#tallestable').DataTable();
+    });
+</script>
 {% endblock %}
