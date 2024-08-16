@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from functools import wraps
 import pytz
+
+from pytz import timezone
 import os
 from werkzeug.utils import secure_filename
 from datetime import datetime, date
@@ -142,6 +144,12 @@ class Talles(UserMixin, db.Model):
     campera_fajina= db.Column(db.String(10))
     borcegos = db.Column(db.Integer)
 
+class Aistencia(UserMixin, db.Model):
+    id_asistencia = db.Column(db.Integer, primary_key=True)
+    dni  = db.Column(db.Integer)
+    tipo_registro = db.Column(db.String(10))
+    fecha = db.Column(db.Date)
+    hora = db.Column(db.String(10))
 
 
 
@@ -208,7 +216,6 @@ def acces():
 
 @app.route('/register', methods=["GET", "POST"])
 @login_required
-@role_required('admin')
 def register():
     if request.method == "POST":
         hash_password = generate_password_hash(request.form.get("password"),
@@ -353,15 +360,20 @@ def cargadatos():
 #----------------------------------------------#-------PAGINA DE LEGAJOS---------------------------------------
 @app.route('/legajosvcp')
 @login_required
-@role_required('admin')
 def legajosvcp():
-    bomberos= Bomberos.query.order_by(Bomberos.legajo_numero).all()
-    licencias = Licencias_Conducir.query.order_by(Licencias_Conducir.numero_legajo).all()
+    if current_user.rol == 'admin':
+        bomberos = Bomberos.query.order_by(Bomberos.legajo_numero).all()
+        licencias = Licencias_Conducir.query.order_by(Licencias_Conducir.numero_legajo).all()
+    else:
+        # Filtra para mostrar solo el legajo del usuario
+        bomberos = Bomberos.query.filter_by(legajo_numero=current_user.numero_legajo).all()
+        licencias = Licencias_Conducir.query.filter_by(numero_legajo=current_user.numero_legajo).all()
+
     return render_template("legajosvcp.html", bomberos=bomberos, licencias=licencias)
+
 
 #------------------------------------------#------EDICION DE LOS LEGAJOS----------------------------------------
 @app.route('/legajosvcp/edit/<int:id>', methods=["GET", "POST"])
-@role_required('admin')
 @login_required
 def edit_legajo(id):
     legajo = Bomberos.query.get_or_404(id)
@@ -397,6 +409,7 @@ def edit_legajo(id):
 #----------------------------------------------#--------------ELIMINAR BOMBERO--------------------------------
 
 @app.route('/eliminar_bombero/<int:legajo>', methods=['POST'])
+@role_required('admin')
 @login_required
 def eliminar_bombero(legajo):
     bombero = Bomberos.query.get_or_404(legajo)
@@ -450,6 +463,7 @@ def edit_licencia(id):
 #----------------------------------------------#--------------ELIMINAR BOMBERO--------------------------------
 
 @app.route('/eliminar_licencia/<int:legajo>', methods=['POST'])
+@role_required('admin')
 @login_required
 def eliminar_licencia(id):
     licencia = Licencias_Conducir.query.get_or_404(id)
@@ -459,7 +473,6 @@ def eliminar_licencia(id):
 
 #----------------------------------------------#--------------CAMBIOS DE GUARDIA--------------------------------
 @app.route('/cambiosguardia', methods=['GET', 'POST'])
-@role_required('admin')
 @login_required
 def cambiosguardia():
     if request.method == 'POST':
@@ -769,8 +782,72 @@ def contactos():
     return render_template('contactos.html')
 
 
-#----------------------------------------------CONTACTOS#----------------------------------------------
+#----------------------------------------------modificar password#----------------------------------------------
+@app.route('/update-password', methods=['POST'])
+def update_password():
+    email = request.form['email']
+    current_password = request.form['current_password']
+    new_password = request.form['new_password']
 
+    # Buscar usuario por email
+    user = User.query.filter_by(email=email).first()
+    if user is None:
+        flash("usuario no registrado")
+        return redirect(url_for('register'))
+
+    # Verificar la contraseña actual
+    if not check_password_hash(user.password, current_password):
+        flash("contraseña incorrecta")
+        return redirect(url_for('register'))
+
+    # Generar el nuevo hash para la nueva contraseña
+    new_hashed_password = generate_password_hash(new_password)
+
+    # Actualizar la contraseña en la base de datos
+    user.password = new_hashed_password
+    flash("Contraseña modificada con exito!!")
+    db.session.commit()
+
+    return render_template('acces.html')
+#----------------------------------------------Asistencia#----------------------------------------------
+
+@app.route('/asistencia', methods=['GET', 'POST'])
+def asistencia():
+    fecha_actual = datetime.now().date()
+    hora_actual_utc = datetime.now(timezone('UTC'))
+    hora_actual_buenos_aires = hora_actual_utc.astimezone(app.config['TIMEZONE'])
+    hora_actual_str = hora_actual_buenos_aires.strftime('%H:%M')
+
+    if request.method == 'POST':
+        dni = request.form.get('dni')
+        agente_existente = Bomberos.query.filter_by(dni=dni).first()
+
+        if not agente_existente:
+            flash('No se puede registrar la asistencia. El DNI no está registrado.')
+            return redirect(url_for("acces"))
+
+        tipo_registro = request.form.get('tipo_registro')
+
+        asistencia = Aistencia(
+            dni=dni,
+            tipo_registro=tipo_registro,
+            hora=hora_actual_str,
+            fecha=fecha_actual
+        )
+        db.session.add(asistencia)
+        db.session.commit()
+        flash('registro cargado exitosamente')
+        return redirect(url_for("index"))
+
+    asistencias_del_dia = Aistencia.query.filter(Aistencia.fecha == fecha_actual).all()
+    bomberos = Bomberos.query.order_by(Bomberos.legajo_numero).all()
+
+    return render_template('asistencia.html', asistencias=asistencias_del_dia, bravo=bomberos)
+
+
+
+
+#----------------------------------------------modificar password#----------------------------------------------
 
 
 

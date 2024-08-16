@@ -7,10 +7,23 @@
 
 </form>
 
-
+<div class="box">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="mensaa alert alert-light">
+        <ul class="list-unstyled">
+        {% for message in messages %}
+        <li> <h2 id="miH202">{{ message }}</h2></li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% endwith %}
+</div>
+{% if current_user.rol == 'admin' %}
 <div class="box">
     <div class="container">
-	<h1>Registro</h1>
+	<h3 class="titulo">Registro</h3>
     <form action="{{ url_for('register') }}" method="post">
     	<input type="text" name="name" placeholder="Nombre" required="required" />
 		<input type="email" name="email" placeholder="Email" required="required" />
@@ -26,5 +39,22 @@
     </form>
         </div>
 </div>
+
+{% endif %}
+
+
+
+<div>
+    <h3 class="titulo">Modificar contraseña</h3>
+</div>
+<form action="/update-password" method="POST">
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+    <label for="current_password">Contraseña Actual:</label>
+    <input type="password" id="current_password" name="current_password" required>
+    <label for="new_password">Nueva Contraseña:</label>
+    <input type="password" id="new_password" name="new_password" required>
+    <button type="submit">Actualizar Contraseña</button>
+</form>
 
 {% endblock %}

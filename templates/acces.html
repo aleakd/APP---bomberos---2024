@@ -26,11 +26,11 @@
 
 <section class="menu">
    <div class="row">
-       {% if current_user.rol == 'admin' %}
+
        <div class="col-md-6">
            <a href="{{ url_for('legajosvcp') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/legajos.jpg') }}'); background-size: cover;">Legajos</a>
        </div>
-       {% endif %}
+
 
 
        <div class="col-md-6">
@@ -63,12 +63,7 @@
        </div>
 
 
-        {% if current_user.rol == 'admin' %}
-       <div class="col-md-6">
-           <a href="{{ url_for('fichas_medicas') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/ficha_medica.jpg') }}'); background-size: cover;">Ficha Medica</a>
 
-       </div>
-        {% endif %}
    </div>
 
 

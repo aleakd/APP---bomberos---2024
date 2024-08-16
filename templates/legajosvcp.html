@@ -2,7 +2,16 @@
 
 {% block content %}
 
-<div class="portada_legajos"></div>
+<div class="portada_legajos">
+
+
+</div>
+ {% if current_user.rol == 'admin' %}
+       <div class="col-md-6">
+           <a href="{{ url_for('fichas_medicas') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/ficha_medica.jpg') }}'); background-size: cover;">Ficha Medica</a>
+
+       </div>
+        {% endif %}
 
 <div class="box">
     {% with messages = get_flashed_messages() %}
@@ -66,15 +75,17 @@
             <td>{{ bombero.obra_scocial }}</td>
             <td>{{ bombero.nivel_educativo }}</td>
             <td>{{ bombero.registro }}</td>
-            {% if current_user.rol == 'admin' %}
-            <td>
-                <a href="{{ url_for('edit_legajo', id=bombero.legajo_numero) }}" class="btn btn-primary">Editar</a>
 
-            </td>
-            <td>
-                <button class="btn btn-danger" onclick="confirmarEliminacion({{ bombero.legajo_numero }})">Eliminar</button>
-            </td>
-            {% endif %}
+            {% if current_user.rol == 'admin' or current_user.numero_legajo == bombero.legajo_numero %}
+    <td>
+        <a href="{{ url_for('edit_legajo', id=bombero.legajo_numero) }}" class="btn btn-primary">Editar</a>
+    </td>
+    {% endif %}
+    {% if current_user.rol == 'admin' %}
+    <td>
+        <button class="btn btn-danger" onclick="confirmarEliminacion({{ bombero.legajo_numero }})">Eliminar</button>
+    </td>
+    {% endif %}
         </tr>
         {% endfor %}
     </tbody>
