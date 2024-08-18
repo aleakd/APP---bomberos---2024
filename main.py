@@ -307,7 +307,7 @@ def cargadatos():
                 file_path_frente = os.path.join(app.config['UPLOAD_FOLDER'], 'licencias', filename_frente)
                 os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'licencias'), exist_ok=True)
                 file_frente.save(file_path_frente)
-                relative_file_path_frente = os.path.join('uploads', 'licencias', filename_frente)
+                relative_file_path_frente = os.path.join(filename_frente)
             else:
                 relative_file_path_frente = None
 
@@ -640,11 +640,16 @@ def download_file(filename):
     return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], subdirectory), filename)
 
 
-@app.route('/uploads/fichas_medicas/<filename>')
+@app.route('/uploads/ficha_medica/<filename>')
 def download_files(filename):
     subdirectory = "ficha_medica"
     return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], subdirectory), filename)
 
+
+@app.route('/uploads/licencias/<filename>')
+def download_filess(filename):
+    subdirectory = "licencias"
+    return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], subdirectory), filename)
 #----------------------------------------FICHA MEDICA------#----------------------------------------------
 
 @app.route('/fichas_medicas', methods=['GET', 'POST'])
@@ -657,8 +662,16 @@ def fichas_medicas():
 
             if archivo_ficha and allowed_file(archivo_ficha.filename):
                 filename_ficha = secure_filename(archivo_ficha.filename)
-                archivo_ficha.save(os.path.join(app.config['UPLOAD_FOLDER'],'ficha_medica', filename_ficha))
-                ficha_path = os.path.join(app.config['UPLOAD_FOLDER'], filename_ficha)
+                ruta_directorio = os.path.join(app.config['UPLOAD_FOLDER'], 'ficha_medica')
+
+                # Verificar si la carpeta 'ficha_medica' existe, y si no, crearla
+                if not os.path.exists(ruta_directorio):
+                    os.makedirs(ruta_directorio)
+
+                # Guardar el archivo en la carpeta
+                ruta_archivo = os.path.join(ruta_directorio, filename_ficha)
+                archivo_ficha.save(ruta_archivo)
+                ficha_path = os.path.join(filename_ficha)
 
                 try:
                     fecha_ficha = datetime.strptime(request.form.get("fecha_ficha"), '%Y-%m-%d').date()
@@ -670,7 +683,7 @@ def fichas_medicas():
                     numero_legajo=request.form.get("numero_legajo"),
                     fecha_ficha=fecha_ficha,
                     observaciones=request.form.get("observaciones"),
-                    pdf_ficha_medica=filename_ficha
+                    pdf_ficha_medica=ficha_path
                 )
                 db.session.add(nueva_ficha)
                 db.session.commit()

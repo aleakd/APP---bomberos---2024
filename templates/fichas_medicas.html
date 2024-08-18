@@ -42,7 +42,7 @@
 
                 <td>{{ ficha.fecha_ficha }}</td>
                 <td>{{ ficha.observaciones }}</td>
-                <td><a href="{{ url_for('download_files', filename=ficha.pdf_ficha_medica) }}" target="_blank">Ver Ficha</a></td>
+                <td><a href="{{ url_for('download_files', filename=ficha.pdf_ficha_medica|replace_backslash) }}" target="_blank">Ver Ficha</a></td>
                 <td>
                     <a href="{{ url_for('editar_ficha_medica', id=ficha.id_ficha_medica) }}" class="btn btn-primary">Editar</a>
                 </td>

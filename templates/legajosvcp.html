@@ -124,8 +124,9 @@
             <td>{{ licencia.observacion }}</td>
             <td>
                 {% if licencia.lic_frente %}
-                <a href="{{ url_for('static', filename=licencia.lic_frente|replace_backslash) }}" target="_blank">
-                Archivo PDF
+            <a href="{{ url_for('download_filess', filename=licencia.lic_frente|replace_backslash) }}" target="_blank">Ver Licencia</a>
+
+
                 {% else %}
                 No disponible
                 {% endif %}
