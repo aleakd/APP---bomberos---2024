@@ -81,7 +81,7 @@ padding:3rem;
 
 .mensaa{
 margin:20px;
-background-color:#1EF507;
+background-color:#26262a;
 color:black;
 }
 
@@ -94,23 +94,23 @@ color:black;
 /* Definición de la animación */
 @keyframes cambio {
     0% {
-        color: yellow;
+        color: #f42222;
     }
     50% {
-        color: #F91C04;
+        color: #fcf4f3;
     }
     75% {
-        color: white;
+        color: #3ed92b;
     }
     100% {
-        color: green;
+        color: #2bd9d4;
     }
 }
 
 .usuario_online {
-    color: #F4D710;
+    color: #f11610;
     margin-top: 2%;
-    font-family: "Cookie";
+    font-family: "Lora";
     font-size: 3rem;
     text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
 }

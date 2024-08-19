@@ -6,12 +6,7 @@
 
 
 </div>
- {% if current_user.rol == 'admin' %}
-       <div class="col-md-6">
-           <a href="{{ url_for('fichas_medicas') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/ficha_medica.jpg') }}'); background-size: cover;">Ficha Medica</a>
 
-       </div>
-        {% endif %}
 
 <div class="box">
     {% with messages = get_flashed_messages() %}
@@ -94,68 +89,6 @@
 
 <hr class="separadorhr">
 
-<div class="portada_licencias"></div>
-<h1 class="titulo">Licencias de Conducir</h1>
-<table class="table tabla_bomberos table-responsive" id="licenciaTable">
-    <thead>
-        <tr>
-            <th>Número de Legajo</th>
-            <th>Apellido</th>
-            <th>Tipo</th>
-            <th>Fecha de Otorgación</th>
-            <th>Fecha de Vencimiento</th>
-            <th>Observación</th>
-            <th>Licencia PDF</th>
-            <th>Editar</th>
-            <th>Eliminar</th>
-
-        </tr>
-    </thead>
-    <tbody>
-        {% for licencia in licencias %}
-        {% set bombero = bomberos | selectattr("legajo_numero", "equalto", licencia.numero_legajo) | first %}
-        {% if bombero %}
-        <tr>
-            <td>{{ licencia.numero_legajo }}</td>
-            <td> {{ bombero.apellido }}</td>
-            <td>{{ licencia.tipo }}</td>
-            <td>{{ licencia.fecha_otorgacion }}</td>
-            <td>{{ licencia.fecha_vencimiento }}</td>
-            <td>{{ licencia.observacion }}</td>
-            <td>
-                {% if licencia.lic_frente %}
-            <a href="{{ url_for('download_filess', filename=licencia.lic_frente|replace_backslash) }}" target="_blank">Ver Licencia</a>
-
-
-                {% else %}
-                No disponible
-                {% endif %}
-                </a>
-            </td>
-            <!--<td>
-                {% if licencia.lic_dorso %}
-                <a href="{{ url_for('static', filename=licencia.lic_dorso|replace_backslash) }}" target="_blank">
-                <img src="{{ url_for('static', filename=licencia.lic_dorso|replace_backslash) }}" alt="Licencia Dorso" style="width:100px;">
-                {% else %}
-                No disponible
-                {% endif %}
-                </a>
-            </td> -->
-            {% if current_user.rol == 'admin' %}
-            <td>
-                <a href="{{ url_for('edit_licencia', id=licencia.numero_legajo) }}" class="btn btn-primary">Editar</a>
-            </td>
-
-            <td>
-                <button class="btn btn-danger" onclick="confirmarEliminacion({{ licencia.numero_legajo }})">Eliminar</button>
-            </td>
-            {% endif %}
-        </tr>
-        {% endif %}
-        {% endfor %}
-
-    </tbody>
-</table>
 {% else %}
 <p>No hay bomberos registrados.</p>
 {% endif %}

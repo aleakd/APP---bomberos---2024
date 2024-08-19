@@ -417,6 +417,21 @@ def eliminar_bombero(legajo):
     db.session.commit()
     return jsonify({'success': True})
 
+#----------------------------------------------#-----LICENCIAS DE CONDUCIR-----------------------------------------
+@app.route('/licencias_conducir')
+@role_required('admin')
+@login_required
+def licencias_conducir():
+    if current_user.rol == 'admin':
+        bomberos = Bomberos.query.order_by(Bomberos.legajo_numero).all()
+        licencias = Licencias_Conducir.query.order_by(Licencias_Conducir.numero_legajo).all()
+    else:
+        # Filtra para mostrar solo el legajo del usuario
+        bomberos = Bomberos.query.filter_by(legajo_numero=current_user.numero_legajo).all()
+        licencias = Licencias_Conducir.query.filter_by(numero_legajo=current_user.numero_legajo).all()
+
+    return render_template("licencias_conducir.html", bomberos=bomberos, licencias=licencias)
+
 #----------------------------------------------#-----EDITAR LICENCIAS DE CONDUCIR-----------------------------------------
 @app.route('/legajosvcp/edit_licencia/<int:id>', methods=["GET", "POST"])
 @role_required('admin')
@@ -456,7 +471,7 @@ def edit_licencia(id):
 
         db.session.commit()
         flash("Licencia actualizada exitosamente")
-        return redirect(url_for('legajosvcp'))
+        return redirect(url_for('licencias_conducir'))
 
     return render_template('edit_licencia.html', licencia=licencia)
 
