@@ -25,6 +25,7 @@
             <tr>
                 <th>ID</th>
                 <th>Número de Legajo</th>
+                <th>Apellido</th>
                 <th>Fecha de Realización</th>
                 <th>Observaciones</th>
                 <th>Ficha Médica</th>
@@ -34,11 +35,14 @@
         </thead>
         <tbody>
             {% for ficha in fichas %}
+            {% set bombero = bomberos | selectattr("legajo_numero", "equalto", ficha.numero_legajo) | first %}
+            {% if bombero %}
 
 
             <tr>
                 <td>{{ ficha.id_ficha_medica }}</td>
                 <td>{{ ficha.numero_legajo }}</td>
+                <td> {{ bombero.apellido }}</td>
 
                 <td>{{ ficha.fecha_ficha }}</td>
                 <td>{{ ficha.observaciones }}</td>
@@ -50,7 +54,7 @@
                     <button class="btn btn-danger" onclick="confirmarEliminacion({{ ficha.id_ficha_medica }})">Eliminar</button>
                 </td>
             </tr>
-
+            {% endif %}
             {% endfor %}
         </tbody>
     </table>

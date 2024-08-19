@@ -668,7 +668,6 @@ def download_filess(filename):
 #----------------------------------------FICHA MEDICA------#----------------------------------------------
 
 @app.route('/fichas_medicas', methods=['GET', 'POST'])
-@role_required('admin')
 @login_required
 def fichas_medicas():
     if request.method == "POST":
@@ -707,8 +706,16 @@ def fichas_medicas():
             else:
                 flash("Error: Formato de archivo no permitido.")
                 return redirect(url_for("fichas_medicas"))
-    fichas = Ficha_Medica.query.all()
-    return render_template("fichas_medicas.html", fichas=fichas)
+
+    if current_user.rol == 'admin':
+        bomberos = Bomberos.query.order_by(Bomberos.legajo_numero).all()
+        fichas = Ficha_Medica.query.order_by(Ficha_Medica.numero_legajo).all()
+    else:
+        # Filtra para mostrar solo el legajo del usuario
+        bomberos = Bomberos.query.filter_by(legajo_numero=current_user.numero_legajo).all()
+        fichas = Ficha_Medica.query.filter_by(numero_legajo=current_user.numero_legajo).all()
+
+    return render_template("fichas_medicas.html", fichas=fichas, bomberos=bomberos)
 
 
 #----------------------------------------ELIMINAR FICHA MEDICA------#----------------------------------------------
