@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify,send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify,send_from_directory, abort
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
@@ -845,14 +845,19 @@ def update_password():
 
     return render_template('acces.html')
 #----------------------------------------------Asistencia#----------------------------------------------
-
+INSTITUTION_IP = "127.0.0.1"
 @app.route('/asistencia', methods=['GET', 'POST'])
 def asistencia():
     fecha_actual = datetime.now().date()
     hora_actual_utc = datetime.now(timezone('UTC'))
     hora_actual_buenos_aires = hora_actual_utc.astimezone(app.config['TIMEZONE'])
     hora_actual_str = hora_actual_buenos_aires.strftime('%H:%M')
-
+    client_ip = request.remote_addr
+    if client_ip != INSTITUTION_IP:
+        # Si la IP no coincide, se niega el acceso
+        abort(403,
+              description="Acceso denegado: Debe estar conectado a la red de la institución para registrar asistencia.")
+    print(client_ip)
     if request.method == 'POST':
         dni = request.form.get('dni')
         agente_existente = Bomberos.query.filter_by(dni=dni).first()
