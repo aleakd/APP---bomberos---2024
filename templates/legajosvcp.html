@@ -32,6 +32,7 @@
             <th>Apellido</th>
             <th>Nombre</th>
             <th>DNI</th>
+            <th>DNI PDF</th>
             <th>Estado</th>
             <th>Teléfono</th>
             <th>Teléfono Alternativo</th>
@@ -57,7 +58,17 @@
             <td>{{ bombero.rol }}</td>
             <td>{{ bombero.apellido }}</td>
             <td>{{ bombero.nombre }}</td>
-            <td>{{ bombero.dni }}</td>
+            <td>{{ bombero.dni }}</td><td>
+                {% if bombero.dni_pdf %}
+            <a href="{{ url_for('download_filesss', filename=bombero.dni_pdf|replace_backslash) }}" target="_blank">Ver DNI PDF</a>
+
+
+                {% else %}
+                No disponible
+                {% endif %}
+                </a>
+            </td>
+
             <td>{{ bombero.estado }}</td>
             <td>{{ bombero.telefono }}</td>
             <td>{{ bombero.telefono_alternativo }}</td>

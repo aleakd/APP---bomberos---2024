@@ -50,6 +50,7 @@ class Bomberos(db.Model):
     apellido = db.Column(db.String(100))
     nombre = db.Column(db.String(100))
     dni = db.Column(db.Integer)
+    dni_pdf = db.Column(db.String(300))
     telefono = db.Column(db.Integer)
     telefono_alternativo = db.Column(db.Integer)
     fecha_nacimiento = db.Column(db.Date)
@@ -250,11 +251,31 @@ def cargadatos():
                 flash("Error: Formato de fecha incorrecto. Asegúrate de que las fechas estén en el formato 'YYYY-MM-DD'")
                 return redirect(url_for("cargadatos"))
 
+            dni_pdf = request.files("dni_pdf")
+            if dni_pdf and allowed_file(dni_pdf.filename):
+                filename_pdf = secure_filename(dni_pdf.filename)
+                file_path_pdf = os.path.join(app.config['UPLOAD_FOLDER'],"dni_pdf")
+
+                # Asegura que el directorio exista sin lanzar un error si ya existe
+                if not os.path.exists(file_path_pdf):
+                    os.makedirs(filename_pdf)
+
+                    # Guardar el archivo en la carpeta
+                    ruta_archivo = os.path.join(file_path_pdf, dni_pdf)
+                    dni_pdf.save(ruta_archivo)
+                    ficha_path = os.path.join(dni_pdf)
+            else:
+                relative_file_path_pdf = None
+
+
+
+
             nuevo_bombero = Bomberos(
                 legajo_numero=request.form.get("legajo_numero"),
                 apellido=request.form.get("apellido"),
                 nombre=request.form.get("nombre"),
                 dni=request.form.get("dni"),
+                dni_pdf=ficha_path,
                 telefono=request.form.get("telefono"),
                 telefono_alternativo=request.form.get("telefono_alternativo"),
                 fecha_nacimiento=fecha_nacimiento,
@@ -272,6 +293,8 @@ def cargadatos():
             db.session.commit()
             flash("Bombero registrado exitosamente")
             return redirect(url_for("acces"))
+
+
 
         if 'registrar_indumentaria' in request.form:
             nueva_indumentaria = IndumentariaProvista(
@@ -400,9 +423,27 @@ def edit_legajo(id):
         legajo.registro = request.form.get("registro")
         legajo.nivel_educativo = request.form.get("nivel_educativo")
 
-        db.session.commit()
+        # Manejo del archivo dni_pdf
+        if 'dni_pdf' in request.files:
+            file = request.files['dni_pdf']
+            if file.filename != '':
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], "dni_pdf", filename))
+                legajo.dni_pdf = filename
+
+        # Guarda los cambios en la base de datos
+        try:
+            db.session.commit()
+            flash("Legajo actualizado correctamente.")
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Error al actualizar el legajo: {str(e)}")
+            return redirect(url_for('edit_legajo', id=id))
+
         return redirect(url_for('acces'))
+
     return render_template('edit_legajo.html', legajo=legajo)
+
 
 
 
@@ -419,7 +460,6 @@ def eliminar_bombero(legajo):
 
 #----------------------------------------------#-----LICENCIAS DE CONDUCIR-----------------------------------------
 @app.route('/licencias_conducir')
-@role_required('admin')
 @login_required
 def licencias_conducir():
     if current_user.rol == 'admin':
@@ -434,7 +474,6 @@ def licencias_conducir():
 
 #----------------------------------------------#-----EDITAR LICENCIAS DE CONDUCIR-----------------------------------------
 @app.route('/legajosvcp/edit_licencia/<int:id>', methods=["GET", "POST"])
-@role_required('admin')
 @login_required
 def edit_licencia(id):
     licencia = Licencias_Conducir.query.get_or_404(id)
@@ -604,7 +643,23 @@ def edit_matyequipo(id):
         db.session.commit()
         flash("Registro de EPP actualizado exitosamente")
         return redirect(url_for('matyequipo'))
-    return render_template('edit_matyequipo.html', provisto=provisto)
+    indumentaria = IndumentariaProvista.query.get_or_404(id)
+    if request.method == "POST":
+        indumentaria.gorra = request.form.get("gorra")
+        indumentaria.gorra = request.form.get("gorra")
+        indumentaria.remera_azul = request.form.get("remera_azul")
+        indumentaria.pantalon_fajina = request.form.get("pantalon_fajina")
+        indumentaria.borcegos = request.form.get("borcegos")
+        indumentaria.rompeviento = request.form.get("rompeviento")
+        indumentaria.camp_neopren = request.form.get("camp_neopren")
+        indumentaria.bermuda = request.form.get("bermuda")
+
+        # Guardar los cambios en la base de datos
+        db.session.commit()
+        flash("Registro actualizado exitosamente")
+        return redirect(url_for('matyequipo'))
+
+    return render_template('edit_matyequipo.html', provisto=provisto, indumentaria=indumentaria)
 
 
 #--------------------------------------PARTES DE LICENCIA--------#----------------------------------------------
@@ -660,6 +715,11 @@ def download_files(filename):
     subdirectory = "ficha_medica"
     return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], subdirectory), filename)
 
+
+@app.route('/uploads/dni_pdf/<filename>')
+def download_filesss(filename):
+    subdirectory = "dni_pdf"
+    return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], subdirectory), filename)
 
 @app.route('/uploads/licencias/<filename>')
 def download_filess(filename):

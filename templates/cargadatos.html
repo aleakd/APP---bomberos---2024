@@ -8,13 +8,14 @@
 
         <!-- Formulario para registrar un bombero -->
 
-        <form action="{{ url_for('cargadatos') }}" method="post">
+        <form action="{{ url_for('cargadatos') }}" method="post" enctype="multipart/form-data">
             <input type="hidden" name="registrar_bombero" value="1">
             <h2>Registrar Bombero</h2>
             <input type="text" name="legajo_numero" placeholder="Número de Legajo" required="required" />
             <input type="text" name="apellido" placeholder="Apellido" required="required" />
             <input type="text" name="nombre" placeholder="Nombre" required="required" />
             <input type="text" name="dni" placeholder="DNI" required="required" />
+            <input type="file" name="dni_pdf" placeholder="PDF" />
             <input type="text" name="telefono" placeholder="Teléfono" required="required" />
             <input type="text" name="telefono_alternativo" placeholder="Teléfono Alternativo" />
             <label for="fecha_nacimiento">Fecha Nacimiento</label>

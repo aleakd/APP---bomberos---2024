@@ -53,4 +53,41 @@
     </div>
     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
 </form>
+<br>
+
+
+<!-- Campos para Indumentaria Provista -->
+<form method="POST">
+    <h2>Indumentaria Provista</h2>
+    <div class="form-group">
+        <label for="gorra">Gorra:</label>
+        <input type="text" class="form-control" id="gorra" name="gorra" value="{{ indumentaria.gorra }}">
+    </div>
+    <div class="form-group">
+        <label for="remera_azul">Remera Azul:</label>
+        <input type="text" class="form-control" id="remera_azul" name="remera_azul" value="{{ indumentaria.remera_azul }}">
+    </div>
+    <div class="form-group">
+        <label for="pantalon_fajina">Pantalón de Fajina:</label>
+        <input type="text" class="form-control" id="pantalon_fajina" name="pantalon_fajina" value="{{ indumentaria.pantalon_fajina }}">
+    </div>
+    <div class="form-group">
+        <label for="borcegos">Borcegos:</label>
+        <input type="text" class="form-control" id="borcegos" name="borcegos" value="{{ indumentaria.borcegos }}">
+    </div>
+    <div class="form-group">
+        <label for="rompeviento">Rompeviento:</label>
+        <input type="text" class="form-control" id="rompeviento" name="rompeviento" value="{{ indumentaria.rompeviento }}">
+    </div>
+    <div class="form-group">
+        <label for="camp_neopren">Campera Neopren:</label>
+        <input type="text" class="form-control" id="camp_neopren" name="camp_neopren" value="{{ indumentaria.camp_neopren }}">
+    </div>
+    <div class="form-group">
+        <label for="bermuda">Bermuda:</label>
+        <input type="text" class="form-control" id="bermuda" name="bermuda" value="{{ indumentaria.bermuda }}">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+</form>
 {% endblock %}

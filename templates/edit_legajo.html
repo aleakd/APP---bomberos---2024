@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container">
     <h1>{{ form_title }}</h1>
-    <form action="" method="post">
+    <form action="{{ url_for('edit_legajo', id=legajo.legajo_numero) }}" method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label for="legajo_numero">Número de Legajo</label>
             <input type="text" class="form-control" id="legajo_numero" name="legajo_numero" value="{{ legajo.legajo_numero if legajo else '' }}" required>
@@ -20,6 +20,16 @@
             <label for="dni">DNI</label>
             <input type="text" class="form-control" id="dni" name="dni" value="{{ legajo.dni if legajo else '' }}" required>
         </div>
+       <div class="form-group">
+    <label for="dni_pdf">DNI_pdf</label>
+    {% if legajo and legajo.dni_pdf %}
+        <!-- Muestra un enlace al PDF actual si existe -->
+        <p>Archivo actual: <a href="{{ url_for('download_filesss', filename=legajo.dni_pdf|replace_backslash) }}" target="_blank">Ver PDF</a></p>
+    {% endif %}
+    <input type="file" class="form-control" id="dni_pdf" name="dni_pdf" accept=".pdf">
+    <!-- No uses el atributo value en un campo de tipo "file" -->
+</div>
+
         <div class="form-group">
             <label for="telefono">Teléfono</label>
             <input type="text" class="form-control" id="telefono" name="telefono" value="{{ legajo.telefono if legajo else '' }}" required>

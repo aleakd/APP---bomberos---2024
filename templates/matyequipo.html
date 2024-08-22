@@ -70,6 +70,7 @@
                 <th>Pantalon Forestal</th>
                 <th>Antiparras Forestal</th>
                 <th>Linterna Forestal</th>
+                <th>Editar</th>
             </tr>
         </thead>
         <tbody>
@@ -92,9 +93,12 @@
                         <td>{{ epp.pantalon_forestal }}</td>
                         <td>{{ epp.antiparras_forestal }}</td>
                         <td>{{ epp.linterna_forestal }}</td>
+
+                    {% if current_user.rol == 'admin' %}
                         <td>
-                            <a href="{{ url_for('edit_matyequipo', id=bombero.legajo_numero) }}" class="btn btn-warning">Editar</a>
+                            <a href="{{ url_for('edit_matyequipo', id=bombero.legajo_numero) }}" class="btn btn-danger">Editar</a>
                         </td>
+                        {% endif %}
                     </tr>
                 {% endif %}
             {% endfor %}
