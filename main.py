@@ -5,6 +5,9 @@ from flask_login import UserMixin, login_user, LoginManager, login_required, cur
 from functools import wraps
 import pytz
 
+
+from werkzeug.middleware.proxy_fix import ProxyFix
+
 from pytz import timezone
 import os
 from werkzeug.utils import secure_filename
@@ -24,7 +27,7 @@ db = SQLAlchemy(app)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -677,7 +680,6 @@ def partes_licencia():
 
 
                 try:
-                    fecha_solicitud = datetime.strptime(request.form.get("fecha_solicitud"), '%Y-%m-%d').date()
                     fecha_inicio_licencia = datetime.strptime(request.form.get("fecha_inicio_licencia"), '%Y-%m-%d').date()
                     fecha_fin_licencia = datetime.strptime(request.form.get("fecha_fin_licencia"), '%Y-%m-%d').date()
                 except ValueError:
@@ -906,13 +908,17 @@ def update_password():
     return render_template('acces.html')
 #----------------------------------------------Asistencia#----------------------------------------------
 INSTITUTION_IP = "127.0.0.1"
+
 @app.route('/asistencia', methods=['GET', 'POST'])
 def asistencia():
     fecha_actual = datetime.now().date()
     hora_actual_utc = datetime.now(timezone('UTC'))
     hora_actual_buenos_aires = hora_actual_utc.astimezone(app.config['TIMEZONE'])
     hora_actual_str = hora_actual_buenos_aires.strftime('%H:%M')
-    client_ip = request.remote_addr
+    client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+
+    print(client_ip)
+    print("esta es la IP")
     if client_ip != INSTITUTION_IP:
         # Si la IP no coincide, se niega el acceso
         abort(403,
