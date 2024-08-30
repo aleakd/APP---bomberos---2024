@@ -56,10 +56,12 @@
         <thead>
             <tr>
                 <th>Número de Legajo</th>
+                <th>Apellido Solicitante</th>
                 <th>Fecha de Solicitud</th>
-                <th>desde Horario</th>
-                <th>Hasta Horario</th>
+                <th>Horario Inicio</th>
+                <th>Horario Fin</th>
                 <th>Legajo de Quien Cubre</th>
+                <th>Apellido Quien Cubre</th>
                 <th>Motivo</th>
                 <th>Fecha de Devolución</th>
                 <th>Imagen</th>
@@ -72,10 +74,12 @@
             {% for cambio in cambios %}
             <tr>
                 <td>{{ cambio.numero_legajo }}</td>
+                <td>{{ apellidos[cambio.numero_legajo] if cambio.numero_legajo in apellidos else 'Desconocido' }}</td>
                 <td>{{ cambio.fecha_solicitud }}</td>
                 <td>{{ cambio.rango_horario }}</td>
                 <td>{{ cambio.rango_horario2 }}</td>
                 <td>{{ cambio.legajo_quien_cubre }}</td>
+                <td>{{ apellidos[cambio.legajo_quien_cubre] if cambio.legajo_quien_cubre in apellidos else 'Desconocido' }}</td>
                 <td>{{ cambio.motivo }}</td>
                 <td>{{ cambio.fecha_devolucion }}</td>
                 <td>
@@ -100,7 +104,7 @@
             {% endfor %}
         </tbody>
     </table>
-</div>
+</div>>
 
 <script>
     $(document).ready(function () {
@@ -149,6 +153,13 @@
             var h2 = document.getElementById('miH202');
             h2.classList.toggle('cambio-color');
         }, 1000);
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        $('#asisTable').DataTable();
+    });
 </script>
 
 {% endblock %}

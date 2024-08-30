@@ -5,13 +5,12 @@ from flask_login import UserMixin, login_user, LoginManager, login_required, cur
 from functools import wraps
 import pytz
 
-
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from pytz import timezone
 import os
 from werkzeug.utils import secure_filename
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
@@ -214,7 +213,16 @@ def index():
 @app.route('/acces')
 @login_required
 def acces():
-    return render_template("acces.html", name=current_user.name)
+    # Obtén el número de legajo del usuario actual
+    legajo_usuario = current_user.numero_legajo
+
+    # Consulta en la tabla Bomberos para obtener el DNI usando el número de legajo
+    bombero = Bomberos.query.filter_by(legajo_numero=legajo_usuario).first()
+    if bombero is None:
+        return "Bombero no encontrado", 404
+    dni = bombero.dni
+    horas_acumuladas = calcular_horas_y_minutos_acumulados(dni)
+    return render_template("acces.html", name=current_user.name, horas_acumuladas=horas_acumuladas)
 
 #----------------------------------------------#---------REGISTRAR UN NUEVO USUARIO-------------------------------------
 
@@ -568,8 +576,11 @@ def cambiosguardia():
             flash("Cambio de guardia registrado exitosamente")
             return redirect(url_for("cambiosguardia"))
 
+
+
     cambios = Cambios_Guardia.query.all()
-    return render_template("cambiosguardia.html", cambios=cambios)
+    apellidos = {bombero.legajo_numero: bombero.apellido for bombero in Bomberos.query.all()}
+    return render_template("cambiosguardia.html", cambios=cambios, apellidos=apellidos)
 
 
 
@@ -908,6 +919,50 @@ def update_password():
     return render_template('acces.html')
 #----------------------------------------------Asistencia#----------------------------------------------
 INSTITUTION_IP = "127.0.0.1"
+def calcular_horas_y_minutos_acumulados(dni):
+    mes_actual = datetime.now().month
+    año_actual = datetime.now().year
+
+    # Filtrar las asistencias del usuario para el mes y año actual
+    asistencias_mes = Aistencia.query.filter(
+        Aistencia.dni == dni,
+        Aistencia.fecha.between(
+            datetime(año_actual, mes_actual, 1),
+            datetime(año_actual, mes_actual + 1, 1) - timedelta(seconds=1)
+        )
+    ).order_by(Aistencia.fecha, Aistencia.hora).all()
+
+    horas_acumuladas = timedelta()
+    entrada_actual = None
+
+    for asistencia in asistencias_mes:
+        if asistencia.tipo_registro == "INGRESO":
+            # Guarda la entrada actual para emparejar más tarde
+            entrada_actual = asistencia
+        elif asistencia.tipo_registro == "SALIDA" and entrada_actual:
+            # Empareja la salida con la entrada actual
+            salida = asistencia
+
+            # Convertir las horas de cadena a datetime.time
+            hora_entrada = datetime.strptime(entrada_actual.hora, '%H:%M').time()
+            hora_salida = datetime.strptime(salida.hora, '%H:%M').time()
+
+            # Combinar la fecha con las horas convertidas
+            tiempo_entrada = datetime.combine(entrada_actual.fecha, hora_entrada)
+            tiempo_salida = datetime.combine(salida.fecha, hora_salida)
+
+            # Sumar la diferencia de tiempo entre salida e ingreso
+            horas_acumuladas += tiempo_salida - tiempo_entrada
+
+            # Restablecer la entrada actual para procesar el siguiente par
+            entrada_actual = None
+
+    # Convertir timedelta a horas y minutos
+    total_horas = int(horas_acumuladas.total_seconds() // 3600)
+    total_minutos = int((horas_acumuladas.total_seconds() % 3600) // 60)
+
+    return f"{total_horas} horas y {total_minutos} minutos"
+
 
 @app.route('/asistencia', methods=['GET', 'POST'])
 def asistencia():
