@@ -139,10 +139,12 @@ background-color:#ACB9B9;
 margin:2% 20%;
 border: 9px solid #FDFDFD;
 padding: 20px;
-width: 65%;
+width: 70%;
 border-radius: 5px;
 box-shadow: 3px 6px 110px #ccc;
 }
+
+
 
 /* Estilos para los campos del formulario */
 input {
@@ -164,9 +166,7 @@ border-radius: 4px;
 cursor: pointer;
 font-size:1rem;
 }
-button
-
-label{
+button label{
 color:#230903;
 display: block;
 margin-bottom: 0.5rem;
@@ -285,6 +285,14 @@ width:23rem;
 width:18rem;
 }
 
+form{
+background-color:#ACB9B9;
+border: 9px solid #FDFDFD;
+width: 80%;
+border-radius: 5px;
+box-shadow: 3px 6px 110px #ccc;
+}
+
 
 .container {
     width: 80%;
@@ -351,6 +359,38 @@ width:18rem;
 }
 
 
+ .form_automotores label {
+            font-size: 1.2em; /* Ajusta el tamaño de fuente según lo desees */
+            font-weight: bold; /* Pone el texto en negrita */
+        }
+
+ .etiquetaaa{
+ font-size:22px;
+ font-weight:bold;
+ }
+
+
+ .form_automotores{
+ background-color:#ef9139;
+ }
+
+  #tablaautomotores th{
+ background-color:#ef9139;
+ color:black;
+ }
+
+
+
+
+
+ .form_kitforestal{
+ background-color:#55e8bc;
+ }
+
+ #tablakits th{
+ background-color:#55e8bc;
+ color:black;
+ }
 
 
 

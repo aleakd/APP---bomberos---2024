@@ -149,10 +149,53 @@ class Talles(UserMixin, db.Model):
 
 class Aistencia(UserMixin, db.Model):
     id_asistencia = db.Column(db.Integer, primary_key=True)
-    dni  = db.Column(db.Integer)
+    dni = db.Column(db.Integer)
     tipo_registro = db.Column(db.String(10))
     fecha = db.Column(db.Date)
     hora = db.Column(db.String(10))
+
+
+class ControlAutomotor(UserMixin, db.Model):
+    id_control = db.Column(db.Integer, primary_key=True)
+    numero_legajo = db.Column(db.Integer)
+    nombre_unidad = db.Column(db.String(10))
+    fecha = db.Column(db.Date)
+    hora = db.Column(db.String(10))
+    bateria = db.Column(db.String(10))
+    odometro = db.Column(db.Integer)
+    combustible = db.Column(db.String(10))
+    acite_motor = db.Column(db.String(10))
+    agua_radiador = db.Column(db.String(10))
+    liq_freno = db.Column(db.String(10))
+    neumaticos = db.Column(db.String(10))
+    frenos = db.Column(db.String(10))
+    direccion = db.Column(db.String(10))
+    luces_baja = db.Column(db.String(10))
+    luces_alta = db.Column(db.String(10))
+    balizas = db.Column(db.String(10))
+    estrobos = db.Column(db.String(10))
+    sirena = db.Column(db.String(10))
+    equipo_base = db.Column(db.String(10))
+    limpieza_interior = db.Column(db.String(10))
+    limpieza_exterior = db.Column(db.String(10))
+    puesta_marcha = db.Column(db.String(10))
+    agua_tanque = db.Column(db.String(10))
+    observaciones = db.Column(db.String(1000))
+
+class ControlKit(UserMixin, db.Model):
+    id_control =db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.Date)
+    hora = db.Column(db.String(10))
+    numero_legajo = db.Column(db.Integer)
+    nombre_unidad = db.Column(db.String(10))
+    nivel_aceite =db.Column(db.String(10))
+    combustible = db.Column(db.String(10))
+    bidon_nafta = db.Column(db.String(10))
+    agua_tanque = db.Column(db.String(10))
+    aceite_motor = db.Column(db.String(10))
+    marcha = db.Column(db.String(10))
+    novedades = db.Column(db.String(1000))
+
 
 
 
@@ -917,7 +960,7 @@ def update_password():
     db.session.commit()
 
     return render_template('acces.html')
-#----------------------------------------------Asistencia#----------------------------------------------
+#---------------------------------------------- Funcion de calcular horas Asistencia#----------------------------------------------
 INSTITUTION_IP = "127.0.0.1"
 def calcular_horas_y_minutos_acumulados(dni):
     mes_actual = datetime.now().month
@@ -962,7 +1005,7 @@ def calcular_horas_y_minutos_acumulados(dni):
     total_minutos = int((horas_acumuladas.total_seconds() % 3600) // 60)
 
     return f"{total_horas} horas y {total_minutos} minutos"
-
+#----------------------------------------------ASISTENCIAS ojo mal escrito------------------------------------------
 
 @app.route('/asistencia', methods=['GET', 'POST'])
 def asistencia():
@@ -987,31 +1030,128 @@ def asistencia():
             flash('No se puede registrar la asistencia. El DNI no está registrado.')
             return redirect(url_for("acces"))
 
+
+
+        if not current_user.is_authenticated:
+            # Obtener el último registro de asistencia del usuario
+            ultimo_registro = Aistencia.query.filter_by(dni=dni).order_by(
+                Aistencia.id_asistencia.desc()).first()
+
+            # Verificar si el último registro fue "INGRESO" y la nueva solicitud es también "INGRESO"
+            if ultimo_registro and ultimo_registro.tipo_registro == "INGRESO" and request.form.get(
+                    'tipo_registro') == "INGRESO":
+                flash('Debe registrar una SALIDA antes de registrar un nuevo INGRESO.')
+                return redirect(url_for("asistencia"))
+
+
+
         tipo_registro = request.form.get('tipo_registro')
 
-        asistencia = Aistencia(
-            dni=dni,
-            tipo_registro=tipo_registro,
-            hora=hora_actual_str,
-            fecha=fecha_actual
-        )
+
+        # Si el usuario está logueado como "sistema", usar la fecha y hora manual del formulario
+        if current_user.is_authenticated and current_user.rol == "admin":
+            fecha_manual = request.form.get('fecha')
+            hora_manual = request.form.get('hora')
+            asistencia = Aistencia(
+                dni=dni,
+                tipo_registro=tipo_registro,
+                hora=hora_manual,
+                fecha=datetime.strptime(fecha_manual, '%Y-%m-%d').date()
+            )
+        else:
+            asistencia = Aistencia(
+                dni=dni,
+                tipo_registro=tipo_registro,
+                hora=hora_actual_str,
+                fecha=fecha_actual
+            )
+
         db.session.add(asistencia)
         db.session.commit()
-        flash('registro cargado exitosamente')
+        flash('Registro cargado exitosamente')
         return redirect(url_for("index"))
 
-    asistencias_del_dia = Aistencia.query.filter(Aistencia.fecha == fecha_actual).all()
+    # Calcular la fecha y hora de hace 24 horas
+    hace_24_horas = fecha_actual - timedelta(hours=24)
+
+    asistencias_del_dia = Aistencia.query.filter(Aistencia.fecha >= hace_24_horas).all()
+    asistencias_general = Aistencia.query.all()
     bomberos = Bomberos.query.order_by(Bomberos.legajo_numero).all()
 
-    return render_template('asistencia.html', asistencias=asistencias_del_dia, bravo=bomberos)
+    return render_template('asistencia.html', asistencias=asistencias_del_dia, bravo=bomberos, asistencias_general=asistencias_general)
 
 
 
 
-#----------------------------------------------modificar password#----------------------------------------------
+#----------------------------------------------CONTROL AUTOMOTORES----------------------------------------------
+
+@app.route('/automotores', methods=['GET', 'POST'])
+@login_required
+def automotores():
+    fecha_actual = datetime.now(app.config['TIMEZONE']).date()
+    hora_actual = datetime.now(app.config['TIMEZONE']).strftime('%H:%M')
+    if request.method == 'POST':
+        if 'control_automotores' in request.form:
+
+            control = ControlAutomotor(
+                numero_legajo=current_user.numero_legajo,
+                nombre_unidad=request.form.get('nombre_unidad'),
+                fecha=fecha_actual,
+                hora=hora_actual,
+                bateria=request.form.get('bateria'),
+                odometro=request.form.get('odometro'),
+                combustible=request.form.get('combustible'),
+                acite_motor=request.form.get('acite_motor'),
+                agua_radiador=request.form.get('agua_radiador'),
+                liq_freno=request.form.get('liq_freno'),
+                neumaticos=request.form.get('neumaticos'),
+                frenos=request.form.get('frenos'),
+                direccion=request.form.get('direccion'),
+                luces_baja=request.form.get('luces_baja'),
+                luces_alta=request.form.get('luces_alta'),
+                balizas=request.form.get('balizas'),
+                estrobos=request.form.get('estrobos'),
+                sirena=request.form.get('sirena'),
+                equipo_base=request.form.get('equipo_base'),
+                limpieza_interior=request.form.get('limpieza_interior'),
+                limpieza_exterior=request.form.get('limpieza_exterior'),
+                puesta_marcha=request.form.get('puesta_marcha'),
+                agua_tanque=request.form.get('agua_tanque'),
+                observaciones=request.form.get('observaciones')
+            )
+
+            db.session.add(control)
+            db.session.commit()
+            flash('Control del automotor registrado exitosamente.')
+            return redirect(url_for('automotores'))
 
 
+        if 'control_kit' in request.form:
+            control_kit = ControlKit(
+                numero_legajo=current_user.numero_legajo,
+                nombre_unidad=request.form.get('nombre_unidad_kit'),
+                fecha=fecha_actual,
+                hora=hora_actual,
+                nivel_aceite=request.form.get('nivel_aceite'),
+                combustible=request.form.get('combustible_kit'),
+                bidon_nafta=request.form.get('bidon_nafta'),
+                agua_tanque=request.form.get('agua_tanque_kit'),
+                aceite_motor=request.form.get('aceite_motor_kit'),
+                marcha=request.form.get('marcha'),
+                novedades=request.form.get('novedades')
+            )
 
+            db.session.add(control_kit)
+            db.session.commit()
+            flash('Control del kit forestal registrado exitosamente.')
+
+        return redirect(url_for('automotores'))
+
+    controles = ControlAutomotor.query.order_by(ControlAutomotor.fecha.desc(), ControlAutomotor.hora.desc()).all()
+    controles_kit = ControlKit.query.order_by(ControlKit.fecha.desc(), ControlKit.hora.desc()).all()
+    return render_template('automotores.html', controles=controles, controles_kit=controles_kit)
+
+#-------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
     app.run(debug=True, port=8080)  # Cambia 8080 al puerto que prefieras

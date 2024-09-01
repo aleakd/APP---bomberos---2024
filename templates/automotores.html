@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+
+<div class="container">
+    {% with messages = get_flashed_messages() %}
+  {% if messages %}
+  <div class="mensaa alert alert-light">
+    <ul class="list-unstyled">
+      {% for message in messages %}
+      <li> <h2 id="miH202">{{ message }}</h2></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  {% endwith %}
+
+</div>
+
+
+
+<form action="{{ url_for('automotores') }}" method="POST" class="form_automotores">
+        <input type="hidden" name="control_automotores" value="1">
+        <h2>Control Automotores</h2>
+        <div class="row">
+            <!-- Nombre de la Unidad -->
+            <div class="col-12">
+                <select name="nombre_unidad" class="form-select" required>
+                    <option value="" disabled selected> Nombre de la Unidad</option>
+                    <option value="B2">B2</option>
+                    <option value="B3">B3</option>
+                    <option value="B4">B4</option>
+                    <option value="BF1">BF1</option>
+                    <option value="BR1">BR1</option>
+                    <option value="E1">E1</option>
+                    <option value="F2">F2</option>
+                    <option value="F3">F3</option>
+                    <option value="R1">R1</option>
+                    <option value="R8">R8</option>
+                    <option value="FIOR">FIOR</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <!-- Odómetro -->
+            <div class="col-12">
+                <input type="number" name="odometro" class="form-control" placeholder="Odómetro" required>
+            </div>
+        </div>
+
+         <div class="row">
+            <!-- Nombre de la Unidad -->
+            <div class="col-12">
+                <select name="combustible" class="form-select" required>
+                    <option value="" disabled selected>Combustible</option>
+                    <option value="menos 1/4">Menos 1/4</option>
+                    <option value="1/4">1/4</option>
+                    <option value="menos 1/2">Menos 1/2</option>
+                    <option value="1/2">1/2</option>
+                    <option value="menos 3/4">Menos 3/4</option>
+                    <option value="3/4">3/4</option>
+                    <option value="mas 3/4">Más 3/4</option>
+                    <option value="Full">Full</option>
+                    <option value="Vacio">Vacio</option>
+
+                    <
+                </select>
+            </div>
+        </div>
+
+        <!-- Función para generar campos con OK/Error -->
+        {% macro radio_field(name, placeholder) %}
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="d-flex align-items-center">
+                    <div class="me-3 etiquetaaa">{{ placeholder }}    :</div>
+                    <div class="form-check me-3">
+                        <input class="form-check-input" type="radio" name="{{ name }}" id="{{ name }}_ok" value="✔" required>
+                        <label class="form-check-label" for="{{ name }}_ok">
+                           ✔
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="{{ name }}" id="{{ name }}_error" value="X" required>
+                        <label class="form-check-label" for="{{ name }}_error">
+                            X
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endmacro %}
+
+        <!-- Campos con OK/Error -->
+        {{ radio_field('bateria', 'Batería') }}
+        {{ radio_field('acite_motor', 'Aceite Motor') }}
+        {{ radio_field('agua_radiador', 'Agua Radiador') }}
+        {{ radio_field('liq_freno', 'Líq. de Freno') }}
+        {{ radio_field('neumaticos', 'Neumáticos') }}
+        {{ radio_field('frenos', 'Frenos') }}
+        {{ radio_field('direccion', 'Dirección') }}
+        {{ radio_field('luces_baja', 'Luces Baja') }}
+        {{ radio_field('luces_alta', 'Luces Alta') }}
+        {{ radio_field('balizas', 'Balizas') }}
+        {{ radio_field('estrobos', 'Estrobos') }}
+        {{ radio_field('sirena', 'Sirena') }}
+        {{ radio_field('equipo_base', 'Equipo Base') }}
+        {{ radio_field('limpieza_interior', 'Limpieza Interior') }}
+        {{ radio_field('limpieza_exterior', 'Limpieza Exterior') }}
+        {{ radio_field('puesta_marcha', 'Puesta en Marcha') }}
+        {{ radio_field('agua_tanque', 'Agua en el Tanque') }}
+
+        <!-- Observaciones -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <textarea name="observaciones" class="form-control" placeholder="Observaciones" rows="6"></textarea>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 text-end">
+                <button type="submit" class="btn btn-primary">Registrar</button>
+            </div>
+        </div>
+    </form>
+
+
+
+
+<!-- Formulario de Control de Kits Forestales -->
+<form action="{{ url_for('automotores') }}" method="POST" class="form_kitforestal mt-5">
+    <input type="hidden" name="control_kit" value="kitforestal">
+    <h2>Control de Kits Forestales</h2>
+    <div class="row">
+        <!-- Nombre de la Unidad -->
+        <div class="col-12">
+            <select name="nombre_unidad_kit" class="form-select" required>
+                <option value="" disabled selected>Nombre de la Unidad</option>
+                <option value="B2">B2</option>
+                <option value="F1">F1</option>
+                <option value="F2">F2</option>
+                <option value="F3">F3</option>
+
+            </select>
+        </div>
+    </div>
+
+    <div class="row">
+            <!-- Nombre de la Unidad -->
+            <div class="col-12">
+                <select name="combustible" class="form-select" required>
+                    <option value="" disabled selected>Combustible</option>
+                    <option value="menos 1/4">Menos 1/4</option>
+                    <option value="1/4">1/4</option>
+                    <option value="menos 1/2">Menos 1/2</option>
+                    <option value="1/2">1/2</option>
+                    <option value="menos 3/4">Menos 3/4</option>
+                    <option value="3/4">3/4</option>
+                    <option value="mas 3/4">Más 3/4</option>
+                    <option value="Full">Full</option>
+                    <option value="Vacio">Vacio</option>
+
+                    <
+                </select>
+            </div>
+        </div>
+
+
+
+    <!-- Función para generar campos con OK/Error -->
+    {% macro kit_radio_field(names, placeholder) %}
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="d-flex align-items-center">
+                <div class="me-3 etiquetaaa">{{ placeholder }}:</div>
+                <div class="form-check me-3">
+                    <input class="form-check-input" type="radio" name="{{ names }}" id="{{ names }}_ok" value="✔" required>
+                    <label class="form-check-label" for="{{ names }}_ok">
+                        ✔
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="{{ names }}" id="{{ names }}_error" value="X" required>
+                    <label class="form-check-label" for="{{ names }}_error">
+                        X
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endmacro %}
+
+    <!-- Campos con OK/Error -->
+    {{ kit_radio_field('nivel_aceite', 'nivel de aceite') }}
+    {{ kit_radio_field('bidon_nafta', 'Bidón de Nafta') }}
+    {{ kit_radio_field('agua_tanque_kit', 'Agua en el Tanque') }}
+    {{ kit_radio_field('aceite_motor_kit', 'Aceite del Motor') }}
+    {{ kit_radio_field('marcha', 'Puesta en Marcha') }}
+
+    <!-- Novedades -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <textarea name="novedades" class="form-control" placeholder="Novedades" rows="6"></textarea>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 text-end">
+            <button type="submit" class="btn btn-primary">Registrar</button>
+        </div>
+    </div>
+</form>
+
+{% if current_user.rol == 'admin' %}
+
+
+<!-- Tabla de registros -->
+<h2 class="mt-5 mb-4">Registros</h2>
+<div class="table-responsive">
+    <table class="table table-striped table-bordered" id="tablaautomotores">
+        <thead class="table-dark">
+        <tr>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Numero de Legajo</th>
+            <th>Nombre de la Unidad</th>
+            <th>Batería</th>
+            <th>Odómetro</th>
+            <th>Combustible</th>
+            <th>Aceite Motor</th>
+            <th>Agua Radiador</th>
+            <th>Líquido de Freno</th>
+            <th>Neumáticos</th>
+            <th>Frenos</th>
+            <th>Dirección</th>
+            <th>Luces Baja</th>
+            <th>Luces Alta</th>
+            <th>Balizas</th>
+            <th>Estrobos</th>
+            <th>Sirena</th>
+            <th>Equipo Base</th>
+            <th>Limpieza Interior</th>
+            <th>Limpieza Exterior</th>
+            <th>Puesta en Marcha</th>
+            <th>Agua en el Tanque</th>
+            <th>Observaciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for control in controles %}
+        <tr>
+            <td>{{ control.fecha.strftime('%d/%m/%Y') }}</td>
+            <td>{{ control.hora }}</td>
+            <td>{{ control.numero_legajo }}</td>
+            <td>{{ control.nombre_unidad }}</td>
+            <td>{{ control.bateria }}</td>
+            <td>{{ control.odometro }}</td>
+            <td>{{ control.combustible }}</td>
+            <td>{{ control.acite_motor }}</td>
+            <td>{{ control.agua_radiador }}</td>
+            <td>{{ control.liq_freno }}</td>
+            <td>{{ control.neumaticos }}</td>
+            <td>{{ control.frenos }}</td>
+            <td>{{ control.direccion }}</td>
+            <td>{{ control.luces_baja }}</td>
+            <td>{{ control.luces_alta }}</td>
+            <td>{{ control.balizas }}</td>
+            <td>{{ control.estrobos }}</td>
+            <td>{{ control.sirena }}</td>
+            <td>{{ control.equipo_base }}</td>
+            <td>{{ control.limpieza_interior }}</td>
+            <td>{{ control.limpieza_exterior }}</td>
+            <td>{{ control.puesta_marcha }}</td>
+            <td>{{ control.agua_tanque }}</td>
+            <td>{{ control.observaciones }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+<!-- Tabla de registros de control de kits -->
+<h2 class="mt-5 mb-4">Registros de Control de Kits</h2>
+<div class="table-responsive">
+        <table class="table table-striped table-bordered" id="tablakits">
+            <thead class="table-dark">
+                <tr>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Numero de Legajo</th>
+                    <th>Nombre de la Unidad</th>
+                    <th>Nivel de Aceite</th>
+                    <th>Combustible</th>
+                    <th>Bidón de Nafta</th>
+                    <th>Agua en el Tanque</th>
+                    <th>Aceite Motor</th>
+                    <th>Puesta en Marcha</th>
+                    <th>Observaciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for kit in controles_kit %}
+                <tr>
+                    <td>{{ kit.fecha.strftime('%d/%m/%Y') }}</td>
+                    <td>{{ kit.hora }}</td>
+                    <td>{{ kit.numero_legajo }}</td>
+                    <td>{{ kit.nombre_unidad }}</td>
+                    <td>{{ kit.nivel_aceite }}</td>
+                    <td>{{ kit.combustible }}</td>
+                    <td>{{ kit.bidon_nafta }}</td>
+                    <td>{{ kit.agua_tanque }}</td>
+                    <td>{{ kit.aceite_motor }}</td>
+                    <td>{{ kit.marcha }}</td>
+                    <td>{{ kit.novedades }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+{% endif %}
+
+
+<script>
+    $(document).ready(function () {
+        $('#tablaautomotores').DataTable();
+    });
+</script>
+
+
+
+{% endblock %}
+
