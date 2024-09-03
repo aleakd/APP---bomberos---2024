@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block content %}
+
+<script>
+  function confirmSubmit() {
+
+    return confirm('¿Está seguro de registrar esta información?');
+  }
+</script>
+
+<div class="portada_comunicaciones">
+
+
+</div>
+
+
+<div class="container">
+    {% with messages = get_flashed_messages() %}
+  {% if messages %}
+  <div class="mensaa alert alert-light">
+    <ul class="list-unstyled">
+      {% for message in messages %}
+      <li> <h2 id="miH202">{{ message }}</h2></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  {% endwith %}
+
+</div>
+
+
+
+<div class="row">
+      <div class="col-lg-6 col-md-12">
+
+           <h3 class="text-center titulo_form_index">FORMULARIO DE ASISTENCIAS</h3>
+        <form class="form_ins" action="{{ url_for('centralistas') }}" method="post" enctype="multipart/form-data" onsubmit="return confirmSubmit();">
+        <input type="number" class="form-control" name="dni" placeholder="DNI" required="required" />
+
+        <select class="form-control" name="tipo_registro" placeholder="TIPO DE REGISTRO" required="required">
+              <option value="" disabled selected>TIPO DE REGISTRO</option>
+            <option value="INGRESO">INGRESO</option>
+            <option value="SALIDA">SALIDA</option>
+
+        </select>
+
+
+         <button type="submit" name="parte_salida" class="btn btn-primary btn-lg">REGISTRAR ASISTENCIA</button>
+        </form>
+
+      </div>
+
+    <div class="col-lg-6 col-md-12">
+<table class="tabla_agentes" id="asistenciatablauser">
+        <thead>
+        <tr>
+            <th>DNI Registrado</th>
+            <th>Apellido</th>
+            <th>Nombre</th>
+            <th>Tipo de registro</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for asistencia in asistencias %}
+        {% for agte in bravo %}
+        {% if asistencia.dni == agte.dni %}
+
+        <tr>
+            <td>{{ asistencia.dni }}</td>
+            <td>{{ agte.apellido }}</td>
+            <td>{{ agte.nombre }}</td>
+            <td>{{ asistencia.tipo_registro }}</td>
+            <td>{{ asistencia.fecha }}</td>
+            <td>{{ asistencia.hora }}</td>
+
+
+
+        </tr>
+        {% endif %}
+        {% endfor %}
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+</div>
+
+{% if current_user.rol == 'admin' %}
+
+<h3 class="text-center titulo_form_index">FORMULARIO DE ASISTENCIAS</h3>
+        <form class="form_ins" action="{{ url_for('centralistas') }}" method="post" enctype="multipart/form-data" onsubmit="return confirmSubmit();">
+        <input type="number" class="form-control" name="dni" placeholder="DNI" required="required" />
+
+        <select class="form-control" name="tipo_registro" placeholder="TIPO DE REGISTRO" required="required">
+              <option value="" disabled selected>TIPO DE REGISTRO</option>
+            <option value="INGRESO">INGRESO</option>
+            <option value="SALIDA">SALIDA</option>
+            <input type="date" name="fecha" id="fecha" required>
+            <input type="time" name="hora" id="hora" required>
+
+
+
+        </select>
+
+
+         <button type="submit" name="parte_salida" class="btn btn-primary btn-lg">REGISTRAR ASISTENCIA</button>
+        </form>
+
+
+
+ <div class="col-lg-6 col-md-12">
+<table class="tabla_agentes" id="tablaasistencia_general">
+        <thead>
+        <tr>
+            <th>DNI Registrado</th>
+            <th>Apellido</th>
+            <th>Nombre</th>
+            <th>Tipo de registro</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for asistencia in asistencias_general %}
+        {% for agte in bravo %}
+        {% if asistencia.dni == agte.dni %}
+
+        <tr>
+            <td>{{ asistencia.dni }}</td>
+            <td>{{ agte.apellido }}</td>
+            <td>{{ agte.nombre }}</td>
+            <td>{{ asistencia.tipo_registro }}</td>
+            <td>{{ asistencia.fecha }}</td>
+            <td>{{ asistencia.hora }}</td>
+
+
+
+        </tr>
+        {% endif %}
+        {% endfor %}
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+
+{% endif %}
+
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#tablaasistencia_general').DataTable();
+        $('#asistenciatablauser').DataTable();
+    });
+</script>
+
+{% endblock %}

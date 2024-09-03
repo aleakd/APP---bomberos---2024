@@ -196,6 +196,12 @@ class ControlKit(UserMixin, db.Model):
     marcha = db.Column(db.String(10))
     novedades = db.Column(db.String(1000))
 
+class Centralistas_horarios(UserMixin, db.Model):
+    id_asistencia = db.Column(db.Integer, primary_key=True)
+    dni = db.Column(db.Integer)
+    tipo_registro = db.Column(db.String(10))
+    fecha = db.Column(db.Date)
+    hora = db.Column(db.String(10))
 
 
 
@@ -1151,7 +1157,97 @@ def automotores():
     controles_kit = ControlKit.query.order_by(ControlKit.fecha.desc(), ControlKit.hora.desc()).all()
     return render_template('automotores.html', controles=controles, controles_kit=controles_kit)
 
+#-------------------------------------CENTRALISTAS HORARIOS------------------------------------------
+
+@app.route('/comunicaciones', methods=['GET', 'POST'])
+def centralistas():
+    tz_buenos_aires = pytz.timezone('America/Argentina/Buenos_Aires')
+    fecha_actual = datetime.now(tz_buenos_aires).date()
+    hora_actual_utc = datetime.now(timezone('UTC'))
+    hora_actual_buenos_aires = hora_actual_utc.astimezone(app.config['TIMEZONE'])
+    hora_actual_str = hora_actual_buenos_aires.strftime('%H:%M')
+    client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+
+    print(client_ip)
+    print("esta es la IP")
+    if client_ip not in INSTITUTION_IP:
+        # Si la IP no coincide, se niega el acceso
+        abort(403,
+              description="Acceso denegado: Debe estar conectado a la red de la institución para registrar asistencia.")
+    print(client_ip)
+
+
+    if request.method == 'POST':
+        dni = request.form.get('dni')
+        agente_existente = Bomberos.query.filter_by(dni=dni).first()
+
+        if not agente_existente:
+            flash('No se puede registrar la asistencia. El DNI no está registrado.')
+            return redirect(url_for("acces"))
+
+
+        if not current_user.is_authenticated:
+        # Obtener el último registro de asistencia del usuario
+            ultimo_registro = Centralistas_horarios.query.filter_by(dni=dni).order_by(
+            Centralistas_horarios.id_asistencia.desc()).first()
+
+
+        # Verificar si el último registro fue "INGRESO" y la nueva solicitud es también "INGRESO"
+            if ultimo_registro and ultimo_registro.tipo_registro == "INGRESO" and request.form.get(
+                    'tipo_registro') == "INGRESO":
+                flash('Debe registrar una SALIDA antes de registrar un nuevo INGRESO.')
+                return redirect(url_for("comunicaciones"))
+
+
+
+
+
+        tipo_registro = request.form.get('tipo_registro')
+
+
+        # Si el usuario está logueado como "sistema", usar la fecha y hora manual del formulario
+        if current_user.is_authenticated and current_user.rol == "admin":
+            fecha_manual = request.form.get('fecha')
+            hora_manual = request.form.get('hora')
+            asistencia = Centralistas_horarios(
+                dni=dni,
+                tipo_registro=tipo_registro,
+                hora=hora_manual,
+                fecha=datetime.strptime(fecha_manual, '%Y-%m-%d').date()
+            )
+        else:
+            asistencia = Centralistas_horarios(
+                dni=dni,
+                tipo_registro=tipo_registro,
+                hora=hora_actual_str,
+                fecha=fecha_actual
+            )
+
+        db.session.add(asistencia)
+        db.session.commit()
+        flash('Registro cargado exitosamente')
+        return redirect(url_for("comunicaciones"))
+
+
+    # Calcular la fecha y hora de hace 24 horas
+    hace_24_horas = fecha_actual - timedelta(hours=24)
+
+    asistencias_del_dia = Centralistas_horarios.query.filter(Centralistas_horarios.fecha >= hace_24_horas).all()
+    asistencias_general = Centralistas_horarios.query.all()
+    bomberos = Bomberos.query.order_by(Bomberos.legajo_numero).all()
+
+    return render_template('comunicaciones.html', asistencias=asistencias_del_dia, bravo=bomberos, asistencias_general=asistencias_general)
+
+
+
+
+
+
+
+
+
 #-------------------------------------------------------------------------------------------
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=8080)  # Cambia 8080 al puerto que prefieras

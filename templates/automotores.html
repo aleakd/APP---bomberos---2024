@@ -20,7 +20,7 @@
 </div>
 
 
-
+<!-- Formulario de Control de Automotores -->
 <form action="{{ url_for('automotores') }}" method="POST" class="form_automotores">
         <input type="hidden" name="control_automotores" value="1">
         <h2>Control Automotores</h2>
@@ -44,14 +44,14 @@
             </div>
         </div>
 
-        <div class="row mb-3">
+        <div class="row ">
             <!-- Odómetro -->
             <div class="col-12">
                 <input type="number" name="odometro" class="form-control" placeholder="Odómetro" required>
             </div>
         </div>
-
-         <div class="row">
+<br>
+        <div class="row">
             <!-- Nombre de la Unidad -->
             <div class="col-12">
                 <select name="combustible" class="form-select" required>
@@ -70,6 +70,84 @@
                 </select>
             </div>
         </div>
+<br>
+        <div class="row">
+        <div class="col-12">
+                <select name="aceite_motor" class="form-select" required>
+                    <option value="" disabled selected>Aceite Motor</option>
+                    <option value="menos 1/4">Menos 1/4</option>
+                    <option value="1/4">1/4</option>
+                    <option value="menos 1/2">Menos 1/2</option>
+                    <option value="1/2">1/2</option>
+                    <option value="menos 3/4">Menos 3/4</option>
+                    <option value="3/4">3/4</option>
+                    <option value="mas 3/4">Más 3/4</option>
+                    <option value="Full">Full</option>
+                    <option value="Vacio">Vacio</option>
+
+                    <
+                </select>
+            </div>
+        </div>
+<br>
+        <div class="row">
+    <div class="col-12">
+                <select name="agua_radiador" class="form-select" required>
+                    <option value="" disabled selected>Agua Radiador</option>
+                    <option value="menos 1/4">Menos 1/4</option>
+                    <option value="1/4">1/4</option>
+                    <option value="menos 1/2">Menos 1/2</option>
+                    <option value="1/2">1/2</option>
+                    <option value="menos 3/4">Menos 3/4</option>
+                    <option value="3/4">3/4</option>
+                    <option value="mas 3/4">Más 3/4</option>
+                    <option value="Full">Full</option>
+                    <option value="Vacio">Vacio</option>
+
+                    <
+                </select>
+            </div>
+        </div>
+<br>
+        <div class="row">
+            <div class="col-12">
+                <select name="liq_freno" class="form-select" required>
+                    <option value="" disabled selected>Liquido Freno</option>
+                    <option value="menos 1/4">Menos 1/4</option>
+                    <option value="1/4">1/4</option>
+                    <option value="menos 1/2">Menos 1/2</option>
+                    <option value="1/2">1/2</option>
+                    <option value="menos 3/4">Menos 3/4</option>
+                    <option value="3/4">3/4</option>
+                    <option value="mas 3/4">Más 3/4</option>
+                    <option value="Full">Full</option>
+                    <option value="Vacio">Vacio</option>
+
+                    <
+                </select>
+            </div>
+        </div>
+<br>
+        <div class="row">
+            <div class="col-12">
+                <select name="agua_tanque" class="form-select" required>
+                    <option value="" disabled selected>Agua de Tanque</option>
+                    <option value="menos 1/4">Menos 1/4</option>
+                    <option value="1/4">1/4</option>
+                    <option value="menos 1/2">Menos 1/2</option>
+                    <option value="1/2">1/2</option>
+                    <option value="menos 3/4">Menos 3/4</option>
+                    <option value="3/4">3/4</option>
+                    <option value="mas 3/4">Más 3/4</option>
+                    <option value="Full">Full</option>
+                    <option value="Vacio">Vacio</option>
+
+                    <
+                </select>
+            </div>
+            </div>
+<br>
+
 
         <!-- Función para generar campos con OK/Error -->
         {% macro radio_field(name, placeholder) %}
@@ -96,9 +174,6 @@
 
         <!-- Campos con OK/Error -->
         {{ radio_field('bateria', 'Batería') }}
-        {{ radio_field('acite_motor', 'Aceite Motor') }}
-        {{ radio_field('agua_radiador', 'Agua Radiador') }}
-        {{ radio_field('liq_freno', 'Líq. de Freno') }}
         {{ radio_field('neumaticos', 'Neumáticos') }}
         {{ radio_field('frenos', 'Frenos') }}
         {{ radio_field('direccion', 'Dirección') }}
@@ -111,7 +186,7 @@
         {{ radio_field('limpieza_interior', 'Limpieza Interior') }}
         {{ radio_field('limpieza_exterior', 'Limpieza Exterior') }}
         {{ radio_field('puesta_marcha', 'Puesta en Marcha') }}
-        {{ radio_field('agua_tanque', 'Agua en el Tanque') }}
+
 
         <!-- Observaciones -->
         <div class="row mb-3">
@@ -147,12 +222,92 @@
             </select>
         </div>
     </div>
-
+<br>
     <div class="row">
             <!-- Nombre de la Unidad -->
             <div class="col-12">
                 <select name="combustible" class="form-select" required>
                     <option value="" disabled selected>Combustible</option>
+                    <option value="menos 1/4">Menos 1/4</option>
+                    <option value="1/4">1/4</option>
+                    <option value="menos 1/2">Menos 1/2</option>
+                    <option value="1/2">1/2</option>
+                    <option value="menos 3/4">Menos 3/4</option>
+                    <option value="3/4">3/4</option>
+                    <option value="mas 3/4">Más 3/4</option>
+                    <option value="Full">Full</option>
+                    <option value="Vacio">Vacio</option>
+
+                    <
+                </select>
+            </div>
+        </div>
+<br>
+    <div class="row">
+            <!-- Nombre de la Unidad -->
+            <div class="col-12">
+                <select name="aceite_motor" class="form-select" required>
+                    <option value="" disabled selected>Nivel de Aceite</option>
+                    <option value="menos 1/4">Menos 1/4</option>
+                    <option value="1/4">1/4</option>
+                    <option value="menos 1/2">Menos 1/2</option>
+                    <option value="1/2">1/2</option>
+                    <option value="menos 3/4">Menos 3/4</option>
+                    <option value="3/4">3/4</option>
+                    <option value="mas 3/4">Más 3/4</option>
+                    <option value="Full">Full</option>
+                    <option value="Vacio">Vacio</option>
+
+                    <
+                </select>
+            </div>
+        </div>
+<br>
+    <div class="row">
+            <!-- Nombre de la Unidad -->
+            <div class="col-12">
+                <select name="bidon_nafta" class="form-select" required>
+                    <option value="" disabled selected>Bidon de Nafta</option>
+                    <option value="menos 1/4">Menos 1/4</option>
+                    <option value="1/4">1/4</option>
+                    <option value="menos 1/2">Menos 1/2</option>
+                    <option value="1/2">1/2</option>
+                    <option value="menos 3/4">Menos 3/4</option>
+                    <option value="3/4">3/4</option>
+                    <option value="mas 3/4">Más 3/4</option>
+                    <option value="Full">Full</option>
+                    <option value="Vacio">Vacio</option>
+
+                    <
+                </select>
+            </div>
+        </div>
+<br>
+    <div class="row">
+            <!-- Nombre de la Unidad -->
+            <div class="col-12">
+                <select name="agua_tanque" class="form-select" required>
+                    <option value="" disabled selected>Agua en Tanque</option>
+                    <option value="menos 1/4">Menos 1/4</option>
+                    <option value="1/4">1/4</option>
+                    <option value="menos 1/2">Menos 1/2</option>
+                    <option value="1/2">1/2</option>
+                    <option value="menos 3/4">Menos 3/4</option>
+                    <option value="3/4">3/4</option>
+                    <option value="mas 3/4">Más 3/4</option>
+                    <option value="Full">Full</option>
+                    <option value="Vacio">Vacio</option>
+
+                    <
+                </select>
+            </div>
+        </div>
+<br>
+    <div class="row">
+            <!-- Nombre de la Unidad -->
+            <div class="col-12">
+                <select name="aceite_motor" class="form-select" required>
+                    <option value="" disabled selected>Aceite de Motor</option>
                     <option value="menos 1/4">Menos 1/4</option>
                     <option value="1/4">1/4</option>
                     <option value="menos 1/2">Menos 1/2</option>
@@ -194,10 +349,6 @@
     {% endmacro %}
 
     <!-- Campos con OK/Error -->
-    {{ kit_radio_field('nivel_aceite', 'nivel de aceite') }}
-    {{ kit_radio_field('bidon_nafta', 'Bidón de Nafta') }}
-    {{ kit_radio_field('agua_tanque_kit', 'Agua en el Tanque') }}
-    {{ kit_radio_field('aceite_motor_kit', 'Aceite del Motor') }}
     {{ kit_radio_field('marcha', 'Puesta en Marcha') }}
 
     <!-- Novedades -->
@@ -213,6 +364,14 @@
         </div>
     </div>
 </form>
+
+
+
+
+
+
+
+
 
 {% if current_user.rol == 'admin' %}
 
@@ -330,9 +489,18 @@
 <script>
     $(document).ready(function () {
         $('#tablaautomotores').DataTable();
+        $('#tablakits').DataTable();
     });
 </script>
 
+
+
+<script>
+        setInterval(function() {
+            var h2 = document.getElementById('miH202');
+            h2.classList.toggle('cambio-color');
+        }, 1000);
+</script>
 
 
 {% endblock %}

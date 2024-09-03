@@ -15,6 +15,15 @@ color:black;
     background-position: center;
     padding: 10rem;
 }
+.portada_comunicaciones {
+    background-image: url('/static/img/central_alarmas.jpg');
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+    padding: 10rem;
+
+
+}
 
 .portada_licencias{
 background-image: url('/static/img/portlic.jpg');
@@ -58,15 +67,106 @@ font-family:"Lora";
 margin:30px;
 }
 
-.boton{
-color:white;
-width:16rem;
-height:16rem;
-margin-top:20px;
-margin-bottom:30px;
-border-radius:20%;
-font-size:30px;
+/* Define las animaciones */
+@keyframes slideInLeft {
+    0% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
+
+@keyframes slideInRight {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Aplica las animaciones a los botones */
+.boton {
+    color: #f8f72c;
+    text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+    width: 16rem;
+    height: 16rem;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    border-radius: 20%;
+    font-size: 30px;
+    opacity: 0; /* Oculta los botones inicialmente */
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+}
+
+/* Aplica la animación desde la izquierda o derecha según corresponda */
+.row:nth-child(1) .col-md-6:nth-child(odd) .boton {
+    animation-name: slideInLeft;
+}
+
+.row:nth-child(1) .col-md-6:nth-child(even) .boton {
+    animation-name: slideInRight;
+}
+
+.row:nth-child(2) .col-md-6:nth-child(odd) .boton {
+    animation-name: slideInLeft;
+}
+
+.row:nth-child(2) .col-md-6:nth-child(even) .boton {
+    animation-name: slideInRight;
+}
+
+.row:nth-child(3) .col-md-6:nth-child(odd) .boton {
+    animation-name: slideInLeft;
+}
+
+.row:nth-child(3) .col-md-6:nth-child(even) .boton {
+    animation-name: slideInRight;
+}
+.row:nth-child(4) .col-md-6:nth-child(odd) .boton {
+    animation-name: slideInLeft;
+}
+
+.row:nth-child(4) .col-md-6:nth-child(even) .boton {
+    animation-name: slideInRight;
+}
+.row:nth-child(5) .col-md-6:nth-child(odd) .boton {
+    animation-name: slideInLeft;
+}
+
+.row:nth-child(5) .col-md-6:nth-child(even) .boton {
+    animation-name: slideInRight;
+}
+.row:nth-child(6) .col-md-6:nth-child(odd) .boton {
+    animation-name: slideInLeft;
+}
+
+.row:nth-child(6) .col-md-6:nth-child(even) .boton {
+    animation-name: slideInRight;
+}
+.row:nth-child(7) .col-md-6:nth-child(odd) .boton {
+    animation-name: slideInLeft;
+}
+
+.row:nth-child(7) .col-md-6:nth-child(even) .boton {
+    animation-name: slideInRight;
+}
+.row:nth-child(8) .col-md-6:nth-child(odd) .boton {
+    animation-name: slideInLeft;
+}
+
+.row:nth-child(8) .col-md-6:nth-child(even) .boton {
+    animation-name: slideInRight;
+}
+/* Repite para las filas adicionales si es necesario */
+
+
 
 .boton:hover{
 width:18rem;
@@ -391,7 +491,6 @@ box-shadow: 3px 6px 110px #ccc;
  background-color:#55e8bc;
  color:black;
  }
-
 
 
 
