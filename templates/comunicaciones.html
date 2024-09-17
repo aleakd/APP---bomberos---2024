@@ -155,7 +155,56 @@
 
 
 
+<div class="grafico_central">
 
+ <h1>Horas Trabajadas por Centralista</h1>
+
+    <canvas id="centralistasChart" width="300" height="100"></canvas>
+
+    <script>
+        var ctx = document.getElementById('centralistasChart').getContext('2d');
+        var chartData = {{ data | tojson }};
+        var labels = [];
+        var datasets = [];
+
+        // Preparar los labels (meses) y los datasets (horas trabajadas por centralista)
+        for (var apellido in chartData) {
+            var centralistaData = chartData[apellido];
+            var dataset = {
+                label: apellido,
+                data: [],
+                backgroundColor: 'rgba(255, 0, 13, 0.64)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2
+            };
+            for (var mes in centralistaData) {
+                if (!labels.includes(mes)) {
+                    labels.push(mes);
+                }
+                dataset.data.push(centralistaData[mes]);
+            }
+            datasets.push(dataset);
+        }
+
+        // Crear el gráfico de barras
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: datasets
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+
+
+ </div>
 
 <script>
     $(document).ready(function () {

@@ -5,6 +5,9 @@ from flask_login import UserMixin, login_user, LoginManager, login_required, cur
 from functools import wraps
 import pytz
 
+from sqlalchemy import text
+
+
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from pytz import timezone
@@ -1087,6 +1090,47 @@ def asistencia():
     return render_template('asistencia.html', asistencias=asistencias_del_dia, bravo=bomberos, asistencias_general=asistencias_general)
 
 
+#--------------------------------------------------------------------------------------------
+
+
+@app.route('/eliminar_asistencia/<int:id>', methods=['POST'])
+def eliminar_asistencia(id):
+    # Buscar el registro de asistencia por su ID
+    asistencia = Aistencia.query.get_or_404(id)
+
+    # Eliminar el registro de la base de datos
+    try:
+        db.session.delete(asistencia)
+        db.session.commit()
+        flash('Registro eliminado correctamente', 'success')
+    except:
+        db.session.rollback()
+        flash('Hubo un error al eliminar el registro', 'danger')
+
+    # Redirigir a la página de asistencia
+    return redirect(url_for('asistencia'))
+
+#--------------------------------------------------------------------------------------------
+
+
+@app.route('/editar_asistencia/<int:id>', methods=['GET', 'POST'])
+def editar_asistencia(id):
+    asistencia = Aistencia.query.get_or_404(id)
+
+    if request.method == 'POST':
+        # Actualizar los datos del registro de asistencia
+        asistencia.dni = request.form['dni']
+        asistencia.tipo_registro = request.form['tipo_registro']
+
+        try:
+            db.session.commit()
+            flash('Registro actualizado correctamente', 'success')
+            return redirect(url_for('asistencia'))
+        except:
+            db.session.rollback()
+            flash('Hubo un error al actualizar el registro', 'danger')
+
+    return render_template('editar_asistencia.html', asistencia=asistencia)
 
 
 #----------------------------------------------CONTROL AUTOMOTORES----------------------------------------------
@@ -1153,6 +1197,8 @@ def automotores():
 
         return redirect(url_for('automotores'))
 
+
+
     controles = ControlAutomotor.query.order_by(ControlAutomotor.fecha.desc(), ControlAutomotor.hora.desc()).all()
     controles_kit = ControlKit.query.order_by(ControlKit.fecha.desc(), ControlKit.hora.desc()).all()
     return render_template('automotores.html', controles=controles, controles_kit=controles_kit)
@@ -1169,13 +1215,8 @@ def centralistas():
     client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
 
     print(client_ip)
-    print("esta es la IP")
     if client_ip not in INSTITUTION_IP:
-        # Si la IP no coincide, se niega el acceso
-        abort(403,
-              description="Acceso denegado: Debe estar conectado a la red de la institución para registrar asistencia.")
-    print(client_ip)
-
+        abort(403, description="Acceso denegado: Debe estar conectado a la red de la institución.")
 
     if request.method == 'POST':
         dni = request.form.get('dni')
@@ -1183,29 +1224,19 @@ def centralistas():
 
         if not agente_existente:
             flash('No se puede registrar la asistencia. El DNI no está registrado.')
-            return redirect(url_for("acces"))
+            return redirect(url_for("centralistas"))
 
-
-        if not current_user.is_authenticated:
-        # Obtener el último registro de asistencia del usuario
-            ultimo_registro = Centralistas_horarios.query.filter_by(dni=dni).order_by(
+        # Verificar último registro de asistencia
+        ultimo_registro = Centralistas_horarios.query.filter_by(dni=dni).order_by(
             Centralistas_horarios.id_asistencia.desc()).first()
 
-
-        # Verificar si el último registro fue "INGRESO" y la nueva solicitud es también "INGRESO"
-            if ultimo_registro and ultimo_registro.tipo_registro == "INGRESO" and request.form.get(
-                    'tipo_registro') == "INGRESO":
-                flash('Debe registrar una SALIDA antes de registrar un nuevo INGRESO.')
-                return redirect(url_for("comunicaciones"))
-
-
-
-
+        if ultimo_registro and ultimo_registro.tipo_registro == "INGRESO" and request.form.get('tipo_registro') == "INGRESO":
+            flash('Debe registrar una SALIDA antes de registrar un nuevo INGRESO.')
+            return redirect(url_for("centralistas"))
 
         tipo_registro = request.form.get('tipo_registro')
 
-
-        # Si el usuario está logueado como "sistema", usar la fecha y hora manual del formulario
+        # Asistencia según el rol del usuario
         if current_user.is_authenticated and current_user.rol == "admin":
             fecha_manual = request.form.get('fecha')
             hora_manual = request.form.get('hora')
@@ -1226,17 +1257,67 @@ def centralistas():
         db.session.add(asistencia)
         db.session.commit()
         flash('Registro cargado exitosamente')
-        return redirect(url_for("comunicaciones"))
+        return redirect(url_for("centralistas"))
 
+    # Ejecutar la consulta SQL para obtener las horas trabajadas por mes para cada centralista
+    registros = db.session.execute(text('''
+        WITH Ordenados AS (
+            SELECT
+                dni,
+                fecha,
+                hora,
+                tipo_registro,
+                id_asistencia,
+                LAG(tipo_registro) OVER (PARTITION BY dni ORDER BY fecha, hora) AS registro_anterior,
+                LAG(fecha) OVER (PARTITION BY dni ORDER BY fecha, hora) AS fecha_anterior,
+                LAG(hora) OVER (PARTITION BY dni ORDER BY fecha, hora) AS hora_anterior
+            FROM
+                Centralistas_horarios
+        ),
+        Pares AS (
+            SELECT
+                dni,
+                strftime('%Y-%m', fecha) AS mes_anio,
+                fecha_anterior AS fecha_ingreso,
+                hora_anterior AS hora_ingreso,
+                fecha AS fecha_salida,
+                hora AS hora_salida,
+                (julianday(fecha || ' ' || hora) - julianday(fecha_anterior || ' ' || hora_anterior)) * 24 AS horas_trabajadas
+            FROM
+                Ordenados
+            WHERE
+                tipo_registro = 'SALIDA' AND registro_anterior = 'INGRESO'
+        )
+        SELECT
+            p.dni,
+            b.apellido,
+            p.mes_anio,
+            SUM(p.horas_trabajadas) AS total_horas
+        FROM
+            Pares p
+        JOIN
+            Bomberos b ON p.dni = b.dni
+        GROUP BY
+            p.dni, b.apellido, p.mes_anio
+        ORDER BY
+            p.mes_anio;
+    ''')).fetchall()
 
-    # Calcular la fecha y hora de hace 24 horas
+    # Convertir los datos a un formato que sea fácil de manejar en el gráfico
+    data = {}
+    for row in registros:
+        dni, apellido, mes_anio, total_horas = row
+        if apellido not in data:
+            data[apellido] = {}
+        data[apellido][mes_anio] = total_horas
+
+    # Mostrar las asistencias del día
     hace_24_horas = fecha_actual - timedelta(hours=24)
-
     asistencias_del_dia = Centralistas_horarios.query.filter(Centralistas_horarios.fecha >= hace_24_horas).all()
     asistencias_general = Centralistas_horarios.query.all()
     bomberos = Bomberos.query.order_by(Bomberos.legajo_numero).all()
 
-    return render_template('comunicaciones.html', asistencias=asistencias_del_dia, bravo=bomberos, asistencias_general=asistencias_general)
+    return render_template('comunicaciones.html', asistencias=asistencias_del_dia, bravo=bomberos, asistencias_general=asistencias_general, data=data)
 
 
 
