@@ -209,6 +209,31 @@ class Centralistas_horarios(UserMixin, db.Model):
 
 
 
+class Salida(db.Model):
+    id_salida = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.Date, nullable=False)
+    hora = db.Column(db.Time, nullable=False)
+    unidad = db.Column(db.String(50), nullable=False)
+    tipo_alarma = db.Column(db.String(100), nullable=False)
+    a_cargo = db.Column(db.String(100), nullable=False)
+    chofer = db.Column(db.String(100), nullable=False)
+    dotacion = db.Column(db.Text, nullable=False)
+    qth = db.Column(db.String(255), nullable=False)
+
+
+class Llegada(db.Model):
+    __tablename__ = 'llegada'
+    id_llegada = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.Date, nullable=False)
+    unidad = db.Column(db.String(10), nullable=False)
+    hora_salida = db.Column(db.Time, nullable=False)
+    hora_llegada = db.Column(db.Time, nullable=False)
+    novedades = db.Column(db.String(500), nullable=True)
+
+
+
+
+
 # Line below only required once, when creating DB.
 with app.app_context():
     db.create_all()
@@ -1318,6 +1343,29 @@ def centralistas():
     bomberos = Bomberos.query.order_by(Bomberos.legajo_numero).all()
 
     return render_template('comunicaciones.html', asistencias=asistencias_del_dia, bravo=bomberos, asistencias_general=asistencias_general, data=data)
+#-------------------------------------------------------------------------------------------
+@app.route('/salidas', methods=['GET', 'POST'])
+@login_required
+def salidas():
+    if request.method == 'POST':
+        fecha = datetime.strptime(request.form['fecha'], '%Y-%m-%d').date()
+        hora = datetime.strptime(request.form['hora'], '%H:%M').time()
+        unidad = request.form['unidad']
+        tipo_alarma = request.form['tipo_alarma']
+        a_cargo = request.form['a_cargo']
+        chofer = request.form['chofer']
+        dotacion = request.form['dotacion']
+        qth = request.form['qth']
+
+        nueva_salida = Salida(fecha=fecha, hora=hora, unidad=unidad, tipo_alarma=tipo_alarma, a_cargo=a_cargo, chofer=chofer, dotacion=dotacion, qth=qth)
+        db.session.add(nueva_salida)
+        db.session.commit()
+
+        flash('Salida registrada exitosamente', 'success')
+        return redirect(url_for('salidas'))
+
+    salidas = Salida.query.all()
+    return render_template('salidas.html', salidas=salidas)
 
 
 
@@ -1325,7 +1373,95 @@ def centralistas():
 
 
 
+#-------------------------------------------------------------------------------------------
 
+@app.route('/salidas/editar/<int:id>', methods=['GET', 'POST'])
+@login_required
+def editar_salida(id):
+    # Buscar la salida en la base de datos
+    salida = Salida.query.get_or_404(id)
+
+    if request.method == 'POST':
+        try:
+            # Convertir la fecha y la hora de los formularios en los objetos correctos
+            salida.fecha = datetime.strptime(request.form['fecha'], '%Y-%m-%d').date()
+            salida.hora = datetime.strptime(request.form['hora'], '%H:%M').time()
+
+            # Actualizar los demás campos
+            salida.unidad = request.form['unidad']
+            salida.tipo_alarma = request.form['tipo_alarma']
+            salida.a_cargo = request.form['a_cargo']
+            salida.chofer = request.form['chofer']
+            salida.dotacion = request.form['dotacion']
+            salida.qth = request.form['qth']
+
+            # Guardar los cambios
+            db.session.commit()
+            flash('La salida ha sido actualizada exitosamente', 'success')
+            return redirect(url_for('salidas'))
+
+        except Exception as e:
+            flash(f'Ocurrió un error al actualizar la salida: {str(e)}', 'danger')
+            db.session.rollback()
+
+    # Mostrar el formulario con los valores actuales de la salida
+    return render_template('editar_salidas.html', salida=salida)
+
+#-------------------------------------------------------------------------------------------
+
+@app.route('/llegadas', methods=['GET', 'POST'])
+def llegadas():
+    if request.method == 'POST':
+        fecha = request.form.get('fecha')
+        unidad = request.form.get('unidad')
+        hora_salida = request.form.get('hora_salida')
+        hora_llegada = request.form.get('hora_llegada')
+        novedades = request.form.get('novedades')
+
+        # Convertir los campos de fecha y hora a objetos datetime
+        fecha = datetime.strptime(fecha, '%Y-%m-%d').date()
+        hora_salida = datetime.strptime(hora_salida, '%H:%M').time()
+        hora_llegada = datetime.strptime(hora_llegada, '%H:%M').time()
+
+        nueva_llegada = Llegada(fecha=fecha, unidad=unidad, hora_salida=hora_salida, hora_llegada=hora_llegada, novedades=novedades)
+
+        try:
+            db.session.add(nueva_llegada)
+            db.session.commit()
+            flash("Llegada registrada exitosamente", "success")
+        except Exception as e:
+            flash(f"Error al registrar llegada: {str(e)}", "danger")
+
+        return redirect(url_for('llegadas'))
+
+    # Consulta de llegadas para mostrar en la tabla
+    llegadas = Llegada.query.all()
+    return render_template('llegadas.html', llegadas=llegadas)
+#-------------------------------------------------------------------------------------------
+@app.route('/editar_llegada/<int:id>', methods=['GET', 'POST'])
+def editar_llegada(id):
+    llegada = Llegada.query.get_or_404(id)
+
+    if request.method == 'POST':
+        llegada.fecha = datetime.strptime(request.form.get('fecha'), '%Y-%m-%d').date()
+        llegada.unidad = request.form.get('unidad')
+        llegada.hora_salida = datetime.strptime(request.form.get('hora_salida'), '%H:%M').time()
+        llegada.hora_llegada = datetime.strptime(request.form.get('hora_llegada'), '%H:%M').time()
+        llegada.novedades = request.form.get('novedades')
+
+        try:
+            db.session.commit()
+            flash("Llegada actualizada con éxito", "success")
+        except Exception as e:
+            flash(f"Error al actualizar la llegada: {str(e)}", "danger")
+
+        return redirect(url_for('llegadas'))
+
+    return render_template('editar_llegada.html', llegada=llegada)
+
+
+#-------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------------------
 

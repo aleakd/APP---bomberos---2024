@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<div class="container">
+    {% with messages = get_flashed_messages() %}
+  {% if messages %}
+  <div class="mensaa alert alert-light">
+    <ul class="list-unstyled">
+      {% for message in messages %}
+      <li> <h2 id="miH202">{{ message }}</h2></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  {% endwith %}
+
+</div>
+
+<h1 class="titulo">REGISTRO DE LLEGADAS</h1>
+
+<!-- Formulario para registrar nuevas llegadas -->
+<form action="{{ url_for('llegadas') }}" method="post">
+    <div class="form-group">
+        <label for="fecha">Fecha</label>
+        <input type="date" class="form-control" name="fecha" required id="fecha">
+    </div>
+    <div class="form-group">
+        <label for="unidad">Unidad</label>
+        <select name="unidad" class="form-select" required>
+            <option value="" disabled selected>Seleccionar Unidad</option>
+            <option value="B2">B2</option>
+            <option value="B3">B3</option>
+            <option value="B4">B4</option>
+            <option value="BF1">BF1</option>
+            <option value="BR1">BR1</option>
+            <option value="E1">E1</option>
+            <option value="F2">F2</option>
+            <option value="F3">F3</option>
+            <option value="R1">R1</option>
+            <option value="R8">R8</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="hora_salida">Hora de Salida</label>
+        <input type="time" class="form-control" name="hora_salida" required>
+    </div>
+    <div class="form-group">
+        <label for="hora_llegada">Hora de Llegada</label>
+        <input type="time" class="form-control" name="hora_llegada" required>
+    </div>
+    <div class="form-group">
+
+        <textarea class="form-control" name="novedades" placeholder="Escribir novedades" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Registrar Llegada</button>
+</form>
+
+<!-- Tabla para mostrar las llegadas registradas -->
+<h2>Llegadas Registradas</h2>
+<div class="table-responsive">
+    <table class="table table-striped" id="tabla_llegadas">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th>Unidad</th>
+                <th>Hora de Salida</th>
+                <th>Hora de Llegada</th>
+                <th>Novedades</th>
+                <th>Editar</th>
+                <th>Copiar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for llegada in llegadas %}
+            <tr>
+                <td>{{ llegada.id_llegada }}</td>
+                <td>{{ llegada.fecha }}</td>
+                <td>{{ llegada.unidad }}</td>
+                <td>{{ llegada.hora_salida }}</td>
+                <td>{{ llegada.hora_llegada }}</td>
+                <td>{{ llegada.novedades }}</td>
+                <td>
+                    <a href="{{ url_for('editar_llegada', id=llegada.id_llegada) }}" class="btn btn-warning">Editar</a>
+                </td>
+                <td>
+                    <button class="btn btn-primary copiar-boton"
+                            data-unidad="{{ llegada.unidad }}"
+                            data-hora_salida="{{ llegada.hora_salida }}"
+                            data-hora_llegada="{{ llegada.hora_llegada }}"
+                            data-novedades="{{ llegada.novedades }}">
+                        Copiar
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#tabla_llegadas').DataTable();
+    });
+</script>
+
+
+<script>
+        setInterval(function() {
+            var h2 = document.getElementById('miH202');
+            h2.classList.toggle('cambio-color');
+        }, 1000);
+</script>
+
+<script>
+    document.querySelectorAll('.copiar-boton').forEach(button => {
+        button.addEventListener('click', function () {
+            const unidad = this.getAttribute('data-unidad');
+            const hora_salida = this.getAttribute('data-hora_salida');
+            const hora_llegada = this.getAttribute('data-hora_llegada');
+            const novedades = this.getAttribute('data-novedades');
+
+            const formato = `
+                RETORNO:,
+                UNIDAD: ${unidad}
+                HORA DE SALIDA: ${hora_salida}
+                HORA DE LLEGADA: ${hora_llegada}
+                NOVEDADES: ${novedades}
+            `;
+
+            // Copiar al portapapeles
+            navigator.clipboard.writeText(formato.trim()).then(() => {
+                alert('Información copiada al portapapeles');
+            }).catch(err => {
+                alert('Hubo un error al copiar la información: ', err);
+            });
+        });
+    });
+</script>
+
+
+{% endblock %}

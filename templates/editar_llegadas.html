@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Editar Llegada</h1>
+<form action="{{ url_for('editar_llegada', id=llegada.id_llegada) }}" method="post">
+    <div class="form-group">
+        <label for="fecha">Fecha</label>
+        <input type="date" class="form-control" name="fecha" value="{{ llegada.fecha }}" required>
+    </div>
+    <div class="form-group">
+        <label for="unidad">Unidad</label>
+        <select name="unidad" class="form-select" required>
+            <option value="{{ llegada.unidad }}" selected>{{ llegada.unidad }}</option>
+            <option value="B2">B2</option>
+            <option value="B3">B3</option>
+            <option value="B4">B4</option>
+            <!-- Agregar más opciones según sea necesario -->
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="hora_salida">Hora de Salida</label>
+        <input type="time" class="form-control" name="hora_salida" value="{{ llegada.hora_salida }}" required>
+    </div>
+    <div class="form-group">
+        <label for="hora_llegada">Hora de Llegada</label>
+        <input type="time" class="form-control" name="hora_llegada" value="{{ llegada.hora_llegada }}" required>
+    </div>
+    <div class="form-group">
+        <label for="novedades">Novedades</label>
+        <textarea class="form-control" name="novedades">{{ llegada.novedades }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Actualizar Llegada</button>
+</form>
+
+
+
+
+
+{% endblock %}

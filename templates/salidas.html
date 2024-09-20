@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+    {% with messages = get_flashed_messages() %}
+  {% if messages %}
+  <div class="mensaa alert alert-light">
+    <ul class="list-unstyled">
+      {% for message in messages %}
+      <li> <h2 id="miH202">{{ message }}</h2></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  {% endwith %}
+
+</div>
+
+
+<form action="{{ url_for('salidas') }}" method="post">
+    <h1 class="titulo">SALIDAS</h1>
+    <div class="form-group">
+        <label for="fecha">Fecha</label>
+        <input type="date" class="form-control" name="fecha" required id="fecha">
+    </div>
+    <div class="form-group">
+        <label for="hora">Hora</label>
+        <input type="time" class="form-control" name="hora" id="hora" required>
+    </div>
+    <div class="form-group">
+
+        <select name="unidad" class="form-select" required>
+                    <option value="" disabled selected> Nombre de la Unidad</option>
+                    <option value="B2">B2</option>
+                    <option value="B3">B3</option>
+                    <option value="B4">B4</option>
+                    <option value="BF1">BF1</option>
+                    <option value="BR1">BR1</option>
+                    <option value="E1">E1</option>
+                    <option value="F2">F2</option>
+                    <option value="F3">F3</option>
+                    <option value="R1">R1</option>
+                    <option value="R8">R8</option>
+
+                </select>
+    </div>
+    <div class="form-group">
+
+        <input type="text" class="form-control" name="tipo_alarma" placeholder="Tipo de Alarma" required>
+    </div>
+    <div class="form-group">
+
+        <input type="text" class="form-control" name="a_cargo" placeholder="A Cargo" required>
+    </div>
+    <div class="form-group">
+
+        <input type="text" class="form-control" name="chofer" placeholder="Chofer" required>
+    </div>
+    <div class="form-group">
+
+        <textarea class="form-control" name="dotacion" placeholder="Dotacion" required></textarea>
+    </div>
+    <div class="form-group">
+
+        <input type="text" class="form-control" name="qth" placeholder="QTH" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Registrar Salida</button>
+</form>
+
+
+<div class="table-responsive">
+    <h1 class="titulo">Tabla Salidas</h1>
+    <table class="table tabla_bomberos table-responsive" id="TableSalidas">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Unidad</th>
+            <th>Tipo de Alarma</th>
+            <th>A Cargo</th>
+            <th>Chofer</th>
+            <th>Dotación</th>
+            <th>QTH</th>
+            <th>Copiar</th>
+            <th>Editar</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        {% for salida in salidas %}
+        <tr>
+            <td>{{ salida.fecha }}</td>
+            <td>{{ salida.hora }}</td>
+            <td>{{ salida.unidad }}</td>
+            <td>{{ salida.tipo_alarma }}</td>
+            <td>{{ salida.a_cargo }}</td>
+            <td>{{ salida.chofer }}</td>
+            <td>{{ salida.dotacion }}</td>
+            <td>{{ salida.qth }}</td>
+            <td>
+                <button class="btn btn-primary copiar-boton"
+                        data-hora="{{ salida.hora }}"
+                        data-unidad="{{ salida.unidad }}"
+                        data-a_cargo="{{ salida.a_cargo }}"
+                        data-chofer="{{ salida.chofer }}"
+                        data-dotacion="{{ salida.dotacion }}"
+                        data-qth="{{ salida.qth }}"
+                        data-tipo_alarma="{{ salida.tipo_alarma }}">
+                    Copiar
+                </button>
+            </td>
+            <td>
+    <a href="{{ url_for('editar_salida', id=salida.id_salida) }}" class="btn btn-warning">Editar</a>
+</td>
+
+
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+    </div>
+
+
+
+
+
+
+
+
+<script>
+    document.querySelectorAll('.copiar-boton').forEach(button => {
+        button.addEventListener('click', function () {
+            const hora = this.getAttribute('data-hora');
+            const unidad = this.getAttribute('data-unidad');
+            const aCargo = this.getAttribute('data-a_cargo');
+            const chofer = this.getAttribute('data-chofer');
+            const dotacion = this.getAttribute('data-dotacion');
+            const qth = this.getAttribute('data-qth');
+            const tipo_alarma = this.getAttribute('data-tipo_alarma');
+
+            const formato = `
+                BB. VV. VCP
+                MOVIL: ${unidad}
+                HORA: ${hora}
+                CHOFER: ${chofer}
+                TIPO DE ALARMA: ${tipo_alarma}
+                A CARGO: ${aCargo}
+                DOTACION: ${dotacion}
+                DESTINO: ${qth}
+
+            `;
+
+            // Copiar al portapapeles
+            navigator.clipboard.writeText(formato.trim()).then(() => {
+                alert('Información copiada al portapapeles');
+            }).catch(err => {
+                alert('Hubo un error al copiar la información: ', err);
+            });
+        });
+    });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        $('#TableSalidas').DataTable();
+    });
+</script>
+
+<script>
+        setInterval(function() {
+            var h2 = document.getElementById('miH202');
+            h2.classList.toggle('cambio-color');
+        }, 1000);
+</script>
+
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3>Editar Salida</h3>
+<form action="{{ url_for('editar_salida', id=salida.id_salida) }}" method="POST">
+    <div class="form-group">
+        <label for="fecha">Fecha</label>
+        <input type="date" name="fecha" id="fecha" class="form-control" value="{{ salida.fecha }}" required>
+    </div>
+
+    <div class="form-group">
+        <label for="hora">Hora</label>
+        <input type="time" name="hora" id="hora" class="form-control" value="{{ salida.hora }}" required>
+    </div>
+
+    <div class="form-group">
+        <select name="unidad" class="form-select" required>
+                    <option value="" disabled selected> Nombre de la Unidad</option>
+                    <option value="B2">B2</option>
+                    <option value="B3">B3</option>
+                    <option value="B4">B4</option>
+                    <option value="BF1">BF1</option>
+                    <option value="BR1">BR1</option>
+                    <option value="E1">E1</option>
+                    <option value="F2">F2</option>
+                    <option value="F3">F3</option>
+                    <option value="R1">R1</option>
+                    <option value="R8">R8</option>
+
+                </select>
+    </div>
+
+    <div class="form-group">
+        <input type="text" name="tipo_alarma" id="tipo_alarma" class="form-control" value="{{ salida.tipo_alarma }}" placeholder="Tipo de Alarma" required>
+    </div>
+
+    <div class="form-group">
+        <input type="text" name="a_cargo" id="a_cargo" class="form-control" value="{{ salida.a_cargo }}" required placeholder="A Cargo">
+    </div>
+
+    <div class="form-group">
+        <input type="text" name="chofer" id="chofer" class="form-control" value="{{ salida.chofer }}" required placeholder="Chofer">
+    </div>
+
+    <div class="form-group">
+        <input type="text" name="dotacion" id="dotacion" class="form-control" value="{{ salida.dotacion }}" required placeholder="Dotacion">
+    </div>
+
+    <div class="form-group">
+        <input type="text" name="qth" id="qth" class="form-control" value="{{ salida.qth }}" required placeholder="QTH">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    <a href="{{ url_for('salidas') }}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+{% endblock %}
