@@ -3,10 +3,10 @@
 {% block content %}
 <h1>Editar Llegada</h1>
 <form action="{{ url_for('editar_llegada', id=llegada.id_llegada) }}" method="post">
-    <div class="form-group">
+  <!--  <div class="form-group">
         <label for="fecha">Fecha</label>
         <input type="date" class="form-control" name="fecha" value="{{ llegada.fecha }}" required>
-    </div>
+    </div> !-->
     <div class="form-group">
         <label for="unidad">Unidad</label>
         <select name="unidad" class="form-select" required>

@@ -166,42 +166,37 @@
 
 
 <div class="grafico_central">
-
- <h1>Horas Trabajadas por Centralista</h1>
+    <h1>Horas Trabajadas por Centralista en {{ mes_actual }}</h1>
 
     <canvas id="centralistasChart" width="300" height="100"></canvas>
 
     <script>
         var ctx = document.getElementById('centralistasChart').getContext('2d');
-        var chartData = {{ data | tojson }};
-        var labels = [];
-        var datasets = [];
 
-        // Preparar los labels (meses) y los datasets (horas trabajadas por centralista)
+        // Cargar los datos desde el servidor
+        var chartData = {{ data | tojson }};
+
+        // Inicializar etiquetas y datos
+        var labels = [];
+        var data = [];
+
         for (var apellido in chartData) {
-            var centralistaData = chartData[apellido];
-            var dataset = {
-                label: apellido,
-                data: [],
-                backgroundColor: 'rgba(255, 0, 13, 0.64)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 2
-            };
-            for (var mes in centralistaData) {
-                if (!labels.includes(mes)) {
-                    labels.push(mes);
-                }
-                dataset.data.push(centralistaData[mes]);
-            }
-            datasets.push(dataset);
+            labels.push(apellido);  // Añadir apellidos como etiquetas
+            data.push(chartData[apellido]["{{ mes_actual }}"]);  // Añadir las horas trabajadas solo para el mes actual
         }
 
         // Crear el gráfico de barras
         var myChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: labels,
-                datasets: datasets
+                labels: labels,  // Apellidos
+                datasets: [{
+                    label: 'Horas Trabajadas',
+                    data: data,  // Horas trabajadas por centralista en el mes actual
+                    backgroundColor: 'rgba(255, 0, 13, 0.64)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2
+                }]
             },
             options: {
                 scales: {
@@ -212,9 +207,28 @@
             }
         });
     </script>
+</div>
 
-
- </div>
+<!-- Tabla que muestra los apellidos y horas trabajadas -->
+<div class="tabla_horas">
+    <h2>Resumen de Horas Trabajadas en {{ mes_actual }}</h2>
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>Apellido</th>
+                <th>Horas Trabajadas</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for apellido, horas in data.items() %}
+            <tr>
+                <td>{{ apellido }}</td>
+                <td>{{ horas[mes_actual] }}</td>  <!-- Mostrar las horas del mes actual -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 <script>
     $(document).ready(function () {

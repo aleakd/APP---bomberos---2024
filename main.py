@@ -1234,6 +1234,7 @@ def automotores():
 def centralistas():
     tz_buenos_aires = pytz.timezone('America/Argentina/Buenos_Aires')
     fecha_actual = datetime.now(tz_buenos_aires).date()
+    mes_actual = datetime.now(tz_buenos_aires).strftime('%Y-%m')
     hora_actual_utc = datetime.now(timezone('UTC'))
     hora_actual_buenos_aires = hora_actual_utc.astimezone(app.config['TIMEZONE'])
     hora_actual_str = hora_actual_buenos_aires.strftime('%H:%M')
@@ -1322,11 +1323,13 @@ def centralistas():
             Pares p
         JOIN
             Bomberos b ON p.dni = b.dni
+        WHERE
+            p.mes_anio = :mes_actual  -- Filtrar por el mes en curso
         GROUP BY
             p.dni, b.apellido, p.mes_anio
         ORDER BY
             p.mes_anio;
-    ''')).fetchall()
+    '''), {'mes_actual': mes_actual}).fetchall()
 
     # Convertir los datos a un formato que sea fácil de manejar en el gráfico
     data = {}
@@ -1342,7 +1345,8 @@ def centralistas():
     asistencias_general = Centralistas_horarios.query.all()
     bomberos = Bomberos.query.order_by(Bomberos.legajo_numero).all()
 
-    return render_template('comunicaciones.html', asistencias=asistencias_del_dia, bravo=bomberos, asistencias_general=asistencias_general, data=data)
+    return render_template('comunicaciones.html', asistencias=asistencias_del_dia, bravo=bomberos,
+                           asistencias_general=asistencias_general, data=data, mes_actual=mes_actual)
 #-------------------------------------------------------------------------------------------
 @app.route('/salidas', methods=['GET', 'POST'])
 @login_required
@@ -1384,8 +1388,8 @@ def editar_salida(id):
     if request.method == 'POST':
         try:
             # Convertir la fecha y la hora de los formularios en los objetos correctos
-            salida.fecha = datetime.strptime(request.form['fecha'], '%Y-%m-%d').date()
-            salida.hora = datetime.strptime(request.form['hora'], '%H:%M').time()
+            #salida.fecha = datetime.strptime(request.form['fecha'], '%Y-%m-%d').date()
+            #salida.hora = datetime.strptime(request.form['hora'], '%H:%M').time()
 
             # Actualizar los demás campos
             salida.unidad = request.form['unidad']
@@ -1410,6 +1414,7 @@ def editar_salida(id):
 #-------------------------------------------------------------------------------------------
 
 @app.route('/llegadas', methods=['GET', 'POST'])
+@login_required
 def llegadas():
     if request.method == 'POST':
         fecha = request.form.get('fecha')
@@ -1439,6 +1444,7 @@ def llegadas():
     return render_template('llegadas.html', llegadas=llegadas)
 #-------------------------------------------------------------------------------------------
 @app.route('/editar_llegada/<int:id>', methods=['GET', 'POST'])
+@login_required
 def editar_llegada(id):
     llegada = Llegada.query.get_or_404(id)
 
@@ -1457,7 +1463,7 @@ def editar_llegada(id):
 
         return redirect(url_for('llegadas'))
 
-    return render_template('editar_llegada.html', llegada=llegada)
+    return render_template('editar_llegadas.html', llegada=llegada)
 
 
 #-------------------------------------------------------------------------------------------
