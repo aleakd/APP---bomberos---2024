@@ -47,6 +47,7 @@
 
     <div class="col-lg-6 col-md-12">
 <table class="tabla_agentes" id="asistenciatablauser">
+    <h2>Bomberos en Base:</h2>
         <thead>
         <tr>
             <th>DNI Registrado</th>
@@ -83,6 +84,44 @@
     </div>
 
 </div>
+<div class="box">
+    <canvas id="graficoAsistenciaPorDia" width="400" height="200"></canvas>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Obtener los datos desde la ruta de Flask
+    fetch("{{ url_for('asistencia_dia_semana') }}")
+        .then(response => response.json())
+        .then(data => {
+            const ctx = document.getElementById('graficoAsistenciaPorDia').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Asistencias por Día de la Semana',
+                        data: data.values,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        });
+});
+</script>
+
+</div>
 
 {% if current_user.rol == 'admin' %}
 
@@ -117,6 +156,8 @@
             <th>Tipo de registro</th>
             <th>Fecha</th>
             <th>Hora</th>
+            <th>Editar</th>
+            <th>Eliminar</th>
 
 
         </tr>
@@ -135,14 +176,16 @@
             <td>{{ asistencia.hora }}</td>
             <td>
                 <!-- Botón para editar -->
-                <a href="{{ url_for('editar_asistencia', id=asistencia.id_asistencia) }}" class="btn btn-warning">Editar</a>
+                <a href="{{ url_for('editar_asistencia', id=asistencia.id_asistencia) }}" class="btn btn-info">Editar</a>
             </td>
+
             <td>
                 <!-- Botón para eliminar -->
-                <form action="{{ url_for('eliminar_asistencia', id=asistencia.id_asistencia) }}" method="POST" onsubmit="return confirm('¿Estás seguro que deseas eliminar este registro?');">
+                <form id="asist_del" action="{{ url_for('eliminar_asistencia', id=asistencia.id_asistencia) }}" method="POST" onsubmit="return confirm('¿Estás seguro que deseas eliminar este registro?');">
                     <button type="submit" class="btn btn-danger">Eliminar</button>
                 </form>
             </td>
+
 
 
         </tr>

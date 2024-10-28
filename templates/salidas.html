@@ -17,6 +17,8 @@
 
 </div>
 
+<a href="{{ url_for('centralistas') }}" class="btn btn-secondary mt-3">Volver a Comunicaciones</a>
+
 
 <form action="{{ url_for('salidas') }}" method="post">
     <h1 class="titulo">SALIDAS</h1>
@@ -45,10 +47,64 @@
 
                 </select>
     </div>
-    <div class="form-group">
 
-        <input type="text" class="form-control" name="tipo_alarma" placeholder="Tipo de Alarma" required>
-    </div>
+
+
+
+
+
+    <div class="form-group">
+    <label for="tipo_alarma">Tipo de Alarma</label>
+    <select class="form-control" name="tipo_alarma" id="tipo_alarma" required>
+        <option value="" disabled selected>Seleccionar tipo de alarma</option>
+        <!-- Incendios -->
+        <option value="10/10">INCENDIO DE CAMPO</option>
+        <option value="10/11 A">INCENDIO DE BALDIO</option>
+        <option value="10/11 B">INCENDIO DE ÁRBOL</option>
+        <option value="10/11 C">INCENDIO DE GOMAS</option>
+        <option value="10/12">INCENDIO DE QUINCHO</option>
+        <option value="10/13 A">INCENDIO DE CASA</option>
+        <option value="10/13 B">INCENDIO DE COMERCIO</option>
+        <option value="10/13 C">INCENDIO DE FÁBRICA</option>
+        <option value="10/13 D">INCENDIO DE VARIOS</option>
+        <option value="10/14 A">INCENDIO DE AUTO</option>
+        <option value="10/14 B">INCENDIO DE COLECTIVO</option>
+        <option value="10/14 C">INCENDIO DE CAMIÓN</option>
+        <option value="10/14 D">INCENDIO DE MOTO</option>
+        <option value="10/15">INCIDENTE HAZMAT (MATERIALES PELIGROSOS)</option>
+        <option value="10/16">VARIOS</option>
+        <!-- Rescates -->
+        <option value="20/20 A">RESCATE VEHICULAR AUTOMÓVIL</option>
+        <option value="20/20 B">RESCATE VEHICULAR COLECTIVO</option>
+        <option value="20/20 C">RESCATE VEHICULAR CAMIÓN</option>
+        <option value="20/20 D">RESCATE VEHICULAR MOTOCICLETA</option>
+        <option value="20/20 E">RESCATE VEHICULAR BICICLETA</option>
+        <option value="20/21">RESCATE DE ANIMAL</option>
+        <option value="20/22">RESCATE DE CADÁVER</option>
+        <option value="20/24 A">RESCATE DE PERSONA EN RÍO</option>
+        <option value="20/24 B">RESCATE DE PERSONA EN LAGO</option>
+        <option value="20/24 C">RESCATE DE PERSONA EN MONTAÑA</option>
+        <option value="20/24 D">RESCATE DE PERSONA EN VÍA PÚBLICA</option>
+        <option value="20/26">INUNDACIÓN</option>
+        <option value="20/27">DERRUMBE</option>
+        <!-- Otros -->
+        <option value="TRAMITES">TRAMITES</option>
+        <option value="LOGISITCA">LOGISITCA</option>
+        <option value="MATAFUEGOS">MATAFUEGOS</option>
+        <option value="INSPECCIONES">INSPECCIONES</option>
+        <option value="CARGA_COMBUSTIBLE">CARGA COMBUSTIBLE</option>
+        <option value="OTROS">OTROS</option>
+
+    </select>
+</div>
+
+
+
+
+
+
+
+
     <div class="form-group">
 
         <input type="text" class="form-control" name="a_cargo" placeholder="A Cargo" required>
@@ -177,3 +233,6 @@
 </script>
 
 {% endblock %}
+
+
+

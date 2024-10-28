@@ -4,9 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from functools import wraps
 import pytz
-
-from sqlalchemy import text
-
+from sqlalchemy import func  # Import func aquí
+from sqlalchemy import text, extract, desc
 
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -199,6 +198,7 @@ class ControlKit(UserMixin, db.Model):
     marcha = db.Column(db.String(10))
     novedades = db.Column(db.String(1000))
 
+
 class Centralistas_horarios(UserMixin, db.Model):
     id_asistencia = db.Column(db.Integer, primary_key=True)
     dni = db.Column(db.Integer)
@@ -229,6 +229,7 @@ class Llegada(db.Model):
     hora_salida = db.Column(db.Time, nullable=False)
     hora_llegada = db.Column(db.Time, nullable=False)
     novedades = db.Column(db.String(500), nullable=True)
+
 
 
 
@@ -339,7 +340,8 @@ def cargadatos():
                 flash("Error: Formato de fecha incorrecto. Asegúrate de que las fechas estén en el formato 'YYYY-MM-DD'")
                 return redirect(url_for("cargadatos"))
 
-            dni_pdf = request.files("dni_pdf")
+            dni_pdf = request.files["dni_pdf"]
+            ficha_path = None
             if dni_pdf and allowed_file(dni_pdf.filename):
                 filename_pdf = secure_filename(dni_pdf.filename)
                 file_path_pdf = os.path.join(app.config['UPLOAD_FOLDER'],"dni_pdf")
@@ -995,7 +997,9 @@ def update_password():
 
     return render_template('acces.html')
 #---------------------------------------------- Funcion de calcular horas Asistencia#----------------------------------------------
-INSTITUTION_IP = "127.0.0.1"
+INSTITUTION_IP = ["190.195.11.53", "186.108.89.24", "200.105.104.74", "170.51.250.38", "172.28.32.201", "127.0.0.1"]
+NOSTROSIP = ["cuarte etac casaale juli1 juli2"]
+
 def calcular_horas_y_minutos_acumulados(dni):
     mes_actual = datetime.now().month
     año_actual = datetime.now().year
@@ -1040,10 +1044,11 @@ def calcular_horas_y_minutos_acumulados(dni):
 
     return f"{total_horas} horas y {total_minutos} minutos"
 #----------------------------------------------ASISTENCIAS ojo mal escrito------------------------------------------
-
 @app.route('/asistencia', methods=['GET', 'POST'])
 def asistencia():
-    fecha_actual = datetime.now().date()
+    tz_buenos_aires = pytz.timezone('America/Argentina/Buenos_Aires')
+
+    fecha_actual = datetime.now(tz_buenos_aires).date()
     hora_actual_utc = datetime.now(timezone('UTC'))
     hora_actual_buenos_aires = hora_actual_utc.astimezone(app.config['TIMEZONE'])
     hora_actual_str = hora_actual_buenos_aires.strftime('%H:%M')
@@ -1051,11 +1056,14 @@ def asistencia():
 
     print(client_ip)
     print("esta es la IP")
-    if client_ip != INSTITUTION_IP:
-        # Si la IP no coincide, se niega el acceso
-        abort(403,
-              description="Acceso denegado: Debe estar conectado a la red de la institución para registrar asistencia.")
-    print(client_ip)
+    if not (current_user.is_authenticated and current_user.rol == "admin"):
+        if client_ip not in INSTITUTION_IP:
+            # Si la IP no coincide, se niega el acceso
+            abort(403,
+                  description="Acceso denegado: Debe estar conectado a la red de la institución para registrar asistencia.")
+        print(client_ip)
+
+
     if request.method == 'POST':
         dni = request.form.get('dni')
         agente_existente = Bomberos.query.filter_by(dni=dni).first()
@@ -1065,17 +1073,17 @@ def asistencia():
             return redirect(url_for("acces"))
 
 
-
         if not current_user.is_authenticated:
-            # Obtener el último registro de asistencia del usuario
+        # Obtener el último registro de asistencia del usuario
             ultimo_registro = Aistencia.query.filter_by(dni=dni).order_by(
-                Aistencia.id_asistencia.desc()).first()
-
-            # Verificar si el último registro fue "INGRESO" y la nueva solicitud es también "INGRESO"
+            Aistencia.id_asistencia.desc()).first()
+        # Verificar si el último registro fue "INGRESO" y la nueva solicitud es también "INGRESO"
             if ultimo_registro and ultimo_registro.tipo_registro == "INGRESO" and request.form.get(
                     'tipo_registro') == "INGRESO":
                 flash('Debe registrar una SALIDA antes de registrar un nuevo INGRESO.')
                 return redirect(url_for("asistencia"))
+
+
 
 
 
@@ -1103,21 +1111,63 @@ def asistencia():
         db.session.add(asistencia)
         db.session.commit()
         flash('Registro cargado exitosamente')
-        return redirect(url_for("index"))
+        return redirect(url_for("asistencia"))
+
 
     # Calcular la fecha y hora de hace 24 horas
     hace_24_horas = fecha_actual - timedelta(hours=24)
 
-    asistencias_del_dia = Aistencia.query.filter(Aistencia.fecha >= hace_24_horas).all()
+    # Consultar solo los registros con el último tipo de registro "INGRESO" en las últimas 24 horas
+    subquery = db.session.query(
+        Aistencia.dni,
+        func.max(Aistencia.id_asistencia).label("max_id")
+    ).group_by(Aistencia.dni).subquery()
+
+    asistencias_ingreso = db.session.query(Aistencia).join(
+        subquery, Aistencia.id_asistencia == subquery.c.max_id
+    ).filter(
+        Aistencia.tipo_registro == "INGRESO",
+        Aistencia.fecha >= hace_24_horas
+    ).all()
+
     asistencias_general = Aistencia.query.all()
     bomberos = Bomberos.query.order_by(Bomberos.legajo_numero).all()
 
-    return render_template('asistencia.html', asistencias=asistencias_del_dia, bravo=bomberos, asistencias_general=asistencias_general)
+    return render_template('asistencia.html', asistencias=asistencias_ingreso, bravo=bomberos, asistencias_general=asistencias_general)
+#----------------------------------------------
+@app.route('/editar_asistencia/<int:id>', methods=['GET', 'POST'])
+def editar_asistencia(id):
+    asistencia = Aistencia.query.get_or_404(id)
+
+    if request.method == 'POST':
+        # Actualizar los datos del registro de asistencia
+        asistencia.dni = request.form['dni']
+        asistencia.tipo_registro = request.form['tipo_registro']
+
+        # Actualizar el campo de fecha
+        fecha_manual = request.form.get('fecha')
+        if fecha_manual:
+            asistencia.fecha = datetime.strptime(fecha_manual, '%Y-%m-%d').date()
 
 
-#--------------------------------------------------------------------------------------------
+        # Actualizar el campo de hora
+        hora_manual = request.form.get('hora')
+        if hora_manual:
+            asistencia.hora = hora_manual
 
 
+
+
+        try:
+            db.session.commit()
+            flash('Registro actualizado correctamente', 'success')
+            return redirect(url_for('asistencia'))
+        except:
+            db.session.rollback()
+            flash('Hubo un error al actualizar el registro', 'danger')
+
+    return render_template('editar_asistencia.html', asistencia=asistencia)
+#----------------------------------------------
 @app.route('/eliminar_asistencia/<int:id>', methods=['POST'])
 def eliminar_asistencia(id):
     # Buscar el registro de asistencia por su ID
@@ -1135,27 +1185,7 @@ def eliminar_asistencia(id):
     # Redirigir a la página de asistencia
     return redirect(url_for('asistencia'))
 
-#--------------------------------------------------------------------------------------------
-
-
-@app.route('/editar_asistencia/<int:id>', methods=['GET', 'POST'])
-def editar_asistencia(id):
-    asistencia = Aistencia.query.get_or_404(id)
-
-    if request.method == 'POST':
-        # Actualizar los datos del registro de asistencia
-        asistencia.dni = request.form['dni']
-        asistencia.tipo_registro = request.form['tipo_registro']
-
-        try:
-            db.session.commit()
-            flash('Registro actualizado correctamente', 'success')
-            return redirect(url_for('asistencia'))
-        except:
-            db.session.rollback()
-            flash('Hubo un error al actualizar el registro', 'danger')
-
-    return render_template('editar_asistencia.html', asistencia=asistencia)
+#----------------------------------------------
 
 
 #----------------------------------------------CONTROL AUTOMOTORES----------------------------------------------
@@ -1176,7 +1206,7 @@ def automotores():
                 bateria=request.form.get('bateria'),
                 odometro=request.form.get('odometro'),
                 combustible=request.form.get('combustible'),
-                acite_motor=request.form.get('acite_motor'),
+                acite_motor=request.form.get('aceite_motor'),
                 agua_radiador=request.form.get('agua_radiador'),
                 liq_freno=request.form.get('liq_freno'),
                 neumaticos=request.form.get('neumaticos'),
@@ -1222,13 +1252,15 @@ def automotores():
 
         return redirect(url_for('automotores'))
 
-
-
     controles = ControlAutomotor.query.order_by(ControlAutomotor.fecha.desc(), ControlAutomotor.hora.desc()).all()
     controles_kit = ControlKit.query.order_by(ControlKit.fecha.desc(), ControlKit.hora.desc()).all()
     return render_template('automotores.html', controles=controles, controles_kit=controles_kit)
 
+
+
+
 #-------------------------------------CENTRALISTAS HORARIOS------------------------------------------
+
 
 @app.route('/comunicaciones', methods=['GET', 'POST'])
 def centralistas():
@@ -1241,8 +1273,9 @@ def centralistas():
     client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
 
     print(client_ip)
-    if client_ip not in INSTITUTION_IP:
-        abort(403, description="Acceso denegado: Debe estar conectado a la red de la institución.")
+    if not (current_user.is_authenticated and current_user.rol == "admin"):
+        if client_ip not in INSTITUTION_IP:
+            abort(403, description="Acceso denegado: Debe estar conectado a la red de la institución.")
 
     if request.method == 'POST':
         dni = request.form.get('dni')
@@ -1347,6 +1380,12 @@ def centralistas():
 
     return render_template('comunicaciones.html', asistencias=asistencias_del_dia, bravo=bomberos,
                            asistencias_general=asistencias_general, data=data, mes_actual=mes_actual)
+
+
+
+
+
+#-------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------
 @app.route('/salidas', methods=['GET', 'POST'])
 @login_required
@@ -1440,7 +1479,7 @@ def llegadas():
         return redirect(url_for('llegadas'))
 
     # Consulta de llegadas para mostrar en la tabla
-    llegadas = Llegada.query.all()
+    llegadas = Llegada.query.order_by(desc(Llegada.fecha)).all()
     return render_template('llegadas.html', llegadas=llegadas)
 #-------------------------------------------------------------------------------------------
 @app.route('/editar_llegada/<int:id>', methods=['GET', 'POST'])
@@ -1449,10 +1488,10 @@ def editar_llegada(id):
     llegada = Llegada.query.get_or_404(id)
 
     if request.method == 'POST':
-        llegada.fecha = datetime.strptime(request.form.get('fecha'), '%Y-%m-%d').date()
-        llegada.unidad = request.form.get('unidad')
-        llegada.hora_salida = datetime.strptime(request.form.get('hora_salida'), '%H:%M').time()
-        llegada.hora_llegada = datetime.strptime(request.form.get('hora_llegada'), '%H:%M').time()
+        #llegada.fecha = datetime.strptime(request.form.get('fecha'), '%Y-%m-%d').date()
+        #llegada.unidad = request.form.get('unidad')
+        #llegada.hora_salida = datetime.strptime(request.form.get('hora_salida'), '%H:%M').time()
+        #llegada.hora_llegada = datetime.strptime(request.form.get('hora_llegada'), '%H:%M').time()
         llegada.novedades = request.form.get('novedades')
 
         try:
@@ -1468,9 +1507,30 @@ def editar_llegada(id):
 
 #-------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------
+@app.route('/asistencia_dia_semana')
+def asistencia_dia_semana():
+    # Filtra asistencias de los últimos 7 días
+    fecha_hace_7_dias = datetime.now() - timedelta(days=7)
+    asistencias_por_dia = (
+        db.session.query(
+            extract('dow', Aistencia.fecha).label("dia_semana"),  # Día de la semana
+            func.count(Aistencia.id_asistencia).label("cantidad")
+        )
+        .filter(Aistencia.fecha >= fecha_hace_7_dias)
+        .filter(Aistencia.tipo_registro == "INGRESO")  # Solo asistencias de tipo "INGRESO"
+        .group_by("dia_semana")
+        .order_by("dia_semana")
+        .all()
+    )
 
-#-------------------------------------------------------------------------------------------
-
+    # Convierte los resultados a un formato JSON para el gráfico
+    dias_semana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
+    data = {
+        "labels": [dias_semana[registro[0]] for registro in asistencias_por_dia],
+        "values": [registro[1] for registro in asistencias_por_dia]
+    }
+    return jsonify(data)
+#------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
     app.run(debug=True, port=8080)  # Cambia 8080 al puerto que prefieras
