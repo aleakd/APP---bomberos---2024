@@ -84,6 +84,7 @@
     </div>
 
 </div>
+
 <div class="box">
     <canvas id="graficoAsistenciaPorDia" width="400" height="200"></canvas>
 
@@ -209,5 +210,14 @@ document.addEventListener("DOMContentLoaded", function() {
         $('#asistenciatablauser').DataTable();
     });
 </script>
+<script>
+        setInterval(function() {
+            var h2 = document.getElementById('miH202');
+            h2.classList.toggle('cambio-color');
+        }, 1000);
+</script>
+
+
+
 
 {% endblock %}

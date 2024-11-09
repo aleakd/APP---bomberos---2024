@@ -6,7 +6,7 @@ from functools import wraps
 import pytz
 from sqlalchemy import func  # Import func aquí
 from sqlalchemy import text, extract, desc
-
+from collections import Counter
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from pytz import timezone
@@ -718,11 +718,15 @@ def matyequipo():
 @role_required('admin')
 @login_required
 def edit_matyequipo(id):
+    # Obtener instancias de ambos modelos
     provisto = Epp_provisto.query.get_or_404(id)
-    if request.method == "POST":
+    indumentaria = IndumentariaProvista.query.get_or_404(id)
+
+    # Procesar el formulario de 'EPP Provisto'
+    if request.method == "POST" and 'submit_provisto' in request.form:
         provisto.casco_estructural = request.form.get("casco_estructural")
         provisto.monja_estructural = request.form.get("monja_estructural")
-        provisto.guantes__estructural = request.form.get("guantes_estructural")
+        provisto.guantes_estructural = request.form.get("guantes_estructural")
         provisto.chaqueton_estructural = request.form.get("chaqueton_estructural")
         provisto.pantalon_estructural = request.form.get("pantalon_estructural")
         provisto.botas_estructural = request.form.get("botas_estructural")
@@ -736,9 +740,9 @@ def edit_matyequipo(id):
         db.session.commit()
         flash("Registro de EPP actualizado exitosamente")
         return redirect(url_for('matyequipo'))
-    indumentaria = IndumentariaProvista.query.get_or_404(id)
-    if request.method == "POST":
-        indumentaria.gorra = request.form.get("gorra")
+
+    # Procesar el formulario de 'Indumentaria Provista'
+    if request.method == "POST" and 'submit_indumentaria' in request.form:
         indumentaria.gorra = request.form.get("gorra")
         indumentaria.remera_azul = request.form.get("remera_azul")
         indumentaria.pantalon_fajina = request.form.get("pantalon_fajina")
@@ -747,12 +751,12 @@ def edit_matyequipo(id):
         indumentaria.camp_neopren = request.form.get("camp_neopren")
         indumentaria.bermuda = request.form.get("bermuda")
 
-        # Guardar los cambios en la base de datos
         db.session.commit()
-        flash("Registro actualizado exitosamente")
+        flash("Registro de indumentaria actualizado exitosamente")
         return redirect(url_for('matyequipo'))
 
     return render_template('edit_matyequipo.html', provisto=provisto, indumentaria=indumentaria)
+
 
 
 #--------------------------------------PARTES DE LICENCIA--------#----------------------------------------------
@@ -1059,8 +1063,7 @@ def asistencia():
     if not (current_user.is_authenticated and current_user.rol == "admin"):
         if client_ip not in INSTITUTION_IP:
             # Si la IP no coincide, se niega el acceso
-            abort(403,
-                  description="Acceso denegado: Debe estar conectado a la red de la institución para registrar asistencia.")
+            return redirect(url_for("error_red"))
         print(client_ip)
 
 
@@ -1115,9 +1118,8 @@ def asistencia():
 
 
     # Calcular la fecha y hora de hace 24 horas
-    hace_24_horas = fecha_actual - timedelta(hours=24)
+    hace_24_horas = fecha_actual - timedelta(days=1)
 
-    # Consultar solo los registros con el último tipo de registro "INGRESO" en las últimas 24 horas
     subquery = db.session.query(
         Aistencia.dni,
         func.max(Aistencia.id_asistencia).label("max_id")
@@ -1275,7 +1277,7 @@ def centralistas():
     print(client_ip)
     if not (current_user.is_authenticated and current_user.rol == "admin"):
         if client_ip not in INSTITUTION_IP:
-            abort(403, description="Acceso denegado: Debe estar conectado a la red de la institución.")
+            return redirect(url_for("error_red"))
 
     if request.method == 'POST':
         dni = request.form.get('dni')
@@ -1408,8 +1410,16 @@ def salidas():
         return redirect(url_for('salidas'))
 
     salidas = Salida.query.all()
-    return render_template('salidas.html', salidas=salidas)
+    tipos_alarma = [salida.tipo_alarma for salida in salidas]
+    conteo_alarmas = dict(Counter(tipos_alarma))
 
+    # Convertir las claves y valores de conteo_alarmas a listas
+    return render_template(
+        'salidas.html',
+        salidas=salidas,
+        conteo_alarmas_labels=list(conteo_alarmas.keys()),
+        conteo_alarmas_data=list(conteo_alarmas.values())
+    )
 
 
 
@@ -1531,6 +1541,15 @@ def asistencia_dia_semana():
     }
     return jsonify(data)
 #------------------------------------------------------------------------------------------------
+@app.route('/403')
+def error_red():
+    return render_template('403.html')
+
+#------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=8080)  # Cambia 8080 al puerto que prefieras

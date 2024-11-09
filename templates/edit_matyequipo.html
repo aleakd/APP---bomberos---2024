@@ -51,7 +51,7 @@
         <label for="linterna_forestal">Linterna Forestal:</label>
         <input type="text" class="form-control" id="linterna_forestal" name="linterna_forestal" value="{{ provisto.linterna_forestal }}">
     </div>
-    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    <button type="submit" class="btn btn-primary" name="submit_provisto">Guardar Cambios en EPP</button>
 </form>
 <br>
 
@@ -88,6 +88,6 @@
         <input type="text" class="form-control" id="bermuda" name="bermuda" value="{{ indumentaria.bermuda }}">
     </div>
 
-    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+     <button type="submit" class="btn btn-primary" name="submit_indumentaria">Guardar Cambios en Indumentaria</button>
 </form>
 {% endblock %}

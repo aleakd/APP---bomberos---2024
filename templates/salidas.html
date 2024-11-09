@@ -125,6 +125,46 @@
 </form>
 
 
+<div>
+    <!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="container mt-5">
+    <canvas id="tipoAlarmaChart"></canvas>
+</div>
+
+<script>
+    // Datos para el gráfico de tipos de alarma
+    const tipoAlarmaData = {
+        labels: {{ conteo_alarmas_labels | tojson }}, // Nombres de tipos de alarma
+        datasets: [{
+            label: 'Conteo de Tipos de Alarma',
+            data: {{ conteo_alarmas_data | tojson }}, // Conteo de cada tipo de alarma
+            backgroundColor: 'rgba(255, 69, 0, 0.8)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    const config = {
+        type: 'bar',
+        data: tipoAlarmaData,
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    };
+
+    new Chart(document.getElementById('tipoAlarmaChart'), config);
+</script>
+
+
+</div>
+
 <div class="table-responsive">
     <h1 class="titulo">Tabla Salidas</h1>
     <table class="table tabla_bomberos table-responsive" id="TableSalidas">

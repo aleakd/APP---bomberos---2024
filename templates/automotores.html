@@ -373,7 +373,8 @@
 
 
 
-{% if current_user.rol == 'admin' %}
+
+{% if current_user.rol == 'automotor' or current_user.rol == 'admin'%}
 
 
 <!-- Tabla de registros -->
@@ -382,6 +383,7 @@
     <table class="table table-striped table-bordered" id="tablaautomotores">
         <thead class="table-dark">
         <tr>
+            <th>Id Control</th>
             <th>Fecha</th>
             <th>Hora</th>
             <th>Numero de Legajo</th>
@@ -411,6 +413,7 @@
         <tbody>
         {% for control in controles %}
         <tr>
+            <td>{{ control.id_control }}</td>
             <td>{{ control.fecha.strftime('%d/%m/%Y') }}</td>
             <td>{{ control.hora }}</td>
             <td>{{ control.numero_legajo }}</td>
@@ -449,6 +452,7 @@
         <table class="table table-striped table-bordered" id="tablakits">
             <thead class="table-dark">
                 <tr>
+                    <th>Id Control</th>
                     <th>Fecha</th>
                     <th>Hora</th>
                     <th>Numero de Legajo</th>
@@ -465,6 +469,7 @@
             <tbody>
                 {% for kit in controles_kit %}
                 <tr>
+                    <td>{{ kit.id_control }}</td>
                     <td>{{ kit.fecha.strftime('%d/%m/%Y') }}</td>
                     <td>{{ kit.hora }}</td>
                     <td>{{ kit.numero_legajo }}</td>
@@ -484,6 +489,7 @@
 
 
 {% endif %}
+
 
 
 <script>
