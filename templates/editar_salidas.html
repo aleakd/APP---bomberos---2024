@@ -50,6 +50,18 @@
         <input type="text" name="qth" id="qth" class="form-control" value="{{ salida.qth }}" required placeholder="QTH">
     </div>
 
+    <div class="form-group">
+        <input type="text" name="operador" id="operador" class="form-control" value="{{ salida.operador }}" required placeholder="OPERADOR">
+    </div>
+
+    <div class="form-group">
+        <input type="text" name="bros_base" id="bros_base" class="form-control" value="{{ salida.bros_base }}" required placeholder="Bros en base">
+    </div>
+
+    <div class="form-group">
+        <input type="text" name="jefe_guardia" id="jefe_guardia" class="form-control" value="{{ salida.jefe_guardia }}" required placeholder="Jefe de Guardia">
+    </div>
+
     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
     <a href="{{ url_for('salidas') }}" class="btn btn-secondary">Cancelar</a>
 </form>

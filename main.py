@@ -219,6 +219,9 @@ class Salida(db.Model):
     chofer = db.Column(db.String(100), nullable=False)
     dotacion = db.Column(db.Text, nullable=False)
     qth = db.Column(db.String(255), nullable=False)
+    operador = db.Column(db.String(100), nullable=False)
+    bros_base = db.Column(db.String(100), nullable=False)
+    jefe_guardia= db.Column(db.String(100), nullable=False)
 
 
 class Llegada(db.Model):
@@ -1401,8 +1404,19 @@ def salidas():
         chofer = request.form['chofer']
         dotacion = request.form['dotacion']
         qth = request.form['qth']
-
-        nueva_salida = Salida(fecha=fecha, hora=hora, unidad=unidad, tipo_alarma=tipo_alarma, a_cargo=a_cargo, chofer=chofer, dotacion=dotacion, qth=qth)
+        operador = request.form['operador']
+        bros_base = request.form['bros_base']
+        jefe_guardia = request.form['jefe_guardia']
+        nueva_salida = Salida(fecha=fecha, hora=hora,
+                              unidad=unidad,
+                              tipo_alarma=tipo_alarma,
+                              a_cargo=a_cargo,
+                              chofer=chofer,
+                              dotacion=dotacion,
+                              qth=qth,
+                              operador=operador,
+                              bros_base=bros_base,
+                              jefe_guardia=jefe_guardia)
         db.session.add(nueva_salida)
         db.session.commit()
 
@@ -1447,6 +1461,9 @@ def editar_salida(id):
             salida.chofer = request.form['chofer']
             salida.dotacion = request.form['dotacion']
             salida.qth = request.form['qth']
+            salida.operador=request.form['operador']
+            salida.bros_base=request.form['bros_base']
+            salida.jefe_guardia=request.form['jefe_guardia']
 
             # Guardar los cambios
             db.session.commit()

@@ -121,6 +121,21 @@
 
         <input type="text" class="form-control" name="qth" placeholder="QTH" required>
     </div>
+    <div class="form-group">
+
+        <input type="text" class="form-control" name="operador" placeholder="Operador" required>
+    </div>
+
+    <div class="form-group">
+
+        <input type="text" class="form-control" name="bros_base" placeholder="Bros en Base" required>
+    </div>
+
+    <div class="form-group">
+
+        <input type="text" class="form-control" name="jefe_guardia" placeholder="Jefe de guardia" required>
+    </div>
+
     <button type="submit" class="btn btn-primary">Registrar Salida</button>
 </form>
 
@@ -178,6 +193,9 @@
             <th>Chofer</th>
             <th>Dotación</th>
             <th>QTH</th>
+            <th>Operador</th>
+            <th>Bros. en Base</th>
+            <th>jefe de guardia</th>
             <th>Copiar</th>
             <th>Editar</th>
 
@@ -194,6 +212,9 @@
             <td>{{ salida.chofer }}</td>
             <td>{{ salida.dotacion }}</td>
             <td>{{ salida.qth }}</td>
+            <td>{{ salida.operador }}</td>
+            <td>{{ salida.bros_base }}</td>
+            <td>{{ salida.jefe_guardia }}</td>
             <td>
                 <button class="btn btn-primary copiar-boton"
                         data-hora="{{ salida.hora }}"
@@ -202,6 +223,9 @@
                         data-chofer="{{ salida.chofer }}"
                         data-dotacion="{{ salida.dotacion }}"
                         data-qth="{{ salida.qth }}"
+                        data-operador="{{ salida.operador }}"
+                        data-bros_base="{{ salida.bros_base }}"
+                        data-jefe_guardia="{{ salida.jefe_guardia }}"
                         data-tipo_alarma="{{ salida.tipo_alarma }}">
                     Copiar
                 </button>
@@ -234,6 +258,9 @@
             const chofer = this.getAttribute('data-chofer');
             const dotacion = this.getAttribute('data-dotacion');
             const qth = this.getAttribute('data-qth');
+            const operador = this.getAttribute('data-operador');
+            const bros_base = this.getAttribute('data-bros_base');
+            const jefe_guardia = this.getAttribute('data-jefe_guardia');
             const tipo_alarma = this.getAttribute('data-tipo_alarma');
 
             const formato = `
@@ -245,6 +272,9 @@
                 A CARGO: ${aCargo}
                 DOTACION: ${dotacion}
                 DESTINO: ${qth}
+                JEFE DE GUARDIA: ${jefe_guardia}
+                BROS EN BASE: ${bros_base}
+                OPERADOR: ${operador}
 
             `;
 
