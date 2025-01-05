@@ -1,6 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
 
+<!--
+<audio autoplay loop>
+  <source src="/static/archivos/feliz_navidad.mp3" type="audio/mpeg">
+  Tu navegador no soporta la etiqueta de audio.
+</audio>
+
+!-->
+
+
+
 <script>
   function confirmSubmit() {
 
@@ -32,26 +42,29 @@
         <form class="form_ins" action="{{ url_for('asistencia') }}" method="post" enctype="multipart/form-data" onsubmit="return confirmSubmit();">
         <input type="number" class="form-control" name="dni" placeholder="DNI" required="required" />
 
-        <select class="form-control" name="tipo_registro" placeholder="TIPO DE REGISTRO" required="required">
+        <select class="form-control" id="tipo_registro" name="tipo_registro" placeholder="TIPO DE REGISTRO" required="required">
               <option value="" disabled selected>TIPO DE REGISTRO</option>
             <option value="INGRESO">INGRESO</option>
             <option value="SALIDA">SALIDA</option>
 
         </select>
 
-        <select class="form-control" name="actividad" placeholder="ACTIVIDAD" required="required">
+
+
+         <select class="form-control" id="actividad" name="actividad" placeholder="ACTIVIDAD" required="required">
     <option value="" disabled selected>ACTIVIDAD</option>
-    <option value="guardia semana">Guardia Semana</option>
-    <option value="guardia obligatoria">Guardia Obligatoria</option>
-    <option value="capacitacion">Capacitación</option>
-    <option value="reunion">Reunión</option>
-    <option value="refuerzo de guardia">Refuerzo de Guardia</option>
-    <option value="convocatoria">Convocatoria</option>
-    <option value="orden de servicio">Orden de Servicio</option>
-    <option value="practica">Práctica</option>
-    <option value="colaboracion fuera de juri">Colaboración Fuera de Jurisdicción</option>
-    <option value="inspecciones">Inspecciones</option>
-    <option value="matafuegos">Matafuegos</option>
+    <option value="Guardia Semana">Guardia Semana</option>
+    <option value="Guardia Obligatoria">Guardia Obligatoria</option>
+    <option value="Capacitacion">Capacitación</option>
+    <option value="Reunion">Reunión</option>
+    <option value="Refuerzo de Guardia">Refuerzo de Guardia</option>
+    <option value="Convocatoria">Convocatoria</option>
+    <option value="Orden de Servicio">Orden de Servicio</option>
+    <option value="Practica">Práctica</option>
+    <option value="Colaboracion fuera de juri">Colaboración Fuera de Jurisdicción</option>
+    <option value="Inspecciones">Inspecciones</option>
+    <option value="Matafuegos">Matafuegos</option>
+    <option value="Tareas de área">Tareas de área</option>
 </select>
 
 
@@ -70,6 +83,7 @@
             <th>Apellido</th>
             <th>Nombre</th>
             <th>Tipo de registro</th>
+            <th>Actividad</th>
             <th>Fecha</th>
             <th>Hora</th>
 
@@ -86,6 +100,7 @@
             <td>{{ agte.apellido }}</td>
             <td>{{ agte.nombre }}</td>
             <td>{{ asistencia.tipo_registro }}</td>
+            <td>{{ asistencia.actividad }}</td>
             <td>{{ asistencia.fecha }}</td>
             <td>{{ asistencia.hora }}</td>
 
@@ -152,6 +167,23 @@ document.addEventListener("DOMContentLoaded", function() {
             <option value="SALIDA">SALIDA</option>
             <input type="date" name="fecha" id="fecha" required>
             <input type="time" name="hora" id="hora" required>
+
+                    <select class="form-control" name="actividad" placeholder="ACTIVIDAD" required="required">
+    <option value="" disabled selected>ACTIVIDAD</option>
+    <option value="Guardia Semana">Guardia Semana</option>
+    <option value="Guardia Obligatoria">Guardia Obligatoria</option>
+    <option value="Capacitacion">Capacitación</option>
+    <option value="Reunion">Reunión</option>
+    <option value="Refuerzo de Guardia">Refuerzo de Guardia</option>
+    <option value="Convocatoria">Convocatoria</option>
+    <option value="Orden de Servicio">Orden de Servicio</option>
+    <option value="Practica">Práctica</option>
+    <option value="Colaboracion fuera de juri">Colaboración Fuera de Jurisdicción</option>
+    <option value="Inspecciones">Inspecciones</option>
+    <option value="Matafuegos">Matafuegos</option>
+    <option value="Tareas de área">Tareas de área</option>
+</select>
+
 
 
 
@@ -231,6 +263,24 @@ document.addEventListener("DOMContentLoaded", function() {
             var h2 = document.getElementById('miH202');
             h2.classList.toggle('cambio-color');
         }, 1000);
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const tipoRegistro = document.getElementById("tipo_registro");
+        const actividad = document.getElementById("actividad");
+
+        tipoRegistro.addEventListener("change", function () {
+            if (tipoRegistro.value === "SALIDA") {
+                actividad.value = ""; // Limpia el campo
+                actividad.disabled = true; // Desactiva el campo
+                actividad.removeAttribute("required"); // Elimina el requisito de ser obligatorio
+            } else {
+                actividad.disabled = false; // Habilita el campo
+                actividad.setAttribute("required", "required"); // Lo hace obligatorio nuevamente
+            }
+        });
+    });
 </script>
 
 

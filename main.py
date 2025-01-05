@@ -153,6 +153,7 @@ class Aistencia(UserMixin, db.Model):
     id_asistencia = db.Column(db.Integer, primary_key=True)
     dni = db.Column(db.Integer)
     tipo_registro = db.Column(db.String(10))
+    actividad = db.Column(db.String(30))
     fecha = db.Column(db.Date)
     hora = db.Column(db.String(10))
 
@@ -1089,11 +1090,13 @@ def asistencia():
                 flash('Debe registrar una SALIDA antes de registrar un nuevo INGRESO.')
                 return redirect(url_for("asistencia"))
 
-
-
-
-
         tipo_registro = request.form.get('tipo_registro')
+        actividad = request.form.get('actividad')
+
+        if tipo_registro == "SALIDA" and actividad:
+            flash('No se requiere actividad para registros de SALIDA.')
+            return redirect(url_for("asistencia"))
+
 
 
         # Si el usuario está logueado como "sistema", usar la fecha y hora manual del formulario
@@ -1103,6 +1106,7 @@ def asistencia():
             asistencia = Aistencia(
                 dni=dni,
                 tipo_registro=tipo_registro,
+                actividad=actividad if tipo_registro != "SALIDA" else None,
                 hora=hora_manual,
                 fecha=datetime.strptime(fecha_manual, '%Y-%m-%d').date()
             )
@@ -1110,6 +1114,7 @@ def asistencia():
             asistencia = Aistencia(
                 dni=dni,
                 tipo_registro=tipo_registro,
+                actividad=actividad,
                 hora=hora_actual_str,
                 fecha=fecha_actual
             )
@@ -1455,6 +1460,8 @@ def editar_salida(id):
             #salida.hora = datetime.strptime(request.form['hora'], '%H:%M').time()
 
             # Actualizar los demás campos
+            salida.fecha = datetime.strptime(request.form['fecha'], '%Y-%m-%d').date()
+            salida.hora = datetime.strptime(request.form['hora'], '%H:%M').time()
             salida.unidad = request.form['unidad']
             salida.tipo_alarma = request.form['tipo_alarma']
             salida.a_cargo = request.form['a_cargo']

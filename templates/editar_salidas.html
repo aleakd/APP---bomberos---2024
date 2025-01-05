@@ -3,7 +3,7 @@
 
 <h3>Editar Salida</h3>
 <form action="{{ url_for('editar_salida', id=salida.id_salida) }}" method="POST">
- <!--   <div class="form-group">
+    <div class="form-group">
         <label for="fecha">Fecha</label>
         <input type="date" name="fecha" id="fecha" class="form-control" value="{{ salida.fecha }}" required>
     </div>
@@ -11,7 +11,7 @@
     <div class="form-group">
         <label for="hora">Hora</label>
         <input type="time" name="hora" id="hora" class="form-control" value="{{ salida.hora }}" required>
-    </div> -->
+    </div>
 
     <div class="form-group">
     <select name="unidad" class="form-select" required>
