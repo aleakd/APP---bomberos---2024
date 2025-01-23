@@ -248,14 +248,48 @@ document.addEventListener("DOMContentLoaded", function() {
 
 {% endif %}
 
+{% if current_user.rol != 'admin' %}
+<div>
+     <!-- Tabla de registros de asistencia -->
+    <table border="1" id="registros_user">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>DNI</th>
+                <th>Tipo de Registro</th>
+                <th>Actividad</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if asistencias_general %}
+                {% for registro in asistencias_general %}
+                    <tr>
+                        <td>{{ registro.id_asistencia }}</td>
+                        <td>{{ registro.dni }}</td>
+                        <td>{{ registro.tipo_registro }}</td>
+                        <td>{{ registro.actividad if registro.tipo_registro != 'SALIDA' else 'N/A' }}</td>
+                        <td>{{ registro.fecha }}</td>
+                        <td>{{ registro.hora }}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6">No hay registros de asistencia disponibles.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
 
-
-
+{% endif %}
 
 <script>
     $(document).ready(function () {
         $('#tablaasistencia_general').DataTable();
         $('#asistenciatablauser').DataTable();
+        $('#registros_user').DataTable();
     });
 </script>
 <script>

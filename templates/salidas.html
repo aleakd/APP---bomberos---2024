@@ -54,7 +54,7 @@
 
 
     <div class="form-group">
-    <label for="tipo_alarma">Tipo de Alarma</label>
+
     <select class="form-control" name="tipo_alarma" id="tipo_alarma" required>
         <option value="" disabled selected>Seleccionar tipo de alarma</option>
         <!-- Incendios -->
@@ -103,7 +103,10 @@
 
 
 
+    <div class="form-group">
 
+        <input type="number" class="form-control" name="numero_alarma" placeholder="Numero de Alarma">
+    </div>
 
 
 
@@ -192,6 +195,7 @@
             <th>Hora</th>
             <th>Unidad</th>
             <th>Tipo de Alarma</th>
+            <th>Numero de Alarma</th>
             <th>A Cargo</th>
             <th>Chofer</th>
             <th>Dotación</th>
@@ -211,6 +215,7 @@
             <td>{{ salida.hora }}</td>
             <td>{{ salida.unidad }}</td>
             <td>{{ salida.tipo_alarma }}</td>
+            <td>{{ salida.numero_alarma }}</td>
             <td>{{ salida.a_cargo }}</td>
             <td>{{ salida.chofer }}</td>
             <td>{{ salida.dotacion }}</td>

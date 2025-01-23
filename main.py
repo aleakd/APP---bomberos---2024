@@ -8,7 +8,6 @@ from sqlalchemy import func  # Import func aquí
 from sqlalchemy import text, extract, desc
 from collections import Counter
 from werkzeug.middleware.proxy_fix import ProxyFix
-
 from pytz import timezone
 import os
 from werkzeug.utils import secure_filename
@@ -216,6 +215,7 @@ class Salida(db.Model):
     hora = db.Column(db.Time, nullable=False)
     unidad = db.Column(db.String(50), nullable=False)
     tipo_alarma = db.Column(db.String(100), nullable=False)
+    numero_alarma = db.Column(db.Integer)
     a_cargo = db.Column(db.String(100), nullable=False)
     chofer = db.Column(db.String(100), nullable=False)
     dotacion = db.Column(db.Text, nullable=False)
@@ -235,8 +235,110 @@ class Llegada(db.Model):
     novedades = db.Column(db.String(500), nullable=True)
 
 
+class MaterialesR1(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.Date, nullable=False)
+    hora = db.Column(db.Time, nullable=False)
+    numero_legajo = db.Column(db.String(10), nullable=False)
+    observaciones = db.Column(db.Text, nullable=True)
+    cinta_de_vallado = db.Column(db.String(10), nullable=True)
+    alcohol_en_gel = db.Column(db.String(10), nullable=True)
+    llave_de_ascensor = db.Column(db.String(10), nullable=True)
+    herramienta_multiproposito_manual = db.Column(db.String(10), nullable=True)
+    bateria_luz = db.Column(db.String(10), nullable=True)
+    mapa_vcp = db.Column(db.String(10), nullable=True)
+    llave_del_11 = db.Column(db.String(10), nullable=True)
+    par_de_guantes_de_rescate = db.Column(db.String(10), nullable=True)
+    kit_balizas = db.Column(db.String(10), nullable=True)
+    extintor_1k = db.Column(db.String(10), nullable=True)
+    tubo_de_oxigeno = db.Column(db.String(10), nullable=True)
+    gato = db.Column(db.String(10), nullable=True)
+    caja_guantes_nitrilo = db.Column(db.String(10), nullable=True)
+    luz_de_escena = db.Column(db.String(10), nullable=True)
+    conos = db.Column(db.String(10), nullable=True)
+    colcha = db.Column(db.String(10), nullable=True)
+    estabilizadores = db.Column(db.String(10), nullable=True)
+    bolso_cubre_parantes = db.Column(db.String(10), nullable=True)
+    cojinetes_inflables = db.Column(db.String(10), nullable=True)
+    consola_de_comando_dual = db.Column(db.String(10), nullable=True)
+    bolso_con_las_mangueras = db.Column(db.String(10), nullable=True)
+    tubo = db.Column(db.String(10), nullable=True)
+    mochila_de_juguetes = db.Column(db.String(10), nullable=True)
+    bolso_prehospitalario = db.Column(db.String(10), nullable=True)
+    bolso_de_trauma = db.Column(db.String(10), nullable=True)
+    bolso_de_parto = db.Column(db.String(10), nullable=True)
+    chaleco_extraccion_adulto = db.Column(db.String(10), nullable=True)
+    chaleco_extraccion_pediatric = db.Column(db.String(10), nullable=True)
+    bolso_de_ferulas_semi_rigidas = db.Column(db.String(10), nullable=True)
+    bolso_de_airbag = db.Column(db.String(10), nullable=True)
+    valija_de_cubre_airbag = db.Column(db.String(10), nullable=True)
+    equipos_de_bioseguridad = db.Column(db.String(10), nullable=True)
+    sierra_sable = db.Column(db.String(10), nullable=True)
 
+    techo_escalera = db.Column(db.String(10), nullable=True)
+    tablas_espinal_largas = db.Column(db.String(10), nullable=True)
+    masa = db.Column(db.String(10), nullable=True)
+    hooligans = db.Column(db.String(10), nullable=True)
+    trancha_mediana = db.Column(db.String(10), nullable=True)
+    cunas = db.Column(db.String(10), nullable=True)
+    cuña_escalonada = db.Column(db.String(10), nullable=True)
+    tabla_espinal_mediana = db.Column(db.String(10), nullable=True)
+    tabla_espinal_chica = db.Column(db.String(10), nullable=True)
+    holomatro = db.Column(db.String(10), nullable=True)
+    expansor = db.Column(db.String(10), nullable=True)
+    multipropósito = db.Column(db.String(10), nullable=True)
+    cizalla = db.Column(db.String(10), nullable=True)
+    ram = db.Column(db.String(10), nullable=True)
+    bolsa_de_aserrin = db.Column(db.String(10), nullable=True)
+    barreta_chica = db.Column(db.String(10), nullable=True)
+    extintor_5k = db.Column(db.String(10), nullable=True)
+    bidon_nafta = db.Column(db.String(10), nullable=True)
 
+class MaterialesB3(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.Date, nullable=False)
+    hora = db.Column(db.Time, nullable=False)
+    numero_legajo = db.Column(db.String(10), nullable=False)
+    observaciones = db.Column(db.Text, nullable=True)
+    camara_termica = db.Column(db.String(10), nullable=True)
+    pistola_termica = db.Column(db.String(10), nullable=True)
+    reflector_portatil = db.Column(db.String(10), nullable=True)
+    cinta_de_vallado = db.Column(db.String(10), nullable=True)
+    alcohol_en_gel = db.Column(db.String(10), nullable=True)
+    matafuego_5kg = db.Column(db.String(10), nullable=True)
+    kit_balizas = db.Column(db.String(10), nullable=True)
+    plano_de_vcp = db.Column(db.String(10), nullable=True)
+    lanza_nh_2 = db.Column(db.String(10), nullable=True)
+    lanzas_nh_1medio = db.Column(db.String(10), nullable=True)
+    filtro_manguerote = db.Column(db.String(10), nullable=True)
+    llave_stz_manguerote = db.Column(db.String(10), nullable=True)
+    llave_nh = db.Column(db.String(10), nullable=True)
+    halligan = db.Column(db.String(10), nullable=True)
+    era_con_mascara = db.Column(db.String(10), nullable=True)
+    y_stz = db.Column(db.String(10), nullable=True)
+    conos = db.Column(db.String(10), nullable=True)
+    acople_dinnem_stz = db.Column(db.String(10), nullable=True)
+    reductor_stz_ww_2medio_a_1medio = db.Column(db.String(10), nullable=True)
+    reductor_stz_a_nh_1medio = db.Column(db.String(10), nullable=True)
+    reductor_stz_a_nh_1 = db.Column(db.String(10), nullable=True)
+    reductor_stz_2_a_stz_1medio = db.Column(db.String(10), nullable=True)
+    reductor_stz_2_a_nh_1medio = db.Column(db.String(10), nullable=True)
+    reductor_stz_2_a_nh_1 = db.Column(db.String(10), nullable=True)
+    reductor_stz_2_a_stz_1 = db.Column(db.String(10), nullable=True)
+    acople_din_stz = db.Column(db.String(10), nullable=True)
+    acople_stz_a_nh_2 = db.Column(db.String(10), nullable=True)
+    llave_stz = db.Column(db.String(10), nullable=True)
+    desvanadera = db.Column(db.String(10), nullable=True)
+    pertiga = db.Column(db.String(10), nullable=True)
+    manguerote = db.Column(db.String(10), nullable=True)
+    escalera = db.Column(db.String(10), nullable=True)
+    linea_nh_1medio = db.Column(db.String(10), nullable=True)
+    linea_nh_2 = db.Column(db.String(10), nullable=True)
+    linea_stz_1medio = db.Column(db.String(10), nullable=True)
+    linea_stz_2 = db.Column(db.String(10), nullable=True)
+    bolso_prehospitalario = db.Column(db.String(10), nullable=True)
+    columna_hidrante = db.Column(db.String(10), nullable=True)
+    trancha = db.Column(db.String(10), nullable=True)
 
 
 # Line below only required once, when creating DB.
@@ -1140,10 +1242,23 @@ def asistencia():
         Aistencia.fecha >= hace_24_horas
     ).all()
 
-    asistencias_general = Aistencia.query.all()
+    if current_user.is_authenticated and current_user.rol == "admin":
+        # Admin ve todos los registros de asistencia
+        asistencia_general = Aistencia.query.all()
+    elif current_user.is_authenticated:
+        # Usuario no administrador ve solo sus registros basados en legajo_numero
+        asistencia_general = db.session.query(Aistencia).join(Bomberos, Bomberos.dni == Aistencia.dni).filter(
+            Bomberos.legajo_numero == current_user.numero_legajo
+        ).all()
+    else:
+        # Usuario no autenticado no ve registros
+        asistencia_general = []
+
+    # Obtener lista de bomberos para otros propósitos
     bomberos = Bomberos.query.order_by(Bomberos.legajo_numero).all()
 
-    return render_template('asistencia.html', asistencias=asistencias_ingreso, bravo=bomberos, asistencias_general=asistencias_general)
+    return render_template('asistencia.html', asistencias=asistencias_ingreso,
+                           bravo=bomberos, asistencias_general=asistencia_general)
 #----------------------------------------------
 @app.route('/editar_asistencia/<int:id>', methods=['GET', 'POST'])
 def editar_asistencia(id):
@@ -1405,6 +1520,7 @@ def salidas():
         hora = datetime.strptime(request.form['hora'], '%H:%M').time()
         unidad = request.form['unidad']
         tipo_alarma = request.form['tipo_alarma']
+        numero_alarma = request.form['numero_alarma']
         a_cargo = request.form['a_cargo']
         chofer = request.form['chofer']
         dotacion = request.form['dotacion']
@@ -1415,6 +1531,7 @@ def salidas():
         nueva_salida = Salida(fecha=fecha, hora=hora,
                               unidad=unidad,
                               tipo_alarma=tipo_alarma,
+                              numero_alarma=numero_alarma,
                               a_cargo=a_cargo,
                               chofer=chofer,
                               dotacion=dotacion,
@@ -1564,13 +1681,227 @@ def asistencia_dia_semana():
         "values": [registro[1] for registro in asistencias_por_dia]
     }
     return jsonify(data)
+
 #------------------------------------------------------------------------------------------------
 @app.route('/403')
 def error_red():
     return render_template('403.html')
 
 #------------------------------------------------------------------------------------------------
+@app.route('/control_materiales')
+@login_required
+def control_materiales():
+    return render_template('control_materiales.html')
 #------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------
+@app.route('/materiales_r1', methods=['GET', 'POST'])
+@login_required
+def materiales_r1():
+    tz_buenos_aires = pytz.timezone('America/Argentina/Buenos_Aires')
+
+    fecha_actual = datetime.now(tz_buenos_aires).date()
+
+    # Obtener la hora actual en Buenos Aires
+    hora_actual_utc = datetime.now(timezone('UTC'))
+    hora_actual_buenos_aires = hora_actual_utc.astimezone(app.config['TIMEZONE'])
+
+    # Convertir la hora a un objeto 'time' de Python
+    hora_actual_str = hora_actual_buenos_aires.strftime('%H:%M')
+    hora_actual_obj = datetime.strptime(hora_actual_str, '%H:%M').time()
+
+    if request.method == 'POST':
+        if 'materiales_r1' in request.form:
+            materiales = MaterialesR1(
+                numero_legajo=current_user.numero_legajo,
+                fecha=fecha_actual,
+                hora=hora_actual_obj,
+                observaciones=request.form.get('observaciones'),
+                cinta_de_vallado=request.form.get('cinta_de_vallado'),
+                alcohol_en_gel=request.form.get('alcohol_en_gel'),
+                llave_de_ascensor=request.form.get('llave_de_ascensor'),
+                herramienta_multiproposito_manual=request.form.get('herramienta_multiproposito_manual'),
+                bateria_luz=request.form.get('bateria_luz'),
+                mapa_vcp=request.form.get('mapa_vcp'),
+                llave_del_11=request.form.get('llave_del_11'),
+                par_de_guantes_de_rescate=request.form.get('par_de_guantes_de_rescate'),
+                kit_balizas=request.form.get('kit_balizas'),
+                extintor_1k=request.form.get('extintor_1k'),
+                tubo_de_oxigeno=request.form.get('tubo_de_oxigeno'),
+                gato=request.form.get('gato'),
+                caja_guantes_nitrilo=request.form.get('caja_guantes_nitrilo'),
+
+                luz_de_escena=request.form.get('luz_de_escena'),
+                conos=request.form.get('conos'),
+                colcha=request.form.get('colcha'),
+                estabilizadores=request.form.get('estabilizadores'),
+                bolso_cubre_parantes=request.form.get('bolso_cubre_parantes'),
+                cojinetes_inflables=request.form.get('cojinetes_inflables'),
+                consola_de_comando_dual=request.form.get('consola_de_comando_dual'),
+                bolso_con_las_mangueras=request.form.get('bolso_con_las_mangueras'),
+                tubo=request.form.get('tubo'),
+                mochila_de_juguetes=request.form.get('mochila_de_juguetes'),
+                bolso_prehospitalario=request.form.get('bolso_prehospitalario'),
+                bolso_de_trauma=request.form.get('bolso_de_trauma'),
+                bolso_de_parto=request.form.get('bolso_de_parto'),
+                chaleco_extraccion_adulto=request.form.get('chaleco_extraccion_adulto'),
+                chaleco_extraccion_pediatric=request.form.get('chaleco_extraccion_pediatric'),
+                bolso_de_ferulas_semi_rigidas=request.form.get('bolso_de_ferulas_semi_rigidas'),
+                bolso_de_airbag=request.form.get('bolso_de_airbag'),
+                valija_de_cubre_airbag=request.form.get('valija_de_cubre_airbag'),
+                equipos_de_bioseguridad=request.form.get('equipos_de_bioseguridad'),
+                sierra_sable=request.form.get('sierra_sable'),
+
+                techo_escalera=request.form.get('techo_escalera'),
+                tablas_espinal_largas=request.form.get('tablas_espinal_largas'),
+                masa=request.form.get('masa'),
+                hooligans=request.form.get('hooligans'),
+                trancha_mediana=request.form.get('trancha_mediana'),
+                cunas=request.form.get('cunas'),
+                cuña_escalonada=request.form.get('cuña_escalonada'),
+                tabla_espinal_mediana=request.form.get('tabla_espinal_mediana'),
+                tabla_espinal_chica=request.form.get('tabla_espinal_chica'),
+                holomatro=request.form.get('holomastro'),
+                expansor=request.form.get('expansor'),
+                multipropósito=request.form.get('multipropósito'),
+                cizalla=request.form.get('cizalla'),
+                ram=request.form.get('ram'),
+                bolsa_de_aserrin=request.form.get('bolsa_de_aserrin'),
+                barreta_chica=request.form.get('barreta_chica'),
+                extintor_5k=request.form.get('extintor_5k'),
+                bidon_nafta=request.form.get('bidon_nafta')
+            )
+
+            db.session.add(materiales)
+            db.session.commit()
+            flash('Registro de materiales R1 realizado exitosamente.')
+            return redirect(url_for('materiales_r1'))
+
+    materialesr1 = MaterialesR1.query.all()
+
+    return render_template('materiales_r1.html',materialesr1=materialesr1)
+
+
+#------------------------------------------------------------------------------------------------
+
+
+
+@app.route('/materiales_b3', methods=['GET', 'POST'])
+@login_required
+def materiales_b3():
+    tz_buenos_aires = pytz.timezone('America/Argentina/Buenos_Aires')
+
+    fecha_actual = datetime.now(tz_buenos_aires).date()
+
+    # Obtener la hora actual en Buenos Aires
+    hora_actual_utc = datetime.now(timezone('UTC'))
+    hora_actual_buenos_aires = hora_actual_utc.astimezone(app.config['TIMEZONE'])
+
+    # Convertir la hora a un objeto 'time' de Python
+    hora_actual_str = hora_actual_buenos_aires.strftime('%H:%M')
+    hora_actual_obj = datetime.strptime(hora_actual_str, '%H:%M').time()
+
+    if request.method == 'POST':
+
+        observaciones = request.form.get('observaciones')
+        camara_termica = request.form.get('camara_termica')
+        pistola_termica = request.form.get('pistola_termica')
+        reflector_portatil = request.form.get('reflector_portatil')
+        cinta_de_vallado = request.form.get('cinta_de_vallado')
+        alcohol_en_gel = request.form.get('alcohol_en_gel')
+        matafuego_5kg = request.form.get('matafuego_5kg')
+        kit_balizas = request.form.get('kit_balizas')
+        plano_de_vcp = request.form.get('plano_de_vcp')
+        lanza_nh_2 = request.form.get('lanza_nh_2')
+        lanzas_nh_1medio = request.form.get('lanzas_nh_1medio')  # Cambio de nombre
+        filtro_manguerote = request.form.get('filtro_manguerote')
+        llave_stz_manguerote = request.form.get('llave_stz_manguerote')
+        llave_nh = request.form.get('llave_nh')
+        halligan = request.form.get('halligan')
+        era_con_mascara = request.form.get('era_con_mascara')
+        y_stz = request.form.get('y_stz')
+        conos = request.form.get('conos')
+        acople_dinnem_stz = request.form.get('acople_dinnem_stz')
+        reductor_stz_ww_2medio_a_1medio = request.form.get('reductor_stz_ww_2medio_a_1medio')
+        reductor_stz_a_nh_1medio = request.form.get('reductor_stz_a_nh_1medio')
+        reductor_stz_a_nh_1 = request.form.get('reductor_stz_a_nh_1')
+        reductor_stz_2_a_stz_1medio = request.form.get('reductor_stz_2_a_stz_1medio')
+        reductor_stz_2_a_nh_1medio = request.form.get('reductor_stz_2_a_nh_1medio')
+        reductor_stz_2_a_nh_1 = request.form.get('reductor_stz_2_a_nh_1')
+        reductor_stz_2_a_stz_1 = request.form.get('reductor_stz_2_a_stz_1')
+        acople_din_stz = request.form.get('acople_din_stz')
+        acople_stz_a_nh_2 = request.form.get('acople_stz_a_nh_2')
+        llave_stz = request.form.get('llave_stz')
+        desvanadera = request.form.get('desvanadera')
+        pertiga = request.form.get('pertiga')
+        manguerote = request.form.get('manguerote')
+        escalera = request.form.get('escalera')
+        linea_nh_1medio = request.form.get('linea_nh_1medio')
+        linea_nh_2 = request.form.get('linea_nh_2')
+        linea_stz_1medio = request.form.get('linea_stz_1medio')
+        linea_stz_2 = request.form.get('linea_stz_2')
+        bolso_prehospitalario = request.form.get('bolso_prehospitalario')
+        columna_hidrante = request.form.get('columna_hidrante')
+        trancha = request.form.get('trancha')
+
+        nuevo_registro = MaterialesB3(
+            fecha=fecha_actual,
+            hora=hora_actual_obj,
+            numero_legajo=current_user.numero_legajo,
+            observaciones=observaciones,
+            camara_termica=camara_termica,
+            pistola_termica=pistola_termica,
+            reflector_portatil=reflector_portatil,
+            cinta_de_vallado=cinta_de_vallado,
+            alcohol_en_gel=alcohol_en_gel,
+            matafuego_5kg=matafuego_5kg,
+            kit_balizas=kit_balizas,
+            plano_de_vcp=plano_de_vcp,
+            lanza_nh_2=lanza_nh_2,
+            lanzas_nh_1medio=lanzas_nh_1medio,
+            filtro_manguerote=filtro_manguerote,
+            llave_stz_manguerote=llave_stz_manguerote,
+            llave_nh=llave_nh,
+            halligan=halligan,
+            era_con_mascara=era_con_mascara,
+            y_stz=y_stz,
+            conos=conos,
+            acople_dinnem_stz=acople_dinnem_stz,
+            reductor_stz_ww_2medio_a_1medio=reductor_stz_ww_2medio_a_1medio,
+            reductor_stz_a_nh_1medio=reductor_stz_a_nh_1medio,
+            reductor_stz_a_nh_1=reductor_stz_a_nh_1,
+            reductor_stz_2_a_stz_1medio=reductor_stz_2_a_stz_1medio,
+            reductor_stz_2_a_nh_1medio=reductor_stz_2_a_nh_1medio,
+            reductor_stz_2_a_nh_1=reductor_stz_2_a_nh_1,
+            reductor_stz_2_a_stz_1=reductor_stz_2_a_stz_1,
+            acople_din_stz=acople_din_stz,
+            acople_stz_a_nh_2=acople_stz_a_nh_2,
+            llave_stz=llave_stz,
+            desvanadera=desvanadera,
+            pertiga=pertiga,
+            manguerote=manguerote,
+            escalera=escalera,
+            linea_nh_1medio=linea_nh_1medio,
+            linea_nh_2=linea_nh_2,
+            linea_stz_1medio=linea_stz_1medio,
+            linea_stz_2=linea_stz_2,
+            bolso_prehospitalario=bolso_prehospitalario,
+            columna_hidrante=columna_hidrante,
+            trancha=trancha
+        )
+
+        try:
+            db.session.add(nuevo_registro)
+            db.session.commit()
+            flash('Registro guardado exitosamente.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error al guardar el registro: {str(e)}', 'danger')
+
+        return redirect(url_for('materiales_b3'))
+
+    registros = MaterialesB3.query.all()
+    return render_template('materiales_b3.html', registros=registros)
+
 #------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------
 

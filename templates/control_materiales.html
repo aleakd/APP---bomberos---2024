@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row">
+
+       <div class="col-md-6">
+           <a href="{{ url_for('materiales_r1') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/matye.jpg') }}'); background-size: cover;">Control Mat. R1</a>
+       </div>
+
+
+       <div class="col-md-6">
+           <a href="{{ url_for('materiales_b3') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/portlic.jpg') }}'); background-size: cover;">Control Mat. B3</a>
+       </div>
+
+</div>
+
+
+{% endblock %}

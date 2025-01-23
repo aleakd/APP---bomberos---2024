@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="portada_matyequipos">
+
+</div>
+
+
+<div class="container">
+    {% with messages = get_flashed_messages() %}
+  {% if messages %}
+  <div class="mensaa alert alert-light">
+    <ul class="list-unstyled">
+      {% for message in messages %}
+      <li> <h2 id="miH202">{{ message }}</h2></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  {% endwith %}
+
+</div>
+
+
+
+<form action="{{ url_for('materiales_r1') }}" method="POST" class="form_automotores">
+    <input type="hidden" name="materiales_r1" value="1">
+    <div class="container">
+        <h2>Control de Materiales R1</h2>
+
+        {% macro radio_field(name, placeholder) %}
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="d-flex align-items-center">
+                    <div class="me-3 etiquetaaa">{{ placeholder }}:</div>
+                    <div class="form-check me-3">
+                        <input class="form-check-input" type="radio" name="{{ name }}" id="{{ name }}_ok" value="✔" required>
+                        <label class="form-check-label" for="{{ name }}_ok">
+                            ✔
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="{{ name }}" id="{{ name }}_error" value="X" required>
+                        <label class="form-check-label" for="{{ name }}_error">
+                            X
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endmacro %}
+        <h2>CABINA</h2>
+        {{ radio_field('cinta_de_vallado', '1 Cinta de Vallado') }}
+        {{ radio_field('alcohol_en_gel', '1 Alcohol en Gel') }}
+        {{ radio_field('llave_de_ascensor', '1 Llave de Ascensor') }}
+        {{ radio_field('herramienta_multiproposito_manual', '1 Herramienta Multipropósito Manual') }}
+        {{ radio_field('bateria_luz', '1 Batería Luz') }}
+        {{ radio_field('mapa_vcp', '1 Mapa VCP') }}
+        {{ radio_field('llave_del_11', '1 Llave del 11') }}
+        {{ radio_field('par_de_guantes_de_rescate', '1 Par de Guantes de Rescate') }}
+        {{ radio_field('kit_balizas', '1 Kit Balizas') }}
+        {{ radio_field('extintor_1k', '1 Extintor 1K') }}
+        {{ radio_field('tubo_de_oxigeno', '1 Tubo de Oxígeno') }}
+        {{ radio_field('gato', '1 Gato') }}
+        {{ radio_field('caja_guantes_nitrilo', '1 Caja Guantes Nitrilo') }}
+<h2>CAJA SUPERIOR </h2>
+        {{ radio_field('luz_de_escena', '1 Luz de Escena') }}
+        {{ radio_field('conos', '6 Conos') }}
+        {{ radio_field('colcha', '1 Colcha') }}
+        {{ radio_field('estabilizadores', '2 Estabilizadores') }}
+        {{ radio_field('bolso_cubre_parantes', '1 Bolso Cubre Parantes') }}
+        {{ radio_field('cojinetes_inflables', '3 Cojinetes Inflables') }}
+        {{ radio_field('consola_de_comando_dual', '1 Consola de Comando Dual') }}
+        {{ radio_field('bolso_con_las_mangueras', '1 Bolso con las Mangueras') }}
+        {{ radio_field('tubo', '1 Tubo') }}
+        {{ radio_field('mochila_de_juguetes', '1 Mochila de Juguetes') }}
+        {{ radio_field('bolso_prehospitalario', '1 Bolso Prehospitalario') }}
+        {{ radio_field('bolso_de_trauma', '1 Bolso de Trauma') }}
+        {{ radio_field('bolso_de_parto', '1 Bolso de Parto') }}
+        {{ radio_field('chaleco_extraccion_adulto', '1 Chaleco Extracción Adulto') }}
+        {{ radio_field('chaleco_extraccion_pediatric', '1 Chaleco Extracción Pediatric') }}
+        {{ radio_field('bolso_de_ferulas_semi_rigidas',  '1 Bolso de Férulas Semi Rígidas') }}
+        {{ radio_field('bolso_de_airbag', '1 Bolso de Airbag') }}
+        {{ radio_field('valija_de_cubre_airbag', '1 Valija de Cubre Airbag') }}
+        {{ radio_field('equipos_de_bioseguridad', '10 Equipos de Bioseguridad') }}
+        {{ radio_field('sierra_sable', '1 Sierra Sable') }}
+<h2>TECHO </h2>
+        {{ radio_field('techo_escalera', '1 Techo Escalera') }}
+        {{ radio_field('tablas_espinal_largas', '2 Tablas Espinal Largas') }}
+
+<h2>CAJA INFERIOR:</h2>
+        {{ radio_field('masa', '1 Masa') }}
+        {{ radio_field('hooligans', '1 Hooligans') }}
+        {{ radio_field('trancha_mediana', '1 Trancha Mediana') }}
+        {{ radio_field('cunas', '20 Cuñas') }}
+        {{ radio_field('cuña_escalonada', '1 Cuña Escalonada') }}
+        {{ radio_field('tabla_espinal_mediana', '1 Tabla Espinal Mediana') }}
+        {{ radio_field('tabla_espinal_chica', '1 Tabla Espinal Chica') }}
+        {{ radio_field('holomastro', '1 Holomastro') }}
+        {{ radio_field('expansor', '1 Expansor') }}
+        {{ radio_field('multipropósito', '1 Multipropósito') }}
+        {{ radio_field('cizalla', '1 Cizalla') }}
+        {{ radio_field('ram', '1 RAM') }}
+        {{ radio_field('bolsa_de_aserrin', '1 Bolsa de Aserrín') }}
+        {{ radio_field('barreta_chica', '1 Barreta Chica') }}
+        {{ radio_field('extintor_5k', '1 Extintor 5K') }}
+        {{ radio_field('bidon_nafta', '1 Bidón Nafta') }}
+
+        <div class="row mb-3">
+            <div class="col-12">
+                <textarea name="observaciones" class="form-control" placeholder="Observaciones" rows="6"></textarea>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 text-end">
+                <button type="submit" class="btn btn-primary">Registrar</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<div class="table-responsive">
+    <h1 class="titulo">Tabla Control de Materiales R1</h1>
+    <table class="table tabla_bomberos table-responsive" id="TableMaterialesR1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Legajo</th>
+                <th>Cinta de Vallado</th>
+                <th>Alcohol en Gel</th>
+                <th>Llave de Ascensor</th>
+                <th>Herramienta Multipropósito Manual</th>
+                <th>Batería Luz</th>
+                <th>Mapa VCP</th>
+                <th>Llave del 11</th>
+                <th>Par de Guantes de Rescate</th>
+                <th>Kit Balizas</th>
+                <th>Extintor 1K</th>
+                <th>Tubo de Oxígeno</th>
+                <th>Gato</th>
+                <th>Caja Guantes Nitrilo</th>
+                <th>Luz de Escena</th>
+                <th>Conos</th>
+                <th>Colcha</th>
+                <th>Estabilizadores</th>
+                <th>Bolso Cubre Parantes</th>
+                <th>Cojinetes Inflables</th>
+                <th>Consola de Comando Dual</th>
+                <th>Bolso con las Mangueras</th>
+                <th>Tubo</th>
+                <th>Mochila de Juguetes</th>
+                <th>Bolso Prehospitalario</th>
+                <th>Bolso de Trauma</th>
+                <th>Bolso de Parto</th>
+                <th>Chaleco Extracción Adulto</th>
+                <th>Chaleco Extracción Pediátrico</th>
+                <th>Bolso de Férulas Semi Rígidas</th>
+                <th>Bolso de Airbag</th>
+                <th>Valija de Cubre Airbag</th>
+                <th>Equipos de Bioseguridad</th>
+                <th>Sierra Sable</th>
+                <th>Techo Escalera</th>
+                <th>Tablas Espinal Largas</th>
+                <th>Masa</th>
+                <th>Hooligans</th>
+                <th>Trancha Mediana</th>
+                <th>Cunas</th>
+                <th>Cuña Escalonada</th>
+                <th>Tabla Espinal Mediana</th>
+                <th>Tabla Espinal Chica</th>
+                <th>Holomatro</th>
+                <th>Expansor</th>
+                <th>Multipropósito</th>
+                <th>Cizalla</th>
+                <th>Ram</th>
+                <th>Bolsa de Aserrín</th>
+                <th>Barreta Chica</th>
+                <th>Extintor 5K</th>
+                <th>Bidón Nafta</th>
+                <th>Observaciones</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for material in materialesr1 %}
+            <tr>
+                <td>{{ material.id }}</td>
+                <td>{{ material.fecha }}</td>
+                <td>{{ material.hora }}</td>
+                <td>{{ material.numero_legajo }}</td>
+                <td>{{ material.cinta_de_vallado }}</td>
+                <td>{{ material.alcohol_en_gel }}</td>
+                <td>{{ material.llave_de_ascensor }}</td>
+                <td>{{ material.herramienta_multiproposito_manual }}</td>
+                <td>{{ material.bateria_luz }}</td>
+                <td>{{ material.mapa_vcp }}</td>
+                <td>{{ material.llave_del_11 }}</td>
+                <td>{{ material.par_de_guantes_de_rescate }}</td>
+                <td>{{ material.kit_balizas }}</td>
+                <td>{{ material.extintor_1k }}</td>
+                <td>{{ material.tubo_de_oxigeno }}</td>
+                <td>{{ material.gato }}</td>
+                <td>{{ material.caja_guantes_nitrilo }}</td>
+                <td>{{ material.luz_de_escena }}</td>
+                <td>{{ material.conos }}</td>
+                <td>{{ material.colcha }}</td>
+                <td>{{ material.estabilizadores }}</td>
+                <td>{{ material.bolso_cubre_parantes }}</td>
+                <td>{{ material.cojinetes_inflables }}</td>
+                <td>{{ material.consola_de_comando_dual }}</td>
+                <td>{{ material.bolso_con_las_mangueras }}</td>
+                <td>{{ material.tubo }}</td>
+                <td>{{ material.mochila_de_juguetes }}</td>
+                <td>{{ material.bolso_prehospitalario }}</td>
+                <td>{{ material.bolso_de_trauma }}</td>
+                <td>{{ material.bolso_de_parto }}</td>
+                <td>{{ material.chaleco_extraccion_adulto }}</td>
+                <td>{{ material.chaleco_extraccion_pediatric }}</td>
+                <td>{{ material.bolso_de_ferulas_semi_rigidas }}</td>
+                <td>{{ material.bolso_de_airbag }}</td>
+                <td>{{ material.valija_de_cubre_airbag }}</td>
+                <td>{{ material.equipos_de_bioseguridad }}</td>
+                <td>{{ material.sierra_sable }}</td>
+                <td>{{ material.techo_escalera }}</td>
+                <td>{{ material.tablas_espinal_largas }}</td>
+                <td>{{ material.masa }}</td>
+                <td>{{ material.hooligans }}</td>
+                <td>{{ material.trancha_mediana }}</td>
+                <td>{{ material.cunas }}</td>
+                <td>{{ material.cuña_escalonada }}</td>
+                <td>{{ material.tabla_espinal_mediana }}</td>
+                <td>{{ material.tabla_espinal_chica }}</td>
+                <td>{{ material.holomatro }}</td>
+                <td>{{ material.expansor }}</td>
+                <td>{{ material.multipropósito }}</td>
+                <td>{{ material.cizalla }}</td>
+                <td>{{ material.ram }}</td>
+                <td>{{ material.bolsa_de_aserrin }}</td>
+                <td>{{ material.barreta_chica }}</td>
+                <td>{{ material.extintor_5k }}</td>
+                <td>{{ material.bidon_nafta }}</td>
+                <td>{{ material.observaciones }}</td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#TableMaterialesR1').DataTable();
+    });
+</script>
+<script>
+        setInterval(function() {
+            var h2 = document.getElementById('miH202');
+            h2.classList.toggle('cambio-color');
+        }, 1000);
+</script>
+
+
+
+{% endblock %}

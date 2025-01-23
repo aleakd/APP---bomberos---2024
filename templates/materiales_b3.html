@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="portada_licencias"></div>
+
+<div class="container">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="mensaa alert alert-light">
+        <ul class="list-unstyled">
+            {% for message in messages %}
+            <li> <h2 id="miH202">{{ message }}</h2></li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    {% endwith %}
+</div>
+
+<form action="{{ url_for('materiales_b3') }}" method="POST" class="form_automotores">
+    <input type="hidden" name="materiales_r1" value="1">
+    <div class="container">
+        <h2>Control de Materiales B-3</h2>
+
+        {% macro radio_field(name, placeholder) %}
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="d-flex align-items-center">
+                    <div class="me-3 etiquetaaa">{{ placeholder }}:</div>
+                    <div class="form-check me-3">
+                        <input class="form-check-input" type="radio" name="{{ name }}" id="{{ name }}_ok" value="✔" required>
+                        <label class="form-check-label" for="{{ name }}_ok">
+                            ✔
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="{{ name }}" id="{{ name }}_error" value="X" required>
+                        <label class="form-check-label" for="{{ name }}_error">
+                            X
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endmacro %}
+
+        <!-- Campos agrupados de manera más lógica -->
+        {{ radio_field('camara_termica', 'Cámara Térmica') }}
+        {{ radio_field('pistola_termica', 'Pistola Térmica') }}
+        {{ radio_field('reflector_portatil', 'Reflector Portátil') }}
+        {{ radio_field('cinta_de_vallado', 'Cinta de Vallado') }}
+        {{ radio_field('alcohol_en_gel', 'Alcohol en Gel') }}
+        {{ radio_field('matafuego_5kg', 'Matafuego 5kg') }}
+        {{ radio_field('kit_balizas', 'Kit Balizas') }}
+        {{ radio_field('plano_de_vcp', 'Plano de VCP') }}
+        {{ radio_field('lanza_nh_2', 'Lanza NH 2') }}
+        {{ radio_field('lanzas_nh_1medio', 'Lanzas NH 1 Medio') }}
+
+        <!-- Campos relacionados a conexiones y reductores -->
+        {{ radio_field('filtro_manguerote', 'Filtro Manguerote') }}
+        {{ radio_field('llave_stz_manguerote', 'Llave STZ Manguerote') }}
+        {{ radio_field('llave_nh', 'Llave NH') }}
+        {{ radio_field('halligan', 'Halligan') }}
+        {{ radio_field('era_con_mascara', 'ERA con Máscara') }}
+        {{ radio_field('y_stz', 'Y STZ') }}
+        {{ radio_field('conos', 'Conos') }}
+        {{ radio_field('acople_dinnem_stz', 'Acople Dinnem STZ') }}
+        {{ radio_field('reductor_stz_ww_2medio_a_1medio', 'Reductor STZ WW 2 Medio a 1 Medio') }}
+        {{ radio_field('reductor_stz_a_nh_1medio', 'Reductor STZ a NH 1 Medio') }}
+        {{ radio_field('reductor_stz_a_nh_1', 'Reductor STZ a NH 1') }}
+        {{ radio_field('reductor_stz_2_a_stz_1medio', 'Reductor STZ 2 a STZ 1 Medio') }}
+        {{ radio_field('reductor_stz_2_a_nh_1medio', 'Reductor STZ 2 a NH 1 Medio') }}
+        {{ radio_field('reductor_stz_2_a_nh_1', 'Reductor STZ 2 a NH 1') }}
+        {{ radio_field('reductor_stz_2_a_stz_1', 'Reductor STZ 2 a STZ 1') }}
+        {{ radio_field('acople_din_stz', 'Acople DIN STZ') }}
+        {{ radio_field('acople_stz_a_nh_2', 'Acople STZ a NH 2') }}
+        {{ radio_field('llave_stz', 'Llave STZ') }}
+
+        <!-- Otros materiales -->
+        {{ radio_field('desvanadera', 'Desvanadera') }}
+        {{ radio_field('pertiga', 'Pértiga') }}
+        {{ radio_field('manguerote', 'Manguerote') }}
+        {{ radio_field('escalera', 'Escalera') }}
+        {{ radio_field('linea_nh_1medio', 'Línea NH 1 Medio') }}
+        {{ radio_field('linea_nh_2', 'Línea NH 2') }}
+        {{ radio_field('linea_stz_1medio', 'Línea STZ 1 Medio') }}
+        {{ radio_field('linea_stz_2', 'Línea STZ 2') }}
+        {{ radio_field('bolso_prehospitalario', 'Bolso Prehospitalario') }}
+        {{ radio_field('columna_hidrante', 'Columna Hidrante') }}
+        {{ radio_field('trancha', 'Trancha') }}
+
+        <div class="row mb-3">
+            <div class="col-12">
+                <textarea name="observaciones" class="form-control" placeholder="Observaciones" rows="6"></textarea>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 text-end">
+                <button type="submit" class="btn btn-primary">Registrar</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    $(document).ready(function () {
+        $('#TableMaterialesB3').DataTable();
+    });
+</script>
+
+<script>
+    setInterval(function() {
+        var h2 = document.getElementById('miH202');
+        h2.classList.toggle('cambio-color');
+    }, 1000);
+</script>
+
+{% endblock %}
