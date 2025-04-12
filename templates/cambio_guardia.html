@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4 titulo">Registro de Cambios de Guardia</h2>
+
+
+
+<div class="container">
+    {% with messages = get_flashed_messages() %}
+  {% if messages %}
+  <div class="mensaa alert alert-light">
+    <ul class="list-unstyled">
+      {% for message in messages %}
+      <li> <h2 id="miH202">{{ message }}</h2></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  {% endwith %}
+
+</div>
+
+    <form method="POST" class="mb-5">
+        <div class="row">
+            <div class="col-md-4">
+                <label for="tipo_solicitud">Tipo de Solicitud</label>
+                <select name="tipo_solicitud" class="form-control" required>
+                    <option value="">Seleccione</option>
+                    <option value="cambio">Solicitud</option>
+                    <option value="devolucion">Devolución</option>
+                </select>
+            </div>
+
+            <div class="col-md-8">
+                <label for="motivo">Motivo</label>
+                <select name="motivo" class="form-control" required>
+                    <option value="">Seleccione</option>
+                    <option value="Estudio">Estudio</option>
+                    <option value="Trabajo">Trabajo</option>
+                    <option value="Familiar">Familiar</option>
+                    <option value="Salud">Salud</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-md-4">
+                <label for="fecha_ausencia">Fecha de Ausencia</label>
+                <input type="date" name="fecha_ausencia" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+                <label for="hora_desde">Hora Desde</label>
+                <input type="time" name="hora_desde" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+                <label for="hora_hasta">Hora Hasta</label>
+                <input type="time" name="hora_hasta" class="form-control" required>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-md-4">
+                <label for="legajo_quien_cubre">Legajo Quien Cubre</label>
+                <input type="number" name="legajo_quien_cubre" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+                <label for="id_cambio_original">ID de Cambio Original (solo para devolución)</label>
+                <input type="number" name="id_cambio_original" class="form-control" placeholder="Opcional para devolver un cambio">
+            </div>
+            <div class="col-md-4">
+                <label for="jefe_guardia">jefe de guardia</label>
+                <input type="text" name="jefe_guardia" class="form-control" placeholder="Jefe de guardia">
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Registrar</button>
+        </div>
+    </form>
+
+    <hr>
+
+    <h4 class="mb-3">Historial de Cambios</h4>
+    <table class="table table-bordered table-hover table-responsive" id="tablacambiosguardia">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha Registro</th>
+                <th>Hora</th>
+                <th>Tipo</th>
+                <th>Solicitante</th>
+                <th>Motivo</th>
+                <th>Fecha Ausencia</th>
+                <th>Jefe de guardia</th>
+                <th>Desde</th>
+                <th>Hasta</th>
+                <th>Quien Cubre</th>
+                <th>Dev. de Cambio ID</th>
+                <th>Estado de Cambio</th>
+                {% if current_user.rol == 'admin' %}
+                <th>Aprobacion</th>
+                {% endif %}
+                <th>Copiar</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in cambios %}
+            <tr>
+                <td>{{ c.id }}</td>
+                <td>{{ c.fecha }}</td>
+                <td>{{ c.hora.strftime('%H:%M') }}</td>
+                <td>{{ c.tipo_solicitud }}</td>
+                <td>{{ c.legajo_solicitante }}</td>
+                <td>{{ c.motivo }}</td>
+                <td>{{ c.fecha_ausencia }}</td>
+                <td>{{ c.jefe_guardia }}</td>
+                <td>{{ c.hora_desde }}</td>
+                <td>{{ c.hora_hasta }}</td>
+                <td>{{ c.legajo_quien_cubre }}</td>
+                <td>{{ c.id_cambio_original or '-' }}</td>
+                <td>{{ c.estado_confirmacion.value }}</td>
+                 {% if current_user.rol == 'admin' %}
+                 <td>
+    <a href="{{ url_for('confirmar_cobertura', id_cambio=c.id) }}" class="btn btn-primary btn-sm">
+        Confirmar Cobertura
+    </a>
+</td>
+                {% else %}
+        {{ c.estado_confirmacion.value|capitalize }}
+    {% endif %}
+
+
+                <td>
+                    <button type="button"
+    class="btn btn-primary copiar-cambio-guardia"
+    data-tipo_solicitud="{{ c.tipo_solicitud }}"
+    data-legajo_solicitante="{{ c.legajo_solicitante }}"
+    data-motivo="{{ c.motivo }}"
+    data-fecha_ausencia="{{ c.fecha_ausencia }}"
+    data-jefe_guardia="{{ c.jefe_guardia }}"
+    data-hora_desde="{{ c.hora_desde }}"
+    data-hora_hasta="{{ c.hora_hasta }}"
+    data-legajo_quien_cubre="{{ c.legajo_quien_cubre }}"
+>
+    Copiar Información
+</button>
+</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script>
+    document.querySelectorAll('.copiar-cambio-guardia').forEach(button => {
+        button.addEventListener('click', function () {
+            const tipoSolicitud = this.getAttribute('data-tipo_solicitud');
+            const legajoSolicitante = this.getAttribute('data-legajo_solicitante');
+            const motivo = this.getAttribute('data-motivo');
+            const fechaAusencia = this.getAttribute('data-fecha_ausencia');
+            const jefeguardia = this.getAttribute('data-jefe_guardia');
+            const horaDesde = this.getAttribute('data-hora_desde');
+            const horaHasta = this.getAttribute('data-hora_hasta');
+            const legajoQuienCubre = this.getAttribute('data-legajo_quien_cubre');
+
+            const formato = `
+🛡️ Registro de Cambio de Guardia
+- Tipo de Solicitud: ${tipoSolicitud}
+- Legajo Solicitante: ${legajoSolicitante}
+- Motivo: ${motivo}
+- Fecha de Ausencia: ${fechaAusencia}
+- Jefe de Guardia: ${jefeguardia}
+- Desde: ${horaDesde}
+- Hasta: ${horaHasta}
+- Cubre Legajo: ${legajoQuienCubre}
+            `;
+
+            navigator.clipboard.writeText(formato.trim()).then(() => {
+                alert('Información copiada al portapapeles');
+            }).catch(err => {
+                alert('Hubo un error al copiar la información: ', err);
+            });
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#tablacambiosguardia').DataTable();
+    });
+</script>
+
+<script>
+        setInterval(function() {
+            var h2 = document.getElementById('miH202');
+            h2.classList.toggle('cambio-color');
+        }, 1000);
+</script>
+
+
+{% endblock %}

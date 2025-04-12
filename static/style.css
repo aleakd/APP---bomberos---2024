@@ -33,6 +33,25 @@ background-image: url('/static/img/portlic.jpg');
     padding: 10rem;
 }
 
+.portada_asistencia {
+    position: relative;
+    width: 100%;
+    height: 80vh; /* O el tamaño que necesites */
+    overflow: hidden;
+}
+.portada_asistencia h1{
+color:white;
+}
+#videoFondo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Para que el video cubra todo el contenedor */
+    z-index: -1; /* Para que quede detrás del contenido */
+}
 
 
 .separadorhr{
@@ -273,6 +292,7 @@ margin-bottom: 0.5rem;
 font-weight: bold;
 }
 
+
 #asist_del{
 background-color:black;
 margin:2% 10%;
@@ -414,7 +434,7 @@ box-shadow: 3px 6px 110px #ccc;
 
 
 .container {
-    width: 80%;
+    width: 95%;
     margin: auto;
     padding: 20px;
     background-color: #fff;
@@ -478,22 +498,21 @@ box-shadow: 3px 6px 110px #ccc;
 }
 
 
- .form_automotores label {
+.form_automotores label {
             font-size: 1.2em; /* Ajusta el tamaño de fuente según lo desees */
             font-weight: bold; /* Pone el texto en negrita */
         }
 
- .etiquetaaa{
+.etiquetaaa{
  font-size:22px;
  font-weight:bold;
  }
 
-
- .form_automotores{
+.form_automotores{
  background-color:#ef9139;
  }
 
-  #tablaautomotores th{
+#tablaautomotores th{
  background-color:#ef9139;
  color:black;
  }
@@ -513,5 +532,43 @@ box-shadow: 3px 6px 110px #ccc;
 
 
 
+
+.form_controles{
+background-color:ACB9B9;
+font-size:15px;
+margin:2% 5%;
+border: 9px solid #FDFDFD;
+padding: 10px;
+width: 90%;
+border-radius: 5px;
+box-shadow: 3px 6px 110px #ccc
+
+}
+.form_controles .container{
+width: 95%;
+    margin: auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 50px;
+    border-radius: 10px;
+}
+
+
+.form_controles .etiquetaaa{
+font-size: 14px;
+font-weight:lighter ;
+text-align:left;
+}
+
+
+
+video {
+    width: 100%; /* Hace que el video ocupe todo el ancho del contenedor */
+    height: auto; /* Ajusta la altura automáticamente para mantener la relación de aspecto */
+    max-width: 100%; /* Evita que el video se estire más allá del 100% de su contenedor */
+    display: block; /* Elimina el espacio debajo del video */
+    margin: 0 auto; /* Centra el video en el contenedor */
+}
 
 

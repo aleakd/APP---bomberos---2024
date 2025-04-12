@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Control del Bolso Prehospitalario - B3</h2>
+
+    <a href="{{ url_for('control_materiales') }}" class="btn btn-warning mt-3">Volver a Controles</a>
+
+    <!-- Imagen del bolso con lista de contenido -->
+    <div class="text-center mb-3">
+        <img src="{{ url_for('static', filename='img/bolso_pre_b3.jpg') }}" alt="Contenido del Bolso R1" class="img-fluid">
+    </div>
+
+    <!-- Formulario de control -->
+    <form method="POST" class="form_controles">
+        <h2>Bolso Prehospitalario B3</h2>
+        <div class="mb-3">
+            <label class="form-label">Estado del Bolso:</label><br>
+            <input class="form-check-input" type="radio" name="estado_bolso" value="✓" required> ✅ OK
+            <br>
+            <input class="form-check-input" type="radio" name="estado_bolso" value="✗" required> ❌ Falla
+        </div>
+        <div class="mb-3">
+            <label for="observaciones" class="form-label">Observaciones:</label>
+            <textarea id="observaciones" name="observaciones" class="form-control" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar Registro</button>
+    </form>
+
+    <!-- Tabla de registros -->
+    <h3 class="mt-4">Registros Anteriores</h3>
+    <table class="table tabla_bomberos table-responsive" id="TablebolsoB3">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Legajo</th>
+                <th>Estado</th>
+                <th>Observaciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for registro in registros %}
+            <tr>
+                <td>{{ registro.id }}</td>
+                <td>{{ registro.fecha }}</td>
+                <td>{{ registro.hora }}</td>
+                <td>{{ registro.numero_legajo }}</td>
+                <td>{{ registro.estado_bolso }}</td>
+                <td>{{ registro.observaciones }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#TablebolsoB3').DataTable();
+    });
+</script>
+{% endblock %}

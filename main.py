@@ -6,6 +6,8 @@ from functools import wraps
 import pytz
 from sqlalchemy import func  # Import func aquí
 from sqlalchemy import text, extract, desc
+from sqlalchemy import  Enum as SqlEnum
+import enum
 from collections import Counter
 from werkzeug.middleware.proxy_fix import ProxyFix
 from pytz import timezone
@@ -339,6 +341,63 @@ class MaterialesB3(db.Model):
     bolso_prehospitalario = db.Column(db.String(10), nullable=True)
     columna_hidrante = db.Column(db.String(10), nullable=True)
     trancha = db.Column(db.String(10), nullable=True)
+
+
+class ControlBolsoR1(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.Date, nullable=False)
+    hora = db.Column(db.Time, nullable=False)
+    numero_legajo = db.Column(db.String(10), nullable=False)
+    estado_bolso = db.Column(db.String(10), nullable=False)  # 'OK' o 'X'
+    observaciones = db.Column(db.Text, nullable=True)
+
+
+class ControlBolsoB3(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.Date, nullable=False)
+    hora = db.Column(db.Time, nullable=False)
+    numero_legajo = db.Column(db.String(10), nullable=False)
+    estado_bolso = db.Column(db.String(10), nullable=False)  # 'OK' o 'X'
+    observaciones = db.Column(db.Text, nullable=True)
+
+
+class MaterialesBF1(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.Date, nullable=False)
+    hora = db.Column(db.Time, nullable=False)
+    numero_legajo = db.Column(db.String(10), nullable=False)
+    estado_bolso = db.Column(db.String(10), nullable=False)  # 'OK' o 'X'
+    colaborador1 = db.Column(db.String(10), nullable=False)
+    colaborador2 = db.Column(db.String(10), nullable=False)
+    observaciones = db.Column(db.Text, nullable=True)
+
+class EstadoConfirmacion(enum.Enum):
+    pendiente = "pendiente"
+    confirmado = "confirmado"
+    rechazado = "rechazado"
+
+class CambioGuardia(db.Model):
+    __tablename__ = 'CambioGuardia'
+
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.Date, nullable=False)
+    hora = db.Column(db.Time, nullable=False)
+    legajo_solicitante = db.Column(db.Integer, nullable=False)
+    tipo_solicitud = db.Column(db.Enum('cambio', 'devolucion'), nullable=False)
+    motivo = db.Column(db.String(100))
+    fecha_ausencia = db.Column(db.Date, nullable=False)
+    jefe_guardia = db.Column(db.String(50), nullable=True)
+    hora_desde = db.Column(db.Time, nullable=False)
+    hora_hasta = db.Column(db.Time, nullable=False)
+    legajo_quien_cubre = db.Column(db.Integer, nullable=False)
+    id_cambio_original = db.Column(db.Integer, db.ForeignKey('CambioGuardia.id'), nullable=True)
+    estado_confirmacion = db.Column(SqlEnum(EstadoConfirmacion), default=EstadoConfirmacion.pendiente, nullable=False)
+    fecha_confirmacion = db.Column(db.DateTime, nullable=True)
+
+
+
+
+
 
 
 # Line below only required once, when creating DB.
@@ -767,7 +826,78 @@ def cambiosguardia():
     apellidos = {bombero.legajo_numero: bombero.apellido for bombero in Bomberos.query.all()}
     return render_template("cambiosguardia.html", cambios=cambios, apellidos=apellidos)
 
+#---------------------------------------------------------------------------------------------
+@app.route('/cambio_guardia', methods=['GET', 'POST'])
+def cambio_guardia():
+    if request.method == 'POST':
+        tz_buenos_aires = pytz.timezone('America/Argentina/Buenos_Aires')
 
+        fecha_actual = datetime.now(tz_buenos_aires).date()
+
+        # Obtener la hora actual en Buenos Aires
+        hora_actual_utc = datetime.now(timezone('UTC'))
+        hora_actual_buenos_aires = hora_actual_utc.astimezone(app.config['TIMEZONE'])
+
+        # Convertir la hora a un objeto 'time' de Python
+        hora_actual_str = hora_actual_buenos_aires.strftime('%H:%M')
+        hora_actual_obj = datetime.strptime(hora_actual_str, '%H:%M').time()
+
+        tipo_solicitud = request.form.get('tipo_solicitud')
+        if not tipo_solicitud:
+            flash("Debe seleccionar un tipo de solicitud", "danger")
+            return redirect(url_for('cambio_guardia'))
+        #legajo_solicitante = int(request.form['legajo_solicitante'])
+        motivo = request.form['motivo']
+        fecha_ausencia = datetime.strptime(request.form['fecha_ausencia'], '%Y-%m-%d').date()
+        jefe_guardia = request.form['jefe_guardia']
+        hora_desde = datetime.strptime(request.form['hora_desde'], '%H:%M').time()
+        hora_hasta = datetime.strptime(request.form['hora_hasta'], '%H:%M').time()
+        legajo_quien_cubre = int(request.form['legajo_quien_cubre'])
+
+        id_cambio_original = request.form.get('id_cambio_original')
+        id_cambio_original = int(id_cambio_original) if id_cambio_original else None
+
+        nuevo_cambio = CambioGuardia(
+            fecha=fecha_actual,
+            hora=hora_actual_obj,
+            tipo_solicitud=tipo_solicitud,
+            legajo_solicitante=current_user.numero_legajo,
+            motivo=motivo,
+            fecha_ausencia=fecha_ausencia,
+            jefe_guardia=jefe_guardia,
+            hora_desde=hora_desde,
+            hora_hasta=hora_hasta,
+            legajo_quien_cubre=legajo_quien_cubre,
+            id_cambio_original=id_cambio_original,
+            estado_confirmacion=EstadoConfirmacion.pendiente
+        )
+
+        db.session.add(nuevo_cambio)
+        db.session.commit()
+        flash('Cambio registrado correctamente.Pendiente de confirmacion')
+        return redirect(url_for('cambio_guardia'))
+
+    cambios = CambioGuardia.query.order_by(CambioGuardia.id.desc()).all()
+    return render_template('cambio_guardia.html', cambios=cambios)
+@app.route('/confirmar_cobertura/<int:id_cambio>', methods=['GET', 'POST'])
+def confirmar_cobertura(id_cambio):
+    cambio = CambioGuardia.query.get_or_404(id_cambio)
+
+    if request.method == 'POST':
+        decision = request.form.get('decision')
+        if decision == 'confirmar':
+            cambio.estado_confirmacion = EstadoConfirmacion.confirmado
+            cambio.fecha_confirmacion = datetime.now()
+            flash('Has confirmado la cobertura.', 'success')
+        elif decision == 'rechazar':
+            cambio.estado_confirmacion = EstadoConfirmacion.rechazado
+            cambio.fecha_confirmacion = datetime.now()
+            flash('Has rechazado la cobertura.', 'warning')
+
+        db.session.commit()
+        return redirect(url_for('cambio_guardia'))  # O donde quieras redirigir
+
+    return render_template('confirmar_cobertura.html', cambio=cambio)
 
 
 #----------------------------------------------#-----------EDITAR CAMBIOS DE GUARDIA-----------------------------------
@@ -1398,7 +1528,7 @@ def centralistas():
     client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
 
     print(client_ip)
-    if not (current_user.is_authenticated and current_user.rol == "admin"):
+    if not (current_user.is_authenticated and (current_user.rol == "admin" or current_user.rol == "automotor")):
         if client_ip not in INSTITUTION_IP:
             return redirect(url_for("error_red"))
 
@@ -1782,8 +1912,41 @@ def materiales_r1():
 
 
 #------------------------------------------------------------------------------------------------
+@app.route('/control_bolso_r1', methods=['GET', 'POST'])
+@login_required
+def control_bolso_r1():
+    tz_buenos_aires = pytz.timezone('America/Argentina/Buenos_Aires')
 
+    fecha_actual = datetime.now(tz_buenos_aires).date()
 
+    # Obtener la hora actual en Buenos Aires
+    hora_actual_utc = datetime.now(timezone('UTC'))
+    hora_actual_buenos_aires = hora_actual_utc.astimezone(app.config['TIMEZONE'])
+
+    # Convertir la hora a un objeto 'time' de Python
+    hora_actual_str = hora_actual_buenos_aires.strftime('%H:%M')
+    hora_actual_obj = datetime.strptime(hora_actual_str, '%H:%M').time()
+
+    if request.method == 'POST':
+        numero_legajo = current_user.numero_legajo
+        estado_bolso = request.form['estado_bolso']  # 'OK' o 'X'
+        observaciones = request.form.get('observaciones', '')
+
+        nuevo_registro = ControlBolsoR1(
+            fecha=fecha_actual,
+            hora=hora_actual_obj,
+            numero_legajo=numero_legajo,
+            estado_bolso=estado_bolso,
+            observaciones=observaciones
+        )
+        db.session.add(nuevo_registro)
+        db.session.commit()
+
+        return redirect(url_for('control_bolso_r1'))
+
+    registros = ControlBolsoR1.query.order_by(ControlBolsoR1.fecha.desc(), ControlBolsoR1.hora.desc()).all()
+    return render_template('control_bolso_r1.html', registros=registros)
+#------------------------------------------------------------------------------------------------
 
 @app.route('/materiales_b3', methods=['GET', 'POST'])
 @login_required
@@ -1903,8 +2066,108 @@ def materiales_b3():
     return render_template('materiales_b3.html', registros=registros)
 
 #------------------------------------------------------------------------------------------------
+@app.route('/asistencia_por_actividad')
+def asistencia_por_actividad():
+    # Filtra asistencias de los últimos 7 días
+    fecha_hace_7_dias = datetime.now() - timedelta(days=7)
+    asistencias_por_actividad = (
+        db.session.query(
+            Aistencia.actividad.label("actividad"),  # Tipo de actividad
+            func.count(Aistencia.id_asistencia).label("cantidad")
+        )
+        .filter(Aistencia.fecha >= fecha_hace_7_dias)
+        .filter(Aistencia.tipo_registro == "INGRESO")  # Solo asistencias de tipo "INGRESO"
+        .group_by("actividad")
+        .order_by("cantidad")
+        .all()
+    )
+
+    # Convierte los resultados a un formato JSON para el gráfico
+    data = {
+        "labels": [registro[0] for registro in asistencias_por_actividad],
+        "values": [registro[1] for registro in asistencias_por_actividad]
+    }
+    return jsonify(data)
 #------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------
+@app.route('/control_bolso_b3', methods=['GET', 'POST'])
+@login_required
+def control_bolso_b3():
+    tz_buenos_aires = pytz.timezone('America/Argentina/Buenos_Aires')
 
+    fecha_actual = datetime.now(tz_buenos_aires).date()
 
+    # Obtener la hora actual en Buenos Aires
+    hora_actual_utc = datetime.now(timezone('UTC'))
+    hora_actual_buenos_aires = hora_actual_utc.astimezone(app.config['TIMEZONE'])
+
+    # Convertir la hora a un objeto 'time' de Python
+    hora_actual_str = hora_actual_buenos_aires.strftime('%H:%M')
+    hora_actual_obj = datetime.strptime(hora_actual_str, '%H:%M').time()
+
+    if request.method == 'POST':
+        numero_legajo = current_user.numero_legajo
+        estado_bolso = request.form['estado_bolso']  # 'OK' o 'X'
+        observaciones = request.form.get('observaciones', '')
+
+        nuevo_registro = ControlBolsoB3(
+            fecha=fecha_actual,
+            hora=hora_actual_obj,
+            numero_legajo=numero_legajo,
+            estado_bolso=estado_bolso,
+            observaciones=observaciones
+        )
+        db.session.add(nuevo_registro)
+        db.session.commit()
+        flash('Registro de materiales B3 realizado exitosamente.')
+
+        return redirect(url_for('control_bolso_b3'))
+
+    registros = ControlBolsoB3.query.order_by(ControlBolsoB3.fecha.desc(), ControlBolsoB3.hora.desc()).all()
+    return render_template('control_bolso_b3.html', registros=registros)
+#------------------------------------------------------------------------------
+@app.route('/materialesBF1', methods=['GET', 'POST'])
+@login_required
+def materialesBF1():
+    tz_buenos_aires = pytz.timezone('America/Argentina/Buenos_Aires')
+
+    fecha_actual = datetime.now(tz_buenos_aires).date()
+
+    # Obtener la hora actual en Buenos Aires
+    hora_actual_utc = datetime.now(timezone('UTC'))
+    hora_actual_buenos_aires = hora_actual_utc.astimezone(app.config['TIMEZONE'])
+
+    # Convertir la hora a un objeto 'time' de Python
+    hora_actual_str = hora_actual_buenos_aires.strftime('%H:%M')
+    hora_actual_obj = datetime.strptime(hora_actual_str, '%H:%M').time()
+
+    if request.method == 'POST':
+        numero_legajo = current_user.numero_legajo
+        estado_bolso = request.form['estado_bolso']  # 'OK' o 'X'
+        colaborador1=request.form['colaborador1']
+        colaborador2 = request.form['colaborador1']
+        observaciones = request.form.get('observaciones', '')
+
+        nuevo_registro = MaterialesBF1(
+            fecha=fecha_actual,
+            hora=hora_actual_obj,
+            numero_legajo=numero_legajo,
+            estado_bolso=estado_bolso,
+            colaborador1=colaborador1,
+            colaborador2=colaborador2,
+            observaciones=observaciones
+        )
+        db.session.add(nuevo_registro)
+        db.session.commit()
+        flash('Registro de materiales BF1 realizado exitosamente.')
+
+        return redirect(url_for('materialesBF1'))
+
+    registros = MaterialesBF1.query.order_by(MaterialesBF1.fecha.desc(), MaterialesBF1.hora.desc()).all()
+    return render_template('materialesBF1.html', registros=registros)
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 if __name__ == '__main__':
     app.run(debug=True, port=8080)  # Cambia 8080 al puerto que prefieras

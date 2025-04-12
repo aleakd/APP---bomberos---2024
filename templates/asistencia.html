@@ -8,6 +8,15 @@
 </audio>
 
 !-->
+<div class="portada_asistencia">
+    <h1 class="titulo">Asistencias:</h1>
+<video autoplay loop muted id="videoFondo">
+  <source src="/static/videos/misionbbvvvcp.mp4" type="video/mp4">
+
+  Tu navegador no soporta la etiqueta de video.
+</video>
+</div>
+
 
 
 
@@ -318,6 +327,47 @@ document.addEventListener("DOMContentLoaded", function() {
 </script>
 
 
+html_code = """
+<div class="box">
+    <canvas id="graficoAsistenciaPorActividad" width="400" height="200"></canvas>
+</div>
 
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Obtener los datos desde la ruta de Flask
+    fetch("{{ url_for('asistencia_por_actividad') }}")
+        .then(response => response.json())
+        .then(data => {
+            const ctx = document.getElementById('graficoAsistenciaPorActividad').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Asistencias por Actividad',
+                        data: data.values,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        });
+});
+</script>
+"""
+
+print(html_code)
 
 {% endblock %}

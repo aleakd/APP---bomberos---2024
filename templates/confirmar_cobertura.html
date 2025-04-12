@@ -1,0 +1,19 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Confirmar Cobertura</h2>
+<p>Solicitante: {{ cambio.legajo_solicitante }}</p>
+<p>Fecha Ausencia: {{ cambio.fecha_ausencia }}</p>
+<p>Hora Desde: {{ cambio.hora_desde }}</p>
+<p>Hora Hasta: {{ cambio.hora_hasta }}</p>
+<p>Motivo: {{ cambio.motivo }}</p>
+
+<form method="POST">
+    <button type="submit" name="decision" value="confirmar" class="btn btn-success">Confirmar</button>
+    <button type="submit" name="decision" value="rechazar" class="btn btn-danger">Rechazar</button>
+</form>
+
+
+
+{% endblock %}

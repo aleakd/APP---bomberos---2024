@@ -17,7 +17,13 @@
     {% endwith %}
 </div>
 
-<form action="{{ url_for('materiales_b3') }}" method="POST" class="form_automotores">
+
+<div class="row">
+            <div class="col-md-6">
+               <a href="{{ url_for('control_bolso_b3') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/bolsoimag.jpg') }}'); background-size: cover;">Bolso Prehospitalario</a>
+           </div>
+
+<form action="{{ url_for('materiales_b3') }}" method="POST" class="form_controles">
     <input type="hidden" name="materiales_r1" value="1">
     <div class="container">
         <h2>Control de Materiales B-3</h2>
@@ -45,49 +51,54 @@
         {% endmacro %}
 
         <!-- Campos agrupados de manera más lógica -->
-        {{ radio_field('camara_termica', 'Cámara Térmica') }}
-        {{ radio_field('pistola_termica', 'Pistola Térmica') }}
-        {{ radio_field('reflector_portatil', 'Reflector Portátil') }}
-        {{ radio_field('cinta_de_vallado', 'Cinta de Vallado') }}
-        {{ radio_field('alcohol_en_gel', 'Alcohol en Gel') }}
-        {{ radio_field('matafuego_5kg', 'Matafuego 5kg') }}
-        {{ radio_field('kit_balizas', 'Kit Balizas') }}
-        {{ radio_field('plano_de_vcp', 'Plano de VCP') }}
-        {{ radio_field('lanza_nh_2', 'Lanza NH 2') }}
-        {{ radio_field('lanzas_nh_1medio', 'Lanzas NH 1 Medio') }}
+        <h2>CABINA</h2>
+        {{ radio_field('camara_termica', '1 Cámara Térmica') }}
+        {{ radio_field('pistola_termica', '1 Pistola Térmica') }}
+        {{ radio_field('reflector_portatil', '1 Reflector Portátil') }}
+        {{ radio_field('cinta_de_vallado', '1 Cinta de Vallado') }}
+        {{ radio_field('alcohol_en_gel', '1 Alcohol en Gel') }}
+        {{ radio_field('matafuego_5kg', '1 Matafuego 5kg') }}
+        {{ radio_field('kit_balizas', '1 Kit Balizas') }}
+        {{ radio_field('plano_de_vcp', '1 Plano de VCP') }}
+        <h2>BODEGA N°1</h2>
+        {{ radio_field('lanza_nh_2', '1 Lanza NH 2') }}
+        {{ radio_field('lanzas_nh_1medio', '2 Lanzas NH 1 Medio') }}
 
         <!-- Campos relacionados a conexiones y reductores -->
-        {{ radio_field('filtro_manguerote', 'Filtro Manguerote') }}
-        {{ radio_field('llave_stz_manguerote', 'Llave STZ Manguerote') }}
-        {{ radio_field('llave_nh', 'Llave NH') }}
-        {{ radio_field('halligan', 'Halligan') }}
-        {{ radio_field('era_con_mascara', 'ERA con Máscara') }}
-        {{ radio_field('y_stz', 'Y STZ') }}
-        {{ radio_field('conos', 'Conos') }}
-        {{ radio_field('acople_dinnem_stz', 'Acople Dinnem STZ') }}
-        {{ radio_field('reductor_stz_ww_2medio_a_1medio', 'Reductor STZ WW 2 Medio a 1 Medio') }}
-        {{ radio_field('reductor_stz_a_nh_1medio', 'Reductor STZ a NH 1 Medio') }}
-        {{ radio_field('reductor_stz_a_nh_1', 'Reductor STZ a NH 1') }}
-        {{ radio_field('reductor_stz_2_a_stz_1medio', 'Reductor STZ 2 a STZ 1 Medio') }}
-        {{ radio_field('reductor_stz_2_a_nh_1medio', 'Reductor STZ 2 a NH 1 Medio') }}
-        {{ radio_field('reductor_stz_2_a_nh_1', 'Reductor STZ 2 a NH 1') }}
-        {{ radio_field('reductor_stz_2_a_stz_1', 'Reductor STZ 2 a STZ 1') }}
-        {{ radio_field('acople_din_stz', 'Acople DIN STZ') }}
-        {{ radio_field('acople_stz_a_nh_2', 'Acople STZ a NH 2') }}
-        {{ radio_field('llave_stz', 'Llave STZ') }}
-
+        {{ radio_field('filtro_manguerote', '1 Filtro Manguerote') }}
+        {{ radio_field('llave_stz_manguerote', '2 Llave STZ Manguerote') }}
+        {{ radio_field('llave_nh', '4 Llave NH') }}
+        {{ radio_field('era_con_mascara', '3 ERA con Máscara') }}
+        {{ radio_field('y_stz', '1 Y STZ') }}
+        {{ radio_field('conos', '4 Conos') }}
+        {{ radio_field('acople_dinnem_stz', '1 Acople Dinnem STZ') }}
+        {{ radio_field('reductor_stz_ww_2medio_a_1medio', '1 Reductor STZ a WH 2 Medio a 1 Medio') }}
+        {{ radio_field('reductor_stz_a_nh_1medio', '4 Reductor NH 2 medio a STZ a 1 Medio') }}
+        {{ radio_field('reductor_stz_a_nh_1', '4 Acople STZ a NH 1 y medio') }}
+        {{ radio_field('reductor_stz_2_a_stz_1medio', '2 Reductor STZ 2 a STZ 1 Medio') }}
+        {{ radio_field('reductor_stz_2_a_nh_1medio', '1 Reductor STZ 2 a NH 1 Medio') }}
+        {{ radio_field('reductor_stz_2_a_nh_1', '1 Reductor STZ 2 a NH 1') }}
+        {{ radio_field('reductor_stz_2_a_stz_1', '1 Reductor STZ 2 a STZ 1') }}
+        {{ radio_field('acople_din_stz', '1 Acople DIN STZ') }}
+        {{ radio_field('acople_stz_a_nh_2', '1 Acople STZ a NH 2') }}
+        {{ radio_field('llave_stz', '2 Llave STZ') }}
+        <h2>BODEGA TRASERA</h2>
         <!-- Otros materiales -->
-        {{ radio_field('desvanadera', 'Desvanadera') }}
-        {{ radio_field('pertiga', 'Pértiga') }}
-        {{ radio_field('manguerote', 'Manguerote') }}
-        {{ radio_field('escalera', 'Escalera') }}
-        {{ radio_field('linea_nh_1medio', 'Línea NH 1 Medio') }}
-        {{ radio_field('linea_nh_2', 'Línea NH 2') }}
-        {{ radio_field('linea_stz_1medio', 'Línea STZ 1 Medio') }}
-        {{ radio_field('linea_stz_2', 'Línea STZ 2') }}
-        {{ radio_field('bolso_prehospitalario', 'Bolso Prehospitalario') }}
-        {{ radio_field('columna_hidrante', 'Columna Hidrante') }}
-        {{ radio_field('trancha', 'Trancha') }}
+        {{ radio_field('desvanadera', '1 Devanadera') }}
+        <h2>TECHO</h2>
+        {{ radio_field('pertiga', '1 Pértiga') }}
+        {{ radio_field('manguerote', '3 Manguerote') }}
+        {{ radio_field('escalera', '1 Escalera') }}
+        <h2>BODEGA N°2</h2>
+
+        {{ radio_field('linea_nh_1medio', '5 Línea NH 1 Medio') }}
+        {{ radio_field('linea_nh_2', '0 Línea NH 2') }}
+        {{ radio_field('linea_stz_1medio', '5 Línea STZ 1 Medio') }}
+        {{ radio_field('linea_stz_2', '3 Línea STZ 2') }}
+        {{ radio_field('halligan', '1 Halligan') }}
+        {{ radio_field('bolso_prehospitalario', '1 Bolso Prehospitalario') }}
+        {{ radio_field('columna_hidrante', '1 Columna Hidrante') }}
+        {{ radio_field('trancha', '1 Trancha') }}
 
         <div class="row mb-3">
             <div class="col-12">
@@ -102,6 +113,115 @@
         </div>
     </div>
 </form>
+
+
+<div class="table-responsive">
+    <h2>Registro de Materiales B-3</h2>
+    <table class="table table-striped" "table-responsive" id="TableMaterialesB3">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Legajo</th>
+                <th>Observaciones</th>
+                <th>Cámara Térmica</th>
+                <th>Pistola Térmica</th>
+                <th>Reflector Portátil</th>
+                <th>Cinta de Vallado</th>
+                <th>Alcohol en Gel</th>
+                <th>Matafuego 5kg</th>
+                <th>Kit Balizas</th>
+                <th>Plano de VCP</th>
+                <th>Lanza NH 2</th>
+                <th>Lanzas NH 1½</th>
+                <th>Filtro Manguerote</th>
+                <th>Llave STZ Manguerote</th>
+                <th>Llave NH</th>
+
+                <th>ERA con Máscara</th>
+                <th>Y STZ</th>
+                <th>Conos</th>
+                <th>Acople DINNEM STZ</th>
+                <th>Reductor STZ WW 2½ a 1½</th>
+                <th>Reductor STZ a NH 1½</th>
+                <th>Reductor STZ a NH 1</th>
+                <th>Reductor STZ 2 a STZ 1½</th>
+                <th>Reductor STZ 2 a NH 1½</th>
+                <th>Reductor STZ 2 a NH 1</th>
+                <th>Reductor STZ 2 a STZ 1</th>
+                <th>Acople DIN STZ</th>
+                <th>Acople STZ a NH 2</th>
+                <th>Llave STZ</th>
+                <th>Desvanadera</th>
+                <th>Pértiga</th>
+                <th>Manguerote</th>
+                <th>Escalera</th>
+                <th>Línea NH 1½</th>
+                <th>Línea NH 2</th>
+                <th>Línea STZ 1½</th>
+                <th>Línea STZ 2</th>
+                <th>Halligan</th>
+                <th>Bolso Prehospitalario</th>
+                <th>Columna Hidrante</th>
+                <th>Trancha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for registro in registros %}
+            <tr>
+                <td>{{ registro.fecha }}</td>
+                <td>{{ registro.hora }}</td>
+                <td>{{ registro.numero_legajo }}</td>
+                <td>{{ registro.observaciones }}</td>
+                <td>{{ registro.camara_termica }}</td>
+                <td>{{ registro.pistola_termica }}</td>
+                <td>{{ registro.reflector_portatil }}</td>
+                <td>{{ registro.cinta_de_vallado }}</td>
+                <td>{{ registro.alcohol_en_gel }}</td>
+                <td>{{ registro.matafuego_5kg }}</td>
+                <td>{{ registro.kit_balizas }}</td>
+                <td>{{ registro.plano_de_vcp }}</td>
+                <td>{{ registro.lanza_nh_2 }}</td>
+                <td>{{ registro.lanzas_nh_1medio }}</td>
+                <td>{{ registro.filtro_manguerote }}</td>
+                <td>{{ registro.llave_stz_manguerote }}</td>
+                <td>{{ registro.llave_nh }}</td>
+                <td>{{ registro.era_con_mascara }}</td>
+                <td>{{ registro.y_stz }}</td>
+                <td>{{ registro.conos }}</td>
+                <td>{{ registro.acople_dinnem_stz }}</td>
+                <td>{{ registro.reductor_stz_ww_2medio_a_1medio }}</td>
+                <td>{{ registro.reductor_stz_a_nh_1medio }}</td>
+                <td>{{ registro.reductor_stz_a_nh_1 }}</td>
+                <td>{{ registro.reductor_stz_2_a_stz_1medio }}</td>
+                <td>{{ registro.reductor_stz_2_a_nh_1medio }}</td>
+                <td>{{ registro.reductor_stz_2_a_nh_1 }}</td>
+                <td>{{ registro.reductor_stz_2_a_stz_1 }}</td>
+                <td>{{ registro.acople_din_stz }}</td>
+                <td>{{ registro.acople_stz_a_nh_2 }}</td>
+                <td>{{ registro.llave_stz }}</td>
+                <td>{{ registro.desvanadera }}</td>
+                <td>{{ registro.pertiga }}</td>
+                <td>{{ registro.manguerote }}</td>
+                <td>{{ registro.escalera }}</td>
+                <td>{{ registro.linea_nh_1medio }}</td>
+                <td>{{ registro.linea_nh_2 }}</td>
+                <td>{{ registro.linea_stz_1medio }}</td>
+                <td>{{ registro.linea_stz_2 }}</td>
+                <td>{{ registro.halligan }}</td>
+                <td>{{ registro.bolso_prehospitalario }}</td>
+                <td>{{ registro.columna_hidrante }}</td>
+                <td>{{ registro.trancha }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
 
 <script>
     $(document).ready(function () {

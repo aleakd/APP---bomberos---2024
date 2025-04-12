@@ -21,9 +21,14 @@
 
 </div>
 
+<div class="row">
+
+       <div class="col-md-6">
+           <a href="{{ url_for('control_bolso_r1') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/legajos.jpg') }}'); background-size: cover;">Bolso Prehospitalario</a>
+       </div>
 
 
-<form action="{{ url_for('materiales_r1') }}" method="POST" class="form_automotores">
+<form action="{{ url_for('materiales_r1') }}" method="POST" class="form_controles">
     <input type="hidden" name="materiales_r1" value="1">
     <div class="container">
         <h2>Control de Materiales R1</h2>
