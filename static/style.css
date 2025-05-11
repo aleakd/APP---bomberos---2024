@@ -120,7 +120,7 @@ margin:30px;
     border-radius: 20%;
     font-size: 30px;
     opacity: 0; /* Oculta los botones inicialmente */
-    animation-duration: 2s;
+    animation-duration: 3s;
     animation-fill-mode: forwards;
 }
 
@@ -213,16 +213,16 @@ color:black;
 /* Definición de la animación */
 @keyframes cambio {
     0% {
-        color: #f42222;
+        color: #f9ffff;
     }
     50% {
-        color: #fcf4f3;
+        color: #15d7f4;
     }
     75% {
-        color: #3ed92b;
+        color: #f9ffff;
     }
     100% {
-        color: #2bd9d4;
+        color: #15d7f4;
     }
 }
 
@@ -570,5 +570,3 @@ video {
     display: block; /* Elimina el espacio debajo del video */
     margin: 0 auto; /* Centra el video en el contenedor */
 }
-
-

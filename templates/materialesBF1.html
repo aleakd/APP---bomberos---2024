@@ -34,7 +34,7 @@
 
     <!-- Tabla de registros -->
     <h3 class="mt-4">Registros Anteriores</h3>
-    <table class="table table-striped">
+    <table class="table table-striped table-responsive" id="TableMaterialesBF1">
         <thead>
             <tr>
                 <th>ID</th>
@@ -63,4 +63,18 @@
         </tbody>
     </table>
 </div>
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#TableMaterialesBF1').DataTable();
+    });
+</script>
+<script>
+        setInterval(function() {
+            var h2 = document.getElementById('miH202');
+            h2.classList.toggle('cambio-color');
+        }, 1000);
+</script>
 {% endblock %}

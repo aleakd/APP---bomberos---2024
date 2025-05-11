@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<div class="organig">
+        <h1 class="titulo">Partes</h1>
+        <h4>Modelos de Partes:</h4>
+    <hr>
+        <div class="row justify-content-center">
+            <div class="col-md-4 col-sm-6 file-icon">
+                <i class="fa-sharp-duotone fa-solid fa-file-word fa-2x" style="--fa-primary-color: #0a398a; --fa-secondary-color: #6c7584;"></i>
+                <a href="{{ url_for('download_file', filename='Informar_cambio_datos.doc') }}">Informar cambio datos</a>
+            </div>
+            <div class="col-md-4 col-sm-6 file-icon">
+                <i class="fa-sharp-duotone fa-solid fa-file-word fa-2x" style="--fa-primary-color: #0a398a; --fa-secondary-color: #6c7584;"></i>
+                <a href="{{ url_for('download_file', filename='Informar_fuera_juridiccion.doc') }}">Informar fuera de juridiccion</a>
+            </div>
+            <div class="col-md-4 col-sm-6 file-icon">
+                <i class="fa-sharp-duotone fa-solid fa-file-word fa-2x" style="--fa-primary-color: #0a398a; --fa-secondary-color: #6c7584;"></i>
+                <a href="{{ url_for('download_file', filename='Solicitar_baja.doc') }}">Solicitar Baja</a>
+            </div>
+        </div>
+        <hr>
+        <div class="row justify-content-center">
+            <div class="col-md-4 col-sm-6 file-icon">
+                <i class="fa-sharp-duotone fa-solid fa-file-word fa-2x" style="--fa-primary-color: #0a398a; --fa-secondary-color: #6c7584;"></i>
+                <a href="{{ url_for('download_file', filename='Solicitar_certificado.doc') }}">Solicitar Certificado</a>
+            </div>
+            <div class="col-md-4 col-sm-6 file-icon">
+                <i class="fa-sharp-duotone fa-solid fa-file-word fa-2x" style="--fa-primary-color: #0a398a; --fa-secondary-color: #6c7584;"></i>
+                <a href="{{ url_for('download_file', filename='Solicitar_legajo.doc') }}">Solicitar Legajo</a>
+            </div>
+            <div class="col-md-4 col-sm-6 file-icon">
+                <i class="fa-sharp-duotone fa-solid fa-file-word fa-2x" style="--fa-primary-color: #0a398a; --fa-secondary-color: #6c7584;"></i>
+                <a href="{{ url_for('download_file', filename='Solicitar_licencia_ordinaria.doc') }}">Solicitar licencia Ordinaria</a>
+            </div>
+        </div>
+        <hr>
+        <div class="row justify-content-right">
+            <div class="col-md-4 col-sm-6 file-icon">
+                <i class="fa-sharp-duotone fa-solid fa-file-word fa-2x" style="--fa-primary-color: #0a398a; --fa-secondary-color: #6c7584;"></i>
+                <a href="{{ url_for('download_file', filename='Solicitar_licencia_extraordinaria.doc') }}">Solicitar licencia Extraordinaria</a>
+            </div>
+            <div class="col-md-4 col-sm-6 file-icon">
+                <i class="fa-sharp-duotone fa-solid fa-file-word fa-2x" style="--fa-primary-color: #0a398a; --fa-secondary-color: #6c7584;"></i>
+                <a href="{{ url_for('download_file', filename='Solicitar_reserva.doc') }}">Solicitar Reserva</a>
+            </div>
+            <div class="col-md-4 col-sm-6 file-icon">
+                <i class="fa-sharp-duotone fa-solid fa-file-word fa-2x" style="--fa-primary-color: #0a398a; --fa-secondary-color: #6c7584;"></i>
+                <a href="{{ url_for('download_file', filename='Solicitar_retirar_elementos.doc') }}">Solicitar retirar Elementos</a>
+            </div>
+        </div>
+    </div>
+
+
+<form action="{{ url_for('parte_novedades') }}" method="POST">
+    <h3>Nuevo Parte de Novedades</h3>
+
+    <div class="form-group">
+        <label for="destino">Área de Destino</label>
+        <select name="area_destino" class="form-control" required>
+                <option value="" disabled selected>Seleccionar Área</option>
+                <option>Jefatura</option>
+                <option>Operaciones</option>
+                <option>Materiales & Equipo</option>
+                <option>Logistica</option>
+                <option>Capacitacion</option>
+                <option>Prehospitalario</option>
+                <option>Documentacion</option>
+                <option>Automotores</option>
+                <option>Infraestructura</option>
+                <option>Comunicaciones</option>
+
+            </select>
+    </div>
+
+    <div class="form-group">
+        <label for="objeto">Objeto</label>
+        <input type="text" name="objeto" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+        <label for="detalle">Detalle</label>
+        <textarea name="detalle" class="form-control" rows="7" required></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Generar Parte</button>
+</form>
+
+<hr>
+<h2 class="mt-5">Historial de Partes Generados</h2>
+<table class="table tabla_bomberos table-striped" id="tabla_partes">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Legajo</th>
+            <th>Nombre</th>
+            <th>Destino</th>
+            <th>Objeto</th>
+            <th>Detalle</th>
+            <th>Estado</th>
+            <th>Archivo PDF</th>
+            {% if current_user.rol == 'admin' or current_user.rol == 'jefe_guardia' %}
+            <th>Aprobacion</th>
+                {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for parte in partes %}
+        <tr>
+            <td>{{ parte.id }}</td>
+            <td>{{ parte.fecha.strftime('%d/%m/%Y') }}</td>
+            <td>{{ parte.hora.strftime('%H:%M') }}</td>
+            <td>{{ parte.numero_legajo }}</td>
+            <td>{{ parte.nombre_solicitante }}</td>
+            <td>{{ parte.destino }}</td>
+            <td>{{ parte.objeto }}</td>
+            <td>{{ parte.detalle }}</td>
+            <td>{{ parte.estado_confirmacion.value }}</td>
+            <td>
+                {% if parte.archivo_pdf %}
+                <a href="{{ url_for('static', filename='partes_generados/' ~ parte.archivo_pdf) }}" target="_blank" class="btn btn-sm btn-success">Ver PDF</a>
+                {% else %}
+                No generado
+                {% endif %}
+            </td>
+            {% if current_user.rol == 'admin' or current_user.rol == 'jefe_guardia' %}
+                 <td>
+            <a href="{{ url_for('parte_aprobado', id_cambio=parte.id) }}" class="btn btn-primary btn-sm">
+        Confirmar Cobertura
+    </a>
+</td>
+
+
+                {% else %}
+        {{ c.estado_confirmacion.value|capitalize }}
+    {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        $('#tabla_partes').DataTable();
+    });
+</script>
+
+
+{% endblock %}

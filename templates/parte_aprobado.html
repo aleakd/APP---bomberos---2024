@@ -1,0 +1,18 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Confirmar Cobertura</h2>
+<p>Solicitante: {{ parte.numero_legajo }}</p>
+<p>Destino: {{ parte.destino }}</p>
+<p>Objeto: {{ parte.objeto }}</p>
+
+
+<form method="POST">
+    <button type="submit" name="decision" value="confirmar" class="btn btn-success">Confirmar</button>
+    <button type="submit" name="decision" value="rechazar" class="btn btn-danger">Rechazar</button>
+</form>
+
+
+
+{% endblock %}

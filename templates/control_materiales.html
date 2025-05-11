@@ -1,15 +1,43 @@
 {% extends "base.html" %}
 {% block content %}
 
+<h2 class='titulo'>Control de Materiales y Equipos</h2>
+
 <div class="row">
 
        <div class="col-md-6">
-           <a href="{{ url_for('materiales_r1') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/matye.jpg') }}'); background-size: cover;">Control Mat. R1</a>
+           <a href="{{ url_for('materiales_r1') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/r1control.jpg') }}'); background-size: cover;">Control Mat. R1</a>
        </div>
 
 
        <div class="col-md-6">
            <a href="{{ url_for('materiales_b3') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/portlic.jpg') }}'); background-size: cover;">Control Mat. B3</a>
+       </div>
+
+</div>
+<div class="row">
+
+       <div class="col-md-6">
+           <a href="{{ url_for('materialesBF1') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/BF1_control.jpg') }}'); background-size: cover;">Control Mat. BF1</a>
+       </div>
+
+       <div class="col-md-6">
+           <a href="{{ url_for('materialesF2') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/F2_control.jpg') }}'); background-size: cover;">Control Mat. F2</a>
+       </div>
+
+
+
+</div>
+<div class="row">
+    <div class="col-md-6">
+           <a href="{{ url_for('materialesB4') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/B4_materiales_page-0001.jpg') }}'); background-size: cover;">Control Mat. B4</a>
+       </div>
+
+
+
+
+    <div class="col-md-6">
+           <a href="{{ url_for('materialesB2') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/') }}'); background-size: cover;">Control Mat. B2</a>
        </div>
 
 </div>

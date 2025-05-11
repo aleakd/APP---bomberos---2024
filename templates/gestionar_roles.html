@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Gestionar Roles de Usuario</h2>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-success">
+          {% for message in messages %}
+            <p>{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <table class="table table-responsive" id="Tableusuario">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Legajo</th>
+                <th>Rol Actual</th>
+                <th>Modificar Rol</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in usuarios %}
+            <tr>
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.numero_legajo }}</td>
+                <td>{{ user.rol }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('cambiar_rol', user_id=user.id) }}">
+                        <select name="nuevo_rol" class="form-control d-inline" style="width: auto;">
+                            <option value="usuario" {% if user.rol == 'usuario' %}selected{% endif %}>Usuario</option>
+                            <option value="jefe_guardia" {% if user.rol == 'jefe_guardia' %}selected{% endif %}>Jefe de guardia</option>
+                            <option value="admin" {% if user.rol == 'admin' %}selected{% endif %}>Admin</option>
+                        </select>
+
+                        <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('#Tableusuario').DataTable();
+    });
+</script>
+{% endblock %}

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify,send_from_directory, abort
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify,send_from_directory, abort, send_file
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
@@ -14,7 +14,7 @@ from pytz import timezone
 import os
 from werkzeug.utils import secure_filename
 from datetime import datetime, date, timedelta
-
+from fpdf import FPDF
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
 
@@ -371,6 +371,36 @@ class MaterialesBF1(db.Model):
     colaborador2 = db.Column(db.String(10), nullable=False)
     observaciones = db.Column(db.Text, nullable=True)
 
+class MaterialesF2(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.Date, nullable=False)
+    hora = db.Column(db.Time, nullable=False)
+    numero_legajo = db.Column(db.String(10), nullable=False)
+    estado_materiales = db.Column(db.String(10), nullable=False)  # 'OK' o 'X'
+    colaborador1 = db.Column(db.String(10), nullable=False)
+    colaborador2 = db.Column(db.String(10), nullable=False)
+    observaciones = db.Column(db.Text, nullable=True)
+
+    class MaterialesB4(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        fecha = db.Column(db.Date, nullable=False)
+        hora = db.Column(db.Time, nullable=False)
+        numero_legajo = db.Column(db.String(10), nullable=False)
+        estado_materiales = db.Column(db.String(10), nullable=False)  # 'OK' o 'X'
+        colaborador1 = db.Column(db.String(10), nullable=False)
+        colaborador2 = db.Column(db.String(10), nullable=False)
+        observaciones = db.Column(db.Text, nullable=True)
+
+class MaterialesB2(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.Date, nullable=False)
+    hora = db.Column(db.Time, nullable=False)
+    numero_legajo = db.Column(db.String(10), nullable=False)
+    estado_materiales = db.Column(db.String(10), nullable=False)  # 'OK' o 'X'
+    colaborador1 = db.Column(db.String(10), nullable=False)
+    colaborador2 = db.Column(db.String(10), nullable=False)
+    observaciones = db.Column(db.Text, nullable=True)
+
 class EstadoConfirmacion(enum.Enum):
     pendiente = "pendiente"
     confirmado = "confirmado"
@@ -397,6 +427,18 @@ class CambioGuardia(db.Model):
 
 
 
+class ParteNovedades(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.Date, nullable=False)
+    hora = db.Column(db.Time, nullable=False)
+    numero_legajo = db.Column(db.Integer, nullable=False)
+    nombre_solicitante = db.Column(db.String(100), nullable=False)
+    destino = db.Column(db.String(100), nullable=False)  # Para
+    objeto = db.Column(db.String(200), nullable=False)
+    detalle = db.Column(db.Text, nullable=False)
+    archivo_pdf = db.Column(db.String(200), nullable=True)  # <- Nueva columna
+    estado_confirmacion = db.Column(SqlEnum(EstadoConfirmacion), default=EstadoConfirmacion.pendiente, nullable=False)
+    fecha_confirmacion = db.Column(db.DateTime, nullable=True)
 
 
 
@@ -420,12 +462,12 @@ def logout():
     return redirect(url_for('index'))
 #------------------------------------------#------------------------------------------
 
-def role_required(rol):
+def role_required(*roles):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            if not current_user.is_authenticated or current_user.rol != rol:
-                flash('No tienes permiso para acceder a esta página.')
+            if not current_user.is_authenticated or current_user.rol not in roles:
+                flash('No tenés permiso para acceder a esta página.')
                 return redirect(url_for('index'))
             return f(*args, **kwargs)
         return decorated_function
@@ -489,6 +531,40 @@ def register():
 
         return redirect(url_for("acces"))
     return render_template("register.html")
+#----------------------------------------------
+
+# Mostrar usuarios y roles
+@app.route("/usuarios")
+@login_required
+@role_required('admin')
+def usuarios():
+    if not current_user.rol == 'admin':
+        flash('Acceso no autorizado')
+        return redirect(url_for('index'))
+    usuarios = User.query.all()
+    return render_template("gestionar_roles.html", usuarios=usuarios)
+
+
+@app.route("/cambiar_rol/<int:user_id>", methods=["POST"])
+@login_required
+@role_required('admin')
+def cambiar_rol(user_id):
+    if not current_user.rol == 'admin':
+        flash('Acceso no autorizado')
+        return redirect(url_for('index'))
+
+    user = User.query.get_or_404(user_id)
+    nuevo_rol = request.form.get("nuevo_rol")
+
+    if nuevo_rol not in ["usuario", "admin", "jefe_guardia"]:
+        flash("Rol no válido.")
+        return redirect(url_for('usuarios'))
+
+    user.rol = nuevo_rol
+    db.session.commit()
+    flash(f"Rol de {user.name} actualizado a {nuevo_rol}.")
+    return redirect(url_for('usuarios'))
+
 
 #----------------------------------------------#-------PAGINA PARA CARGAR LOS DATOS---------------------------------------
 
@@ -780,54 +856,11 @@ def eliminar_licencia(id):
     db.session.commit()
     return jsonify({'success': True})
 
-#----------------------------------------------#--------------CAMBIOS DE GUARDIA--------------------------------
-@app.route('/cambiosguardia', methods=['GET', 'POST'])
-@login_required
-def cambiosguardia():
-    if request.method == 'POST':
-        if 'registrar_cambio_guardia' in request.form:
-            numero_legajo = current_user.numero_legajo
-            fecha_solicitud = request.form.get("fecha_solicitud")
-            rango_horario = request.form.get("rango_horario")
-            rango_horario2 = request.form.get("rango_horario2")
-            legajo_quien_cubre = request.form.get("legajo_quien_cubre")
-            motivo = request.form.get("motivo")
-            fecha_devolucion = request.form.get("fecha_devolucion")
-            imagen = request.files.get("imagen")
-            imagen_filename = None
 
-            if imagen and allowed_file(imagen.filename):
-                filename = secure_filename(imagen.filename)
-                imagen_filename = os.path.join(app.config['UPLOAD_FOLDER'], 'licencias', filename)
-                os.makedirs(os.path.dirname(imagen_filename), exist_ok=True)
-                imagen.save(imagen_filename)
-                imagen_filename = os.path.join('uploads', 'licencias', filename)  # Guardar la ruta relativa
-
-
-            nuevo_cambio = Cambios_Guardia(
-                numero_legajo=numero_legajo,
-                fecha_solicitud=datetime.strptime(fecha_solicitud, '%Y-%m-%d').date(),
-                rango_horario=datetime.strptime(rango_horario, '%H:%M').time(),
-                rango_horario2=datetime.strptime(rango_horario2, '%H:%M').time(),
-                legajo_quien_cubre=legajo_quien_cubre,
-                motivo=motivo,
-                fecha_devolucion=datetime.strptime(fecha_devolucion, '%Y-%m-%d').date(),
-                imagen=imagen_filename
-
-            )
-            db.session.add(nuevo_cambio)
-            db.session.commit()
-            flash("Cambio de guardia registrado exitosamente")
-            return redirect(url_for("cambiosguardia"))
-
-
-
-    cambios = Cambios_Guardia.query.all()
-    apellidos = {bombero.legajo_numero: bombero.apellido for bombero in Bomberos.query.all()}
-    return render_template("cambiosguardia.html", cambios=cambios, apellidos=apellidos)
-
-#---------------------------------------------------------------------------------------------
+#
+#----------------------------------CAMBIOS DE GUARDIA 2025-----------------------------------------------------------
 @app.route('/cambio_guardia', methods=['GET', 'POST'])
+@login_required
 def cambio_guardia():
     if request.method == 'POST':
         tz_buenos_aires = pytz.timezone('America/Argentina/Buenos_Aires')
@@ -874,12 +907,16 @@ def cambio_guardia():
 
         db.session.add(nuevo_cambio)
         db.session.commit()
-        flash('Cambio registrado correctamente.Pendiente de confirmacion')
+        flash('Cambio registrado correctamente.'
+              'Pendiente de confirmacion')
         return redirect(url_for('cambio_guardia'))
 
     cambios = CambioGuardia.query.order_by(CambioGuardia.id.desc()).all()
     return render_template('cambio_guardia.html', cambios=cambios)
+#------------------------------------------CONFIRMAR CAMBIO DE GUARDIA------------------------------
 @app.route('/confirmar_cobertura/<int:id_cambio>', methods=['GET', 'POST'])
+@login_required
+@role_required('admin','jefe_guardia')
 def confirmar_cobertura(id_cambio):
     cambio = CambioGuardia.query.get_or_404(id_cambio)
 
@@ -898,43 +935,108 @@ def confirmar_cobertura(id_cambio):
         return redirect(url_for('cambio_guardia'))  # O donde quieras redirigir
 
     return render_template('confirmar_cobertura.html', cambio=cambio)
-
-
-#----------------------------------------------#-----------EDITAR CAMBIOS DE GUARDIA-----------------------------------
-@app.route('/editar_cambio_guardia/<int:id>', methods=["GET", "POST"])
-@login_required
-@role_required('admin')
-def editar_cambio_guardia(id):
-    cambio_guardia = Cambios_Guardia.query.get_or_404(id)
-
-    if request.method == "POST":
-
-        cambio_guardia.legajo_quien_cubre = request.form.get("legajo_quien_cubre")
-        cambio_guardia.motivo = request.form.get("motivo")
-        cambio_guardia.fecha_devolucion = datetime.strptime(request.form.get("fecha_devolucion"), '%Y-%m-%d').date()
-        cambio_guardia.aprovado = request.form.get("aprovado")
-
-        db.session.commit()
-        flash("Solicitud de cambio de guardia actualizada exitosamente")
-        return redirect(url_for("cambiosguardia"))
-
-    return render_template("editar_cambio_guardia.html", cambio_guardia=cambio_guardia)
-
-
-#----------------------------------------------#---------ELIMINAR CAMBIO GUARDIA-------------------------------------
-@app.route('/eliminar_cambio_guardia/<int:id>', methods=['POST'])
-@role_required('admin')
+#-----------------------------------ELIMINAR CAMBIO DE GUARDIA----------------------------
+@app.route('/eliminar-cambio-guardia/<int:id>', methods=['POST'])
 @login_required
 def eliminar_cambio_guardia(id):
+    # Buscar el cambio de guardia
+    cambio = CambioGuardia.query.get_or_404(id)
+
+    # Seguridad: Solo un admin o jefe de guardia puede eliminar
+    if current_user.rol not in ['admin', 'jefe_guardia']:
+        flash('No tienes permiso para eliminar este cambio de guardia.')
+        return redirect(url_for('cambio_guardia'))
+
     try:
-        cambiog = Cambios_Guardia.query.get_or_404(id)
-        db.session.delete(cambiog)
+        db.session.delete(cambio)
         db.session.commit()
-        return jsonify({"success": True, "message": "Registro de cambio de guardia eliminado exitosamente."})
+        flash('Cambio de guardia eliminado exitosamente.')
     except Exception as e:
         db.session.rollback()
-        return jsonify({"success": False, "message": "Hubo un problema al eliminar el registro."}), 500
+        flash(f'Error eliminando el cambio de guardia: {str(e)}')
 
+    return redirect(url_for('cambio_guardia'))
+
+#----------------------------------------------#--------------CAMBIOS DE GUARDIA--------------------------------
+#@app.route('/cambiosguardia', methods=['GET', 'POST'])
+#@login_required
+#def cambiosguardia():
+#    if request.method == 'POST':
+#        if 'registrar_cambio_guardia' in request.form:
+#            numero_legajo = current_user.numero_legajo
+#            fecha_solicitud = request.form.get("fecha_solicitud")
+#            rango_horario = request.form.get("rango_horario")
+#            rango_horario2 = request.form.get("rango_horario2")
+#            legajo_quien_cubre = request.form.get("legajo_quien_cubre")
+#            motivo = request.form.get("motivo")
+#            fecha_devolucion = request.form.get("fecha_devolucion")
+#            imagen = request.files.get("imagen")
+#            imagen_filename = None
+#
+#            if imagen and allowed_file(imagen.filename):
+#                filename = secure_filename(imagen.filename)
+#                imagen_filename = os.path.join(app.config['UPLOAD_FOLDER'], 'licencias', filename)
+#                os.makedirs(os.path.dirname(imagen_filename), exist_ok=True)
+#                imagen.save(imagen_filename)
+#                imagen_filename = os.path.join('uploads', 'licencias', filename)  # Guardar la ruta relativa
+#
+#
+#            nuevo_cambio = Cambios_Guardia(
+#                numero_legajo=numero_legajo,
+#                fecha_solicitud=datetime.strptime(fecha_solicitud, '%Y-%m-%d').date(),
+#                rango_horario=datetime.strptime(rango_horario, '%H:%M').time(),
+#                rango_horario2=datetime.strptime(rango_horario2, '%H:%M').time(),
+#                legajo_quien_cubre=legajo_quien_cubre,
+#                motivo=motivo,
+#                fecha_devolucion=datetime.strptime(fecha_devolucion, '%Y-%m-%d').date(),
+#                imagen=imagen_filename
+#
+#            )
+#            db.session.add(nuevo_cambio)
+#            db.session.commit()
+#            flash("Cambio de guardia registrado exitosamente")
+#            return redirect(url_for("cambiosguardia"))
+#
+#
+#
+#    cambios = Cambios_Guardia.query.all()
+#    apellidos = {bombero.legajo_numero: bombero.apellido for bombero in Bomberos.query.all()}
+#    return render_template("cambiosguardia.html", cambios=cambios, apellidos=apellidos)
+#----------------------------------------------#-----------EDITAR CAMBIOS DE GUARDIA-----------------------------------
+#@app.route('/editar_cambio_guardia/<int:id>', methods=["GET", "POST"])
+#@login_required
+#@role_required('admin')
+#def editar_cambio_guardia(id):
+#    cambio_guardia = Cambios_Guardia.query.get_or_404(id)
+#
+#    if request.method == "POST":
+#
+#        cambio_guardia.legajo_quien_cubre = request.form.get("legajo_quien_cubre")
+#        cambio_guardia.motivo = request.form.get("motivo")
+#        cambio_guardia.fecha_devolucion = datetime.strptime(request.form.get("fecha_devolucion"), '%Y-%m-%d').date()
+#        cambio_guardia.aprovado = request.form.get("aprovado")
+#
+#        db.session.commit()
+#        flash("Solicitud de cambio de guardia actualizada exitosamente")
+#        return redirect(url_for("cambiosguardia"))
+#
+#    return render_template("editar_cambio_guardia.html", cambio_guardia=cambio_guardia)
+#
+#
+#----------------------------------------------#---------ELIMINAR CAMBIO GUARDIA-------------------------------------
+#@app.route('/eliminar_cambio_guardia/<int:id>', methods=['POST'])
+#@role_required('admin')
+#@login_required
+#def eliminar_cambio_guardia(id):
+#    try:
+#        cambiog = Cambios_Guardia.query.get_or_404(id)
+#        db.session.delete(cambiog)
+#        db.session.commit()
+#        return jsonify({"success": True, "message": "Registro de cambio de guardia eliminado exitosamente."})
+#    except Exception as e:
+#        db.session.rollback()
+#        return jsonify({"success": False, "message": "Hubo un problema al eliminar el registro."}), 500
+#
 #----------------------------------------------#---------MATERIALES Y EQUIPO-------------------------------------
 
 
@@ -1035,12 +1137,108 @@ def partes_licencia():
     solicitudes = Partes_Licencia.query.all()
     return render_template("partes.html", solicitudes=solicitudes)
 
-#----------------------------------------------#----------------------------------------------
+
+#--------------------------------------------PARTE DE NOVEDADES ---------------------
+@app.route('/parte_novedades', methods=['GET', 'POST'])
+@login_required
+def parte_novedades():
+    if request.method == 'POST':
+        destino = request.form['area_destino']
+        objeto = request.form['objeto']
+        detalle = request.form['detalle']
+
+        # Datos automáticos
+        fecha_actual = datetime.now().date()
+        hora_actual = datetime.now().time()
+        legajo = current_user.numero_legajo
+        nombre = current_user.name
+
+        # Guardar registro en la BD
+        nuevo_parte = ParteNovedades(
+            fecha=fecha_actual,
+            hora=hora_actual,
+            numero_legajo=legajo,
+            nombre_solicitante=nombre,
+            destino=destino,
+            objeto=objeto,
+            detalle=detalle,
+            estado_confirmacion=EstadoConfirmacion.pendiente
+
+        )
+        db.session.add(nuevo_parte)
+        db.session.commit()
+
+        # Crear PDF
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+
+        # Insertar logo en el margen superior derecho
+        logo_path = os.path.join('static', 'img', 'logo1.png')  # Ajustá si tu imagen tiene otro nombre o extensión
+        pdf.image(logo_path, x=160, y=10,
+                  w=40)  # x, y, width - ajustá los valores según el tamaño y posición que quieras
+
+        pdf.set_xy(10, 20)
+        pdf.set_font("Arial", 'B', 16)
+        pdf.cell(0, 10, "PARTE DE NOVEDADES", ln=True, align="C")
+        pdf.ln(10)
+        pdf.multi_cell(0, 10, f"De: {nombre} (Legajo {legajo})\nPara: {destino}\nFecha: {fecha_actual.strftime('%d/%m/%Y')} - Hora: {hora_actual.strftime('%H:%M')}")
+        pdf.ln(5)
+        pdf.cell(0, 10, f"Objeto: {objeto}", ln=True)
+        pdf.ln(5)
+        pdf.multi_cell(0, 10, f"DETALLE:\n{detalle}")
+        pdf.ln(50)
+        pdf.cell(0, 10, "Recibido: ___________________", ln=True)
+        pdf.cell(0, 10, "Autorizado: __________________", ln=True)
+
+        # Guardar PDF
+        ruta_carpeta = os.path.join('static', 'partes_generados')
+        os.makedirs(ruta_carpeta, exist_ok=True)
+
+        nombre_archivo_pdf = f"parte_{nuevo_parte.id}.pdf"
+        ruta_pdf = os.path.join(ruta_carpeta, nombre_archivo_pdf)
+        pdf.output(ruta_pdf)
+
+        # Guardar el nombre del archivo PDF en la base
+        nuevo_parte.archivo_pdf = nombre_archivo_pdf
+        db.session.commit()
+
+        return send_file(ruta_pdf, as_attachment=True)
+
+    # Mostrar partes existentes
+    partes = ParteNovedades.query.order_by(ParteNovedades.id.desc()).all()
+    return render_template("parte_novedades.html", partes=partes)
+#------------------------------------PARTE APROBACION-------------------------------------------------------
+@app.route('/parte_aprobado/<int:id_cambio>', methods=['GET', 'POST'])
+@login_required
+@role_required('admin','jefe_guardia')
+def parte_aprobado(id_cambio):
+    parte = ParteNovedades.query.get_or_404(id_cambio)
+
+    if request.method == 'POST':
+        decision = request.form.get('decision')
+        if decision == 'confirmar':
+            parte.estado_confirmacion = EstadoConfirmacion.confirmado
+            parte.fecha_confirmacion = datetime.now()
+            flash('Has confirmado la cobertura.', 'success')
+        elif decision == 'rechazar':
+            parte.estado_confirmacion = EstadoConfirmacion.rechazado
+            parte.fecha_confirmacion = datetime.now()
+            flash('Has rechazado la cobertura.', 'warning')
+
+        db.session.commit()
+        return redirect(url_for('parte_novedades'))  # O donde quieras redirigir
+
+    return render_template('parte_aprobado.html', parte=parte)
+#----------------------------------------------UPLOADS DE DATOS---------------------------------------------
 @app.route('/uploads/partes/<filename>')
 def download_file(filename):
     subdirectory = "partes"
     return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], subdirectory), filename)
-
+@app.route('/uploads/parte_novedades/<filename>')
+def download_fil(filename):
+    subdirectory = "parte"
+    return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], subdirectory), filename)
 
 @app.route('/uploads/ficha_medica/<filename>')
 def download_files(filename):
@@ -1518,6 +1716,7 @@ def automotores():
 
 
 @app.route('/comunicaciones', methods=['GET', 'POST'])
+@login_required
 def centralistas():
     tz_buenos_aires = pytz.timezone('America/Argentina/Buenos_Aires')
     fecha_actual = datetime.now(tz_buenos_aires).date()
@@ -2089,7 +2288,7 @@ def asistencia_por_actividad():
     }
     return jsonify(data)
 #------------------------------------------------------------------------------------------------
-#------------------------------------------------------------------------------------------------
+#----------------------------------CONTROL BOLSO B3--------------------------------------------------------------
 @app.route('/control_bolso_b3', methods=['GET', 'POST'])
 @login_required
 def control_bolso_b3():
@@ -2125,7 +2324,7 @@ def control_bolso_b3():
 
     registros = ControlBolsoB3.query.order_by(ControlBolsoB3.fecha.desc(), ControlBolsoB3.hora.desc()).all()
     return render_template('control_bolso_b3.html', registros=registros)
-#------------------------------------------------------------------------------
+#-------------------------MATERIALES BF1----------------------------------------------------
 @app.route('/materialesBF1', methods=['GET', 'POST'])
 @login_required
 def materialesBF1():
@@ -2166,8 +2365,127 @@ def materialesBF1():
     registros = MaterialesBF1.query.order_by(MaterialesBF1.fecha.desc(), MaterialesBF1.hora.desc()).all()
     return render_template('materialesBF1.html', registros=registros)
 #------------------------------------------------------------------------------
+@app.route('/materialesF2', methods=['GET', 'POST'])
+@login_required
+def materialesF2():
+    tz_buenos_aires = pytz.timezone('America/Argentina/Buenos_Aires')
+
+    fecha_actual = datetime.now(tz_buenos_aires).date()
+
+    # Obtener la hora actual en Buenos Aires
+    hora_actual_utc = datetime.now(timezone('UTC'))
+    hora_actual_buenos_aires = hora_actual_utc.astimezone(app.config['TIMEZONE'])
+
+    # Convertir la hora a un objeto 'time' de Python
+    hora_actual_str = hora_actual_buenos_aires.strftime('%H:%M')
+    hora_actual_obj = datetime.strptime(hora_actual_str, '%H:%M').time()
+
+    if request.method == 'POST':
+        numero_legajo = current_user.numero_legajo
+        estado_materiales = request.form['estado_bolso']  # 'OK' o 'X'
+        colaborador1=request.form['colaborador1']
+        colaborador2 = request.form['colaborador1']
+        observaciones = request.form.get('observaciones', '')
+
+        nuevo_registro = MaterialesF2(
+            fecha=fecha_actual,
+            hora=hora_actual_obj,
+            numero_legajo=numero_legajo,
+            estado_materiales=estado_materiales,
+            colaborador1=colaborador1,
+            colaborador2=colaborador2,
+            observaciones=observaciones
+        )
+        db.session.add(nuevo_registro)
+        db.session.commit()
+        flash('Registro de materiales F2 realizado exitosamente.')
+
+        return redirect(url_for('materialesF2'))
+
+    registros = MaterialesF2.query.order_by(MaterialesF2.fecha.desc(), MaterialesF2.hora.desc()).all()
+    return render_template('materialesF2.html', registros=registros)
+#-------------------------------------B4-----------------------------------------
+@app.route('/materialesB4', methods=['GET', 'POST'])
+@login_required
+def materialesB4():
+    tz_buenos_aires = pytz.timezone('America/Argentina/Buenos_Aires')
+
+    fecha_actual = datetime.now(tz_buenos_aires).date()
+
+    # Obtener la hora actual en Buenos Aires
+    hora_actual_utc = datetime.now(timezone('UTC'))
+    hora_actual_buenos_aires = hora_actual_utc.astimezone(app.config['TIMEZONE'])
+
+    # Convertir la hora a un objeto 'time' de Python
+    hora_actual_str = hora_actual_buenos_aires.strftime('%H:%M')
+    hora_actual_obj = datetime.strptime(hora_actual_str, '%H:%M').time()
+
+    if request.method == 'POST':
+        numero_legajo = current_user.numero_legajo
+        estado_materiales = request.form['estado_bolso']  # 'OK' o 'X'
+        colaborador1=request.form['colaborador1']
+        colaborador2 = request.form['colaborador1']
+        observaciones = request.form.get('observaciones', '')
+
+        nuevo_registro = MaterialesF2(
+            fecha=fecha_actual,
+            hora=hora_actual_obj,
+            numero_legajo=numero_legajo,
+            estado_materiales=estado_materiales,
+            colaborador1=colaborador1,
+            colaborador2=colaborador2,
+            observaciones=observaciones
+        )
+        db.session.add(nuevo_registro)
+        db.session.commit()
+        flash('Registro de materiales B4 realizado exitosamente.')
+
+        return redirect(url_for('materialesB4'))
+
+    registros = MaterialesB4.query.order_by(MaterialesB4.fecha.desc(), MaterialesB4.hora.desc()).all()
+    return render_template('materialesB4.html', registros=registros)
+
 #------------------------------------------------------------------------------
-#------------------------------------------------------------------------------
+#-------------------------------------------B2-----------------------------------------------------
+@app.route('/materialesB2', methods=['GET', 'POST'])
+@login_required
+def materialesB2():
+    tz_buenos_aires = pytz.timezone('America/Argentina/Buenos_Aires')
+
+    fecha_actual = datetime.now(tz_buenos_aires).date()
+
+    # Obtener la hora actual en Buenos Aires
+    hora_actual_utc = datetime.now(timezone('UTC'))
+    hora_actual_buenos_aires = hora_actual_utc.astimezone(app.config['TIMEZONE'])
+
+    # Convertir la hora a un objeto 'time' de Python
+    hora_actual_str = hora_actual_buenos_aires.strftime('%H:%M')
+    hora_actual_obj = datetime.strptime(hora_actual_str, '%H:%M').time()
+
+    if request.method == 'POST':
+        numero_legajo = current_user.numero_legajo
+        estado_materiales = request.form['estado_bolso']  # 'OK' o 'X'
+        colaborador1=request.form['colaborador1']
+        colaborador2 = request.form['colaborador1']
+        observaciones = request.form.get('observaciones', '')
+
+        nuevo_registro = MaterialesB2(
+            fecha=fecha_actual,
+            hora=hora_actual_obj,
+            numero_legajo=numero_legajo,
+            estado_materiales=estado_materiales,
+            colaborador1=colaborador1,
+            colaborador2=colaborador2,
+            observaciones=observaciones
+        )
+        db.session.add(nuevo_registro)
+        db.session.commit()
+        flash('Registro de materiales B2 realizado exitosamente.')
+
+        return redirect(url_for('materialesB2'))
+
+    registros = MaterialesB2.query.order_by(MaterialesB2.fecha.desc(), MaterialesB2.hora.desc()).all()
+    return render_template('materialesB2.html', registros=registros)
 #------------------------------------------------------------------------------
 if __name__ == '__main__':
     app.run(debug=True, port=8080)  # Cambia 8080 al puerto que prefieras

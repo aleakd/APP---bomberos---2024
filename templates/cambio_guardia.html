@@ -24,8 +24,8 @@
     <form method="POST" class="mb-5">
         <div class="row">
             <div class="col-md-4">
-                <label for="tipo_solicitud">Tipo de Solicitud</label>
-                <select name="tipo_solicitud" class="form-control" required>
+                <label for="tipo_solicitud">Tipo de Cambio de guardia</label>
+                <select name="tipo_solicitud" class="form-control" id="tipo_solicitud" required>
                     <option value="">Seleccione</option>
                     <option value="cambio">Solicitud</option>
                     <option value="devolucion">Devolución</option>
@@ -34,13 +34,14 @@
 
             <div class="col-md-8">
                 <label for="motivo">Motivo</label>
-                <select name="motivo" class="form-control" required>
+                <select name="motivo" class="form-control"  required>
                     <option value="">Seleccione</option>
                     <option value="Estudio">Estudio</option>
                     <option value="Trabajo">Trabajo</option>
                     <option value="Familiar">Familiar</option>
                     <option value="Salud">Salud</option>
                     <option value="Otro">Otro</option>
+                    <option value="Devoluvion">Devoluicion</option>
                 </select>
             </div>
         </div>
@@ -67,7 +68,7 @@
             </div>
             <div class="col-md-4">
                 <label for="id_cambio_original">ID de Cambio Original (solo para devolución)</label>
-                <input type="number" name="id_cambio_original" class="form-control" placeholder="Opcional para devolver un cambio">
+                <input type="number" name="id_cambio_original" id="id_cambio_original" class="form-control" placeholder="Opcional para devolver un cambio">
             </div>
             <div class="col-md-4">
                 <label for="jefe_guardia">jefe de guardia</label>
@@ -99,10 +100,14 @@
                 <th>Quien Cubre</th>
                 <th>Dev. de Cambio ID</th>
                 <th>Estado de Cambio</th>
-                {% if current_user.rol == 'admin' %}
+                {% if current_user.rol == 'admin' or current_user.rol == 'jefe_guardia' %}
                 <th>Aprobacion</th>
                 {% endif %}
                 <th>Copiar</th>
+                {% if current_user.rol == 'admin'%}
+                <th>Eliminar</th>
+                {% endif %}
+
 
             </tr>
         </thead>
@@ -122,12 +127,14 @@
                 <td>{{ c.legajo_quien_cubre }}</td>
                 <td>{{ c.id_cambio_original or '-' }}</td>
                 <td>{{ c.estado_confirmacion.value }}</td>
-                 {% if current_user.rol == 'admin' %}
+                 {% if current_user.rol == 'admin' or current_user.rol == 'jefe_guardia' %}
                  <td>
     <a href="{{ url_for('confirmar_cobertura', id_cambio=c.id) }}" class="btn btn-primary btn-sm">
         Confirmar Cobertura
     </a>
 </td>
+
+
                 {% else %}
         {{ c.estado_confirmacion.value|capitalize }}
     {% endif %}
@@ -147,7 +154,14 @@
 >
     Copiar Información
 </button>
+
 </td>
+{% if current_user.rol == 'admin'%}
+                <td><form action="{{ url_for('eliminar_cambio_guardia', id=c.id) }}" method="post" style="display:inline;">
+    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro que quieres eliminar este cambio de guardia?');">Eliminar</button>
+</form>
+</td>
+                {% endif %}
             </tr>
             {% endfor %}
         </tbody>
@@ -196,6 +210,21 @@
             var h2 = document.getElementById('miH202');
             h2.classList.toggle('cambio-color');
         }, 1000);
+</script>
+
+
+<script>
+    const tipoSolicitud = document.getElementById('tipo_solicitud');
+    const idCambioOriginal = document.getElementById('id_cambio_original');
+
+    tipoSolicitud.addEventListener('change', function() {
+        if (this.value === 'devolucion') {
+            idCambioOriginal.disabled = false;
+        } else {
+            idCambioOriginal.disabled = true;
+            idCambioOriginal.value = ''; // Limpiar el valor si lo deshabilitamos
+        }
+    });
 </script>
 
 

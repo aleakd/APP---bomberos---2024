@@ -35,7 +35,7 @@
 
 
        <div class="col-md-6">
-           <a href="{{ url_for('cambiosguardia') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/cambios.jpg') }}'); background-size: cover;">Cambios de Guardia</a>
+           <a href="{{ url_for('cambio_guardia') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/cambios.jpg') }}'); background-size: cover;">Cambios de Guardia</a>
 
        </div>
    </div>
@@ -96,7 +96,7 @@
         </div>
 
 
-        {% if current_user.rol == 'admin' or current_user.rol == 'comunicaciones' %}
+        {% if current_user.rol == 'admin' or current_user.rol == 'comunicaciones' or current_user.rol == 'automotor' %}
 
         <div class="col-md-6">
             <a href="{{ url_for('centralistas') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/central.jpg') }}'); background-size: cover;">Comunicaciones</a>

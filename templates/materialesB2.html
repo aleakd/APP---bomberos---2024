@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Control de Materiales - B2</h2>
+
+    <!-- Imagen del bolso con lista de contenido -->
+    <div class="text-center mb-3">
+        <img src="{{ url_for('static', filename='img/') }}" alt="Materiales b2" class="img-fluid">
+    </div>
+
+
+    <!-- Formulario de control -->
+    <form method="POST">
+        <div class="mb-3">
+            <label class="form-label">Estado del Material y equipamiento:</label><br>
+            <input type="radio" name="estado_bolso" value="✓" required> ✅ OK
+            <input type="radio" name="estado_bolso" value="✗" required> ❌ Falla
+        </div>
+        <div class="mb-3">
+            <label for="colaborador1" class="form-label">Colaborador 1:</label>
+            <input type="text" id="colaborador1" name="colaborador1" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="colaborador2" class="form-label">Colaborador 2:</label>
+            <input type="text" id="colaborador2" name="colaborador2" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="observaciones" class="form-label">Observaciones:</label>
+            <textarea id="observaciones" name="observaciones" class="form-control" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar Registro</button>
+    </form>
+
+    <!-- Tabla de registros -->
+    <h3 class="mt-4">Registros Anteriores</h3>
+    <table class="table table-striped table-responsive" id="TableMaterialesB2">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Legajo</th>
+                <th>Estado</th>
+                <th>Colaborador 1</th>
+                <th>Colaborador 2</th>
+                <th>Observaciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for registro in registros %}
+            <tr>
+                <td>{{ registro.id }}</td>
+                <td>{{ registro.fecha }}</td>
+                <td>{{ registro.hora }}</td>
+                <td>{{ registro.numero_legajo }}</td>
+                <td>{{ registro.estado_bolso }}</td>
+                <td>{{ registro.colaborador1 }}</td>
+                <td>{{ registro.colaborador2 }}</td>
+                <td>{{ registro.observaciones }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#TableMaterialesB2').DataTable();
+    });
+</script>
+<script>
+        setInterval(function() {
+            var h2 = document.getElementById('miH202');
+            h2.classList.toggle('cambio-color');
+        }, 1000);
+</script>
+{% endblock %}
