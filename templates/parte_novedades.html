@@ -104,6 +104,7 @@
             <th>Archivo PDF</th>
             {% if current_user.rol == 'admin' or current_user.rol == 'jefe_guardia' %}
             <th>Aprobacion</th>
+            <th>Eliminar</th>
                 {% endif %}
         </tr>
     </thead>
@@ -132,10 +133,15 @@
         Confirmar Cobertura
     </a>
 </td>
+            <td>
+                <form action="{{ url_for('eliminar_parte', id=parte.id) }}" method="post" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que querés eliminar este parte?');">
+        <button type="submit" class="btn btn-danger btn-sm">Eliminar Parte</button>
+    </form>
+            </td>
 
 
                 {% else %}
-        {{ c.estado_confirmacion.value|capitalize }}
+
     {% endif %}
         </tr>
         {% endfor %}

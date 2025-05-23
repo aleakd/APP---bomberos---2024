@@ -15,6 +15,26 @@
             </select>
         </div>
 
+
+        <div class="form-group">
+            <label for="actividad">Actividad</label>
+            <select class="form-control" name="actividad" required>
+                <option value="" disabled>ACTIVIDAD</option>
+                <option value="Guardia Semana" {% if asistencia.actividad == 'Guardia Semana' %}selected{% endif %}>Guardia Semana</option>
+                <option value="Guardia Obligatoria" {% if asistencia.actividad == 'Guardia Obligatoria' %}selected{% endif %}>Guardia Obligatoria</option>
+                <option value="Capacitacion" {% if asistencia.actividad == 'Capacitacion' %}selected{% endif %}>Capacitación</option>
+                <option value="Reunion" {% if asistencia.actividad == 'Reunion' %}selected{% endif %}>Reunión</option>
+                <option value="Refuerzo de Guardia" {% if asistencia.actividad == 'Refuerzo de Guardia' %}selected{% endif %}>Refuerzo de Guardia</option>
+                <option value="Convocatoria" {% if asistencia.actividad == 'Convocatoria' %}selected{% endif %}>Convocatoria</option>
+                <option value="Orden de Servicio" {% if asistencia.actividad == 'Orden de Servicio' %}selected{% endif %}>Orden de Servicio</option>
+                <option value="Practica" {% if asistencia.actividad == 'Practica' %}selected{% endif %}>Práctica</option>
+                <option value="Colaboracion fuera de juri" {% if asistencia.actividad == 'Colaboracion fuera de juri' %}selected{% endif %}>Colaboración Fuera de Jurisdicción</option>
+                <option value="Inspecciones" {% if asistencia.actividad == 'Inspecciones' %}selected{% endif %}>Inspecciones</option>
+                <option value="Matafuegos" {% if asistencia.actividad == 'Matafuegos' %}selected{% endif %}>Matafuegos</option>
+                <option value="Tareas de área" {% if asistencia.actividad == 'Tareas de área' %}selected{% endif %}>Tareas de área</option>
+            </select>
+        </div>
+
         <div class="form-group">
             <label for="fecha">Fecha</label>
             <input type="date" class="form-control" name="fecha" value="{{ asistencia.fecha }}" required>

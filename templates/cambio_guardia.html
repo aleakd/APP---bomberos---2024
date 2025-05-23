@@ -118,13 +118,14 @@
                 <td>{{ c.fecha }}</td>
                 <td>{{ c.hora.strftime('%H:%M') }}</td>
                 <td>{{ c.tipo_solicitud }}</td>
-                <td>{{ c.legajo_solicitante }}</td>
+                <td>{{ usuarios.get(c.legajo_solicitante, 'Desconocido') }} ({{ c.legajo_solicitante }})</td>
+
                 <td>{{ c.motivo }}</td>
                 <td>{{ c.fecha_ausencia }}</td>
                 <td>{{ c.jefe_guardia }}</td>
                 <td>{{ c.hora_desde }}</td>
                 <td>{{ c.hora_hasta }}</td>
-                <td>{{ c.legajo_quien_cubre }}</td>
+                <td>{{ usuarios.get(c.legajo_quien_cubre, 'Desconocido') }} ({{ c.legajo_quien_cubre }})</td>
                 <td>{{ c.id_cambio_original or '-' }}</td>
                 <td>{{ c.estado_confirmacion.value }}</td>
                  {% if current_user.rol == 'admin' or current_user.rol == 'jefe_guardia' %}

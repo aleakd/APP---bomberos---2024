@@ -1,10 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify,send_from_directory, abort, send_file
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify,send_from_directory, abort,send_file
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from functools import wraps
 import pytz
-from sqlalchemy import func  # Import func aquí
+from sqlalchemy import func
 from sqlalchemy import text, extract, desc
 from sqlalchemy import  Enum as SqlEnum
 import enum
@@ -15,6 +15,7 @@ import os
 from werkzeug.utils import secure_filename
 from datetime import datetime, date, timedelta
 from fpdf import FPDF
+
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
 
@@ -237,110 +238,111 @@ class Llegada(db.Model):
     novedades = db.Column(db.String(500), nullable=True)
 
 
-class MaterialesR1(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    fecha = db.Column(db.Date, nullable=False)
-    hora = db.Column(db.Time, nullable=False)
-    numero_legajo = db.Column(db.String(10), nullable=False)
-    observaciones = db.Column(db.Text, nullable=True)
-    cinta_de_vallado = db.Column(db.String(10), nullable=True)
-    alcohol_en_gel = db.Column(db.String(10), nullable=True)
-    llave_de_ascensor = db.Column(db.String(10), nullable=True)
-    herramienta_multiproposito_manual = db.Column(db.String(10), nullable=True)
-    bateria_luz = db.Column(db.String(10), nullable=True)
-    mapa_vcp = db.Column(db.String(10), nullable=True)
-    llave_del_11 = db.Column(db.String(10), nullable=True)
-    par_de_guantes_de_rescate = db.Column(db.String(10), nullable=True)
-    kit_balizas = db.Column(db.String(10), nullable=True)
-    extintor_1k = db.Column(db.String(10), nullable=True)
-    tubo_de_oxigeno = db.Column(db.String(10), nullable=True)
-    gato = db.Column(db.String(10), nullable=True)
-    caja_guantes_nitrilo = db.Column(db.String(10), nullable=True)
-    luz_de_escena = db.Column(db.String(10), nullable=True)
-    conos = db.Column(db.String(10), nullable=True)
-    colcha = db.Column(db.String(10), nullable=True)
-    estabilizadores = db.Column(db.String(10), nullable=True)
-    bolso_cubre_parantes = db.Column(db.String(10), nullable=True)
-    cojinetes_inflables = db.Column(db.String(10), nullable=True)
-    consola_de_comando_dual = db.Column(db.String(10), nullable=True)
-    bolso_con_las_mangueras = db.Column(db.String(10), nullable=True)
-    tubo = db.Column(db.String(10), nullable=True)
-    mochila_de_juguetes = db.Column(db.String(10), nullable=True)
-    bolso_prehospitalario = db.Column(db.String(10), nullable=True)
-    bolso_de_trauma = db.Column(db.String(10), nullable=True)
-    bolso_de_parto = db.Column(db.String(10), nullable=True)
-    chaleco_extraccion_adulto = db.Column(db.String(10), nullable=True)
-    chaleco_extraccion_pediatric = db.Column(db.String(10), nullable=True)
-    bolso_de_ferulas_semi_rigidas = db.Column(db.String(10), nullable=True)
-    bolso_de_airbag = db.Column(db.String(10), nullable=True)
-    valija_de_cubre_airbag = db.Column(db.String(10), nullable=True)
-    equipos_de_bioseguridad = db.Column(db.String(10), nullable=True)
-    sierra_sable = db.Column(db.String(10), nullable=True)
+#class MaterialesR1(db.Model):
+#    id = db.Column(db.Integer, primary_key=True)
+#    fecha = db.Column(db.Date, nullable=False)
+#    hora = db.Column(db.Time, nullable=False)
+#    numero_legajo = db.Column(db.String(10), nullable=False)
+#    observaciones = db.Column(db.Text, nullable=True)
+#    cinta_de_vallado = db.Column(db.String(10), nullable=True)
+#    alcohol_en_gel = db.Column(db.String(10), nullable=True)
+#    llave_de_ascensor = db.Column(db.String(10), nullable=True)
+#    herramienta_multiproposito_manual = db.Column(db.String(10), nullable=True)
+#    bateria_luz = db.Column(db.String(10), nullable=True)
+#    mapa_vcp = db.Column(db.String(10), nullable=True)
+#    llave_del_11 = db.Column(db.String(10), nullable=True)
+#    par_de_guantes_de_rescate = db.Column(db.String(10), nullable=True)
+#    kit_balizas = db.Column(db.String(10), nullable=True)
+#    extintor_1k = db.Column(db.String(10), nullable=True)
+#    tubo_de_oxigeno = db.Column(db.String(10), nullable=True)
+#    gato = db.Column(db.String(10), nullable=True)
+#    caja_guantes_nitrilo = db.Column(db.String(10), nullable=True)
+#    luz_de_escena = db.Column(db.String(10), nullable=True)
+#    conos = db.Column(db.String(10), nullable=True)
+#    colcha = db.Column(db.String(10), nullable=True)
+#    estabilizadores = db.Column(db.String(10), nullable=True)
+#    bolso_cubre_parantes = db.Column(db.String(10), nullable=True)
+#    cojinetes_inflables = db.Column(db.String(10), nullable=True)
+#    consola_de_comando_dual = db.Column(db.String(10), nullable=True)
+#    bolso_con_las_mangueras = db.Column(db.String(10), nullable=True)
+#    tubo = db.Column(db.String(10), nullable=True)
+#    mochila_de_juguetes = db.Column(db.String(10), nullable=True)
+#    bolso_prehospitalario = db.Column(db.String(10), nullable=True)
+#    bolso_de_trauma = db.Column(db.String(10), nullable=True)
+#    bolso_de_parto = db.Column(db.String(10), nullable=True)
+#    chaleco_extraccion_adulto = db.Column(db.String(10), nullable=True)
+#    chaleco_extraccion_pediatric = db.Column(db.String(10), nullable=True)
+#    bolso_de_ferulas_semi_rigidas = db.Column(db.String(10), nullable=True)
+#    bolso_de_airbag = db.Column(db.String(10), nullable=True)
+#    valija_de_cubre_airbag = db.Column(db.String(10), nullable=True)
+#    equipos_de_bioseguridad = db.Column(db.String(10), nullable=True)
+#    sierra_sable = db.Column(db.String(10), nullable=True)
+#
+#    techo_escalera = db.Column(db.String(10), nullable=True)
+#    tablas_espinal_largas = db.Column(db.String(10), nullable=True)
+#    masa = db.Column(db.String(10), nullable=True)
+#    hooligans = db.Column(db.String(10), nullable=True)
+#    trancha_mediana = db.Column(db.String(10), nullable=True)
+#    cunas = db.Column(db.String(10), nullable=True)
+#    cuña_escalonada = db.Column(db.String(10), nullable=True)
+#    tabla_espinal_mediana = db.Column(db.String(10), nullable=True)
+#    tabla_espinal_chica = db.Column(db.String(10), nullable=True)
+#    holomatro = db.Column(db.String(10), nullable=True)
+#    expansor = db.Column(db.String(10), nullable=True)
+#    multipropósito = db.Column(db.String(10), nullable=True)
+#    cizalla = db.Column(db.String(10), nullable=True)
+#    ram = db.Column(db.String(10), nullable=True)
+#    bolsa_de_aserrin = db.Column(db.String(10), nullable=True)
+#    barreta_chica = db.Column(db.String(10), nullable=True)
+#    extintor_5k = db.Column(db.String(10), nullable=True)
+#    bidon_nafta = db.Column(db.String(10), nullable=True)
 
-    techo_escalera = db.Column(db.String(10), nullable=True)
-    tablas_espinal_largas = db.Column(db.String(10), nullable=True)
-    masa = db.Column(db.String(10), nullable=True)
-    hooligans = db.Column(db.String(10), nullable=True)
-    trancha_mediana = db.Column(db.String(10), nullable=True)
-    cunas = db.Column(db.String(10), nullable=True)
-    cuña_escalonada = db.Column(db.String(10), nullable=True)
-    tabla_espinal_mediana = db.Column(db.String(10), nullable=True)
-    tabla_espinal_chica = db.Column(db.String(10), nullable=True)
-    holomatro = db.Column(db.String(10), nullable=True)
-    expansor = db.Column(db.String(10), nullable=True)
-    multipropósito = db.Column(db.String(10), nullable=True)
-    cizalla = db.Column(db.String(10), nullable=True)
-    ram = db.Column(db.String(10), nullable=True)
-    bolsa_de_aserrin = db.Column(db.String(10), nullable=True)
-    barreta_chica = db.Column(db.String(10), nullable=True)
-    extintor_5k = db.Column(db.String(10), nullable=True)
-    bidon_nafta = db.Column(db.String(10), nullable=True)
+#class MaterialesB3(db.Model):
+#    id = db.Column(db.Integer, primary_key=True)
+#    fecha = db.Column(db.Date, nullable=False)
+#    hora = db.Column(db.Time, nullable=False)
+#    numero_legajo = db.Column(db.String(10), nullable=False)
+#    observaciones = db.Column(db.Text, nullable=True)
+#    camara_termica = db.Column(db.String(10), nullable=True)
+#    pistola_termica = db.Column(db.String(10), nullable=True)
+#    reflector_portatil = db.Column(db.String(10), nullable=True)
+#    cinta_de_vallado = db.Column(db.String(10), nullable=True)
+#    alcohol_en_gel = db.Column(db.String(10), nullable=True)
+#    matafuego_5kg = db.Column(db.String(10), nullable=True)
+#    kit_balizas = db.Column(db.String(10), nullable=True)
+#    plano_de_vcp = db.Column(db.String(10), nullable=True)
+#    lanza_nh_2 = db.Column(db.String(10), nullable=True)
+#    lanzas_nh_1medio = db.Column(db.String(10), nullable=True)
+#    filtro_manguerote = db.Column(db.String(10), nullable=True)
+#    llave_stz_manguerote = db.Column(db.String(10), nullable=True)
+#    llave_nh = db.Column(db.String(10), nullable=True)
+#    halligan = db.Column(db.String(10), nullable=True)
+#    era_con_mascara = db.Column(db.String(10), nullable=True)
+#    y_stz = db.Column(db.String(10), nullable=True)
+#    conos = db.Column(db.String(10), nullable=True)
+#    acople_dinnem_stz = db.Column(db.String(10), nullable=True)
+#    reductor_stz_ww_2medio_a_1medio = db.Column(db.String(10), nullable=True)
+#    reductor_stz_a_nh_1medio = db.Column(db.String(10), nullable=True)
+#    reductor_stz_a_nh_1 = db.Column(db.String(10), nullable=True)
+#    reductor_stz_2_a_stz_1medio = db.Column(db.String(10), nullable=True)
+#    reductor_stz_2_a_nh_1medio = db.Column(db.String(10), nullable=True)
+#    reductor_stz_2_a_nh_1 = db.Column(db.String(10), nullable=True)
+#    reductor_stz_2_a_stz_1 = db.Column(db.String(10), nullable=True)
+#    acople_din_stz = db.Column(db.String(10), nullable=True)
+#    acople_stz_a_nh_2 = db.Column(db.String(10), nullable=True)
+#    llave_stz = db.Column(db.String(10), nullable=True)
+#    desvanadera = db.Column(db.String(10), nullable=True)
+#    pertiga = db.Column(db.String(10), nullable=True)
+#    manguerote = db.Column(db.String(10), nullable=True)
+#    escalera = db.Column(db.String(10), nullable=True)
+#    linea_nh_1medio = db.Column(db.String(10), nullable=True)
+#    linea_nh_2 = db.Column(db.String(10), nullable=True)
+#    linea_stz_1medio = db.Column(db.String(10), nullable=True)
+#    linea_stz_2 = db.Column(db.String(10), nullable=True)
+#    bolso_prehospitalario = db.Column(db.String(10), nullable=True)
+#    columna_hidrante = db.Column(db.String(10), nullable=True)
+#    trancha = db.Column(db.String(10), nullable=True)
 
-class MaterialesB3(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    fecha = db.Column(db.Date, nullable=False)
-    hora = db.Column(db.Time, nullable=False)
-    numero_legajo = db.Column(db.String(10), nullable=False)
-    observaciones = db.Column(db.Text, nullable=True)
-    camara_termica = db.Column(db.String(10), nullable=True)
-    pistola_termica = db.Column(db.String(10), nullable=True)
-    reflector_portatil = db.Column(db.String(10), nullable=True)
-    cinta_de_vallado = db.Column(db.String(10), nullable=True)
-    alcohol_en_gel = db.Column(db.String(10), nullable=True)
-    matafuego_5kg = db.Column(db.String(10), nullable=True)
-    kit_balizas = db.Column(db.String(10), nullable=True)
-    plano_de_vcp = db.Column(db.String(10), nullable=True)
-    lanza_nh_2 = db.Column(db.String(10), nullable=True)
-    lanzas_nh_1medio = db.Column(db.String(10), nullable=True)
-    filtro_manguerote = db.Column(db.String(10), nullable=True)
-    llave_stz_manguerote = db.Column(db.String(10), nullable=True)
-    llave_nh = db.Column(db.String(10), nullable=True)
-    halligan = db.Column(db.String(10), nullable=True)
-    era_con_mascara = db.Column(db.String(10), nullable=True)
-    y_stz = db.Column(db.String(10), nullable=True)
-    conos = db.Column(db.String(10), nullable=True)
-    acople_dinnem_stz = db.Column(db.String(10), nullable=True)
-    reductor_stz_ww_2medio_a_1medio = db.Column(db.String(10), nullable=True)
-    reductor_stz_a_nh_1medio = db.Column(db.String(10), nullable=True)
-    reductor_stz_a_nh_1 = db.Column(db.String(10), nullable=True)
-    reductor_stz_2_a_stz_1medio = db.Column(db.String(10), nullable=True)
-    reductor_stz_2_a_nh_1medio = db.Column(db.String(10), nullable=True)
-    reductor_stz_2_a_nh_1 = db.Column(db.String(10), nullable=True)
-    reductor_stz_2_a_stz_1 = db.Column(db.String(10), nullable=True)
-    acople_din_stz = db.Column(db.String(10), nullable=True)
-    acople_stz_a_nh_2 = db.Column(db.String(10), nullable=True)
-    llave_stz = db.Column(db.String(10), nullable=True)
-    desvanadera = db.Column(db.String(10), nullable=True)
-    pertiga = db.Column(db.String(10), nullable=True)
-    manguerote = db.Column(db.String(10), nullable=True)
-    escalera = db.Column(db.String(10), nullable=True)
-    linea_nh_1medio = db.Column(db.String(10), nullable=True)
-    linea_nh_2 = db.Column(db.String(10), nullable=True)
-    linea_stz_1medio = db.Column(db.String(10), nullable=True)
-    linea_stz_2 = db.Column(db.String(10), nullable=True)
-    bolso_prehospitalario = db.Column(db.String(10), nullable=True)
-    columna_hidrante = db.Column(db.String(10), nullable=True)
-    trancha = db.Column(db.String(10), nullable=True)
 
 
 class ControlBolsoR1(db.Model):
@@ -360,7 +362,6 @@ class ControlBolsoB3(db.Model):
     estado_bolso = db.Column(db.String(10), nullable=False)  # 'OK' o 'X'
     observaciones = db.Column(db.Text, nullable=True)
 
-
 class MaterialesBF1(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     fecha = db.Column(db.Date, nullable=False)
@@ -370,6 +371,7 @@ class MaterialesBF1(db.Model):
     colaborador1 = db.Column(db.String(10), nullable=False)
     colaborador2 = db.Column(db.String(10), nullable=False)
     observaciones = db.Column(db.Text, nullable=True)
+
 
 class MaterialesF2(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -381,15 +383,15 @@ class MaterialesF2(db.Model):
     colaborador2 = db.Column(db.String(10), nullable=False)
     observaciones = db.Column(db.Text, nullable=True)
 
-    class MaterialesB4(db.Model):
-        id = db.Column(db.Integer, primary_key=True)
-        fecha = db.Column(db.Date, nullable=False)
-        hora = db.Column(db.Time, nullable=False)
-        numero_legajo = db.Column(db.String(10), nullable=False)
-        estado_materiales = db.Column(db.String(10), nullable=False)  # 'OK' o 'X'
-        colaborador1 = db.Column(db.String(10), nullable=False)
-        colaborador2 = db.Column(db.String(10), nullable=False)
-        observaciones = db.Column(db.Text, nullable=True)
+class MaterialesB4(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.Date, nullable=False)
+    hora = db.Column(db.Time, nullable=False)
+    numero_legajo = db.Column(db.String(10), nullable=False)
+    estado_materiales = db.Column(db.String(10), nullable=False)  # 'OK' o 'X'
+    colaborador1 = db.Column(db.String(10), nullable=False)
+    colaborador2 = db.Column(db.String(10), nullable=False)
+    observaciones = db.Column(db.Text, nullable=True)
 
 class MaterialesB2(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -400,6 +402,28 @@ class MaterialesB2(db.Model):
     colaborador1 = db.Column(db.String(10), nullable=False)
     colaborador2 = db.Column(db.String(10), nullable=False)
     observaciones = db.Column(db.Text, nullable=True)
+
+class Materiales_B3(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.Date, nullable=False)
+    hora = db.Column(db.Time, nullable=False)
+    numero_legajo = db.Column(db.String(10), nullable=False)
+    estado_materiales = db.Column(db.String(10), nullable=False)  # 'OK' o 'X'
+    colaborador1 = db.Column(db.String(10), nullable=False)
+    colaborador2 = db.Column(db.String(10), nullable=False)
+    observaciones = db.Column(db.Text, nullable=True)
+
+class Materiales_R1(db.Model):
+    __tablename__ = 'Materiales_R1'
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.Date, nullable=False)
+    hora = db.Column(db.Time, nullable=False)
+    numero_legajo = db.Column(db.String(10), nullable=False)
+    estado_materiales = db.Column(db.String(10), nullable=False)  # 'OK' o 'X'
+    colaborador1 = db.Column(db.String(10), nullable=False)
+    colaborador2 = db.Column(db.String(10), nullable=False)
+    observaciones = db.Column(db.Text, nullable=True)
+
 
 class EstadoConfirmacion(enum.Enum):
     pendiente = "pendiente"
@@ -426,7 +450,6 @@ class CambioGuardia(db.Model):
 
 
 
-
 class ParteNovedades(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     fecha = db.Column(db.Date, nullable=False)
@@ -439,6 +462,9 @@ class ParteNovedades(db.Model):
     archivo_pdf = db.Column(db.String(200), nullable=True)  # <- Nueva columna
     estado_confirmacion = db.Column(SqlEnum(EstadoConfirmacion), default=EstadoConfirmacion.pendiente, nullable=False)
     fecha_confirmacion = db.Column(db.DateTime, nullable=True)
+
+
+
 
 
 
@@ -531,6 +557,8 @@ def register():
 
         return redirect(url_for("acces"))
     return render_template("register.html")
+
+
 #----------------------------------------------
 
 # Mostrar usuarios y roles
@@ -564,7 +592,6 @@ def cambiar_rol(user_id):
     db.session.commit()
     flash(f"Rol de {user.name} actualizado a {nuevo_rol}.")
     return redirect(url_for('usuarios'))
-
 
 #----------------------------------------------#-------PAGINA PARA CARGAR LOS DATOS---------------------------------------
 
@@ -857,8 +884,8 @@ def eliminar_licencia(id):
     return jsonify({'success': True})
 
 
-#
-#----------------------------------CAMBIOS DE GUARDIA 2025-----------------------------------------------------------
+#-------------------------------------------------CAMBIOS DE GUARDIA NUEVOS 2025-------------------------------
+
 @app.route('/cambio_guardia', methods=['GET', 'POST'])
 @login_required
 def cambio_guardia():
@@ -911,12 +938,13 @@ def cambio_guardia():
               'Pendiente de confirmacion')
         return redirect(url_for('cambio_guardia'))
 
+    usuarios = {u.numero_legajo: u.name for u in User.query.all()}
     cambios = CambioGuardia.query.order_by(CambioGuardia.id.desc()).all()
-    return render_template('cambio_guardia.html', cambios=cambios)
+    return render_template('cambio_guardia.html', cambios=cambios, usuarios=usuarios)
 #------------------------------------------CONFIRMAR CAMBIO DE GUARDIA------------------------------
 @app.route('/confirmar_cobertura/<int:id_cambio>', methods=['GET', 'POST'])
 @login_required
-@role_required('admin','jefe_guardia')
+@role_required('admin')
 def confirmar_cobertura(id_cambio):
     cambio = CambioGuardia.query.get_or_404(id_cambio)
 
@@ -1037,6 +1065,7 @@ def eliminar_cambio_guardia(id):
 #        db.session.rollback()
 #        return jsonify({"success": False, "message": "Hubo un problema al eliminar el registro."}), 500
 #
+
 #----------------------------------------------#---------MATERIALES Y EQUIPO-------------------------------------
 
 
@@ -1137,77 +1166,93 @@ def partes_licencia():
     solicitudes = Partes_Licencia.query.all()
     return render_template("partes.html", solicitudes=solicitudes)
 
+#----------------------------------------------Partes 2025----------------------------
 
-#--------------------------------------------PARTE DE NOVEDADES ---------------------
 @app.route('/parte_novedades', methods=['GET', 'POST'])
 @login_required
 def parte_novedades():
     if request.method == 'POST':
-        destino = request.form['area_destino']
-        objeto = request.form['objeto']
-        detalle = request.form['detalle']
+        try:
+            destino = request.form['area_destino']
+            objeto = request.form['objeto']
+            detalle = request.form['detalle']
 
-        # Datos automáticos
-        fecha_actual = datetime.now().date()
-        hora_actual = datetime.now().time()
-        legajo = current_user.numero_legajo
-        nombre = current_user.name
+            # Datos automáticos
+            fecha_actual = datetime.now().date()
+            hora_actual = datetime.now().time()
+            legajo = current_user.numero_legajo
+            nombre = current_user.name
 
-        # Guardar registro en la BD
-        nuevo_parte = ParteNovedades(
-            fecha=fecha_actual,
-            hora=hora_actual,
-            numero_legajo=legajo,
-            nombre_solicitante=nombre,
-            destino=destino,
-            objeto=objeto,
-            detalle=detalle,
-            estado_confirmacion=EstadoConfirmacion.pendiente
+            # Crear registro en la BD
+            nuevo_parte = ParteNovedades(
+                fecha=fecha_actual,
+                hora=hora_actual,
+                numero_legajo=legajo,
+                nombre_solicitante=nombre,
+                destino=destino,
+                objeto=objeto,
+                detalle=detalle,
+                estado_confirmacion=EstadoConfirmacion.pendiente
+            )
+            db.session.add(nuevo_parte)
+            db.session.commit()  # Aquí se genera el ID
 
-        )
-        db.session.add(nuevo_parte)
-        db.session.commit()
+            # Crear PDF
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_font("Arial", size=12)
 
-        # Crear PDF
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", size=12)
+            # Insertar logo (asegurate que exista)
+            logo_path = os.path.join(app.root_path, 'static', 'img', 'logo1.png')
+            if os.path.exists(logo_path):
+                pdf.image(logo_path, x=160, y=10, w=40)
 
-        # Insertar logo en el margen superior derecho
-        logo_path = os.path.join('static', 'img', 'logo1.png')  # Ajustá si tu imagen tiene otro nombre o extensión
-        pdf.image(logo_path, x=160, y=10,
-                  w=40)  # x, y, width - ajustá los valores según el tamaño y posición que quieras
+            pdf.set_xy(10, 20)
+            pdf.set_font("Arial", 'B', 16)
+            pdf.cell(0, 10, "PARTE DE NOVEDADES", ln=True, align="C")
+            pdf.ln(10)
 
-        pdf.set_xy(10, 20)
-        pdf.set_font("Arial", 'B', 16)
-        pdf.cell(0, 10, "PARTE DE NOVEDADES", ln=True, align="C")
-        pdf.ln(10)
-        pdf.multi_cell(0, 10, f"De: {nombre} (Legajo {legajo})\nPara: {destino}\nFecha: {fecha_actual.strftime('%d/%m/%Y')} - Hora: {hora_actual.strftime('%H:%M')}")
-        pdf.ln(5)
-        pdf.cell(0, 10, f"Objeto: {objeto}", ln=True)
-        pdf.ln(5)
-        pdf.multi_cell(0, 10, f"DETALLE:\n{detalle}")
-        pdf.ln(50)
-        pdf.cell(0, 10, "Recibido: ___________________", ln=True)
-        pdf.cell(0, 10, "Autorizado: __________________", ln=True)
+            pdf.set_font("Arial", size=12)
+            pdf.multi_cell(0, 10, f"De: {nombre} (Legajo {legajo})\nPara: {destino}\nFecha: {fecha_actual.strftime('%d/%m/%Y')} - Hora: {hora_actual.strftime('%H:%M')}")
+            pdf.ln(5)
+            pdf.cell(0, 10, f"Objeto: {objeto}", ln=True)
+            pdf.ln(5)
+            pdf.multi_cell(0, 10, f"DETALLE:\n{detalle}")
+            pdf.ln(50)
+            pdf.cell(0, 10, "Recibido: ___________________", ln=True)
+            pdf.cell(0, 10, "Autorizado: __________________", ln=True)
 
-        # Guardar PDF
-        ruta_carpeta = os.path.join('static', 'partes_generados')
-        os.makedirs(ruta_carpeta, exist_ok=True)
+            # Guardar PDF
+            ruta_carpeta = os.path.join(app.root_path, 'static', 'partes_generados')
 
-        nombre_archivo_pdf = f"parte_{nuevo_parte.id}.pdf"
-        ruta_pdf = os.path.join(ruta_carpeta, nombre_archivo_pdf)
-        pdf.output(ruta_pdf)
+            os.makedirs(ruta_carpeta, exist_ok=True)
 
-        # Guardar el nombre del archivo PDF en la base
-        nuevo_parte.archivo_pdf = nombre_archivo_pdf
-        db.session.commit()
+            nombre_archivo_pdf = f"parte_{nuevo_parte.id}.pdf"
+            ruta_pdf = os.path.join(ruta_carpeta, nombre_archivo_pdf)
 
-        return send_file(ruta_pdf, as_attachment=True)
+            pdf.output(ruta_pdf)
 
-    # Mostrar partes existentes
-    partes = ParteNovedades.query.order_by(ParteNovedades.id.desc()).all()
+            # Actualizar registro con el nombre del PDF
+            nuevo_parte.archivo_pdf = nombre_archivo_pdf
+            db.session.commit()
+
+            flash("Parte generado y guardado correctamente.", "success")
+            return redirect(url_for('parte_novedades'))
+
+        except Exception as e:
+            flash(f"Error al generar el parte: {str(e)}", "danger")
+            return redirect(url_for('parte_novedades'))
+
+    # Mostrar historial
+    # Mostrar historial según el tipo de usuario
+    if current_user.rol in ['admin', 'jefe_guardia']:
+        partes = ParteNovedades.query.order_by(ParteNovedades.id.desc()).all()
+    else:
+        partes = ParteNovedades.query.filter_by(numero_legajo=current_user.numero_legajo).order_by(
+            ParteNovedades.id.desc()).all()
+
     return render_template("parte_novedades.html", partes=partes)
+
 #------------------------------------PARTE APROBACION-------------------------------------------------------
 @app.route('/parte_aprobado/<int:id_cambio>', methods=['GET', 'POST'])
 @login_required
@@ -1230,11 +1275,34 @@ def parte_aprobado(id_cambio):
         return redirect(url_for('parte_novedades'))  # O donde quieras redirigir
 
     return render_template('parte_aprobado.html', parte=parte)
-#----------------------------------------------UPLOADS DE DATOS---------------------------------------------
+#----------------------------------------------#----------------------------------------------
+@app.route('/eliminar_parte/<int:id>', methods=['POST'])
+@login_required
+def eliminar_parte(id):
+    if current_user.rol not in ['admin', 'jefe_guardia']:
+        flash("No tenés permiso para eliminar partes.", "danger")
+        return redirect(url_for('parte_novedades'))
+
+    parte = ParteNovedades.query.get_or_404(id)
+
+    # Eliminar PDF si existe
+    if parte.archivo_pdf:
+        ruta_pdf = os.path.join(app.root_path, 'static', 'partes_generados', parte.archivo_pdf)
+        if os.path.exists(ruta_pdf):
+            os.remove(ruta_pdf)
+
+    db.session.delete(parte)
+    db.session.commit()
+    flash("Parte eliminado correctamente.", "success")
+    return redirect(url_for('parte_novedades'))
+
+
+#----------------------------------------------#----------------------------------------------
 @app.route('/uploads/partes/<filename>')
 def download_file(filename):
     subdirectory = "partes"
     return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], subdirectory), filename)
+
 @app.route('/uploads/parte_novedades/<filename>')
 def download_fil(filename):
     subdirectory = "parte"
@@ -1435,20 +1503,26 @@ def update_password():
 
     return render_template('acces.html')
 #---------------------------------------------- Funcion de calcular horas Asistencia#----------------------------------------------
-INSTITUTION_IP = ["190.195.11.53", "186.108.89.24", "200.105.104.74", "170.51.250.38", "172.28.32.201", "127.0.0.1"]
-NOSTROSIP = ["cuarte etac casaale juli1 juli2"]
+INSTITUTION_IP = ["190.195.11.53","186.108.89.24", "200.105.104.74", "170.51.250.38", "172.28.32.201", "104.28.63.27", "104.28.59.28"]
+NOSTROSIP = ["cuarte etac casaale juli1 juli2 kossoyiphone kossoyiphone2"]
 
 def calcular_horas_y_minutos_acumulados(dni):
     mes_actual = datetime.now().month
     año_actual = datetime.now().year
 
+    # Manejar el inicio y fin del mes de manera segura
+    inicio_mes = datetime(año_actual, mes_actual, 1)
+    if mes_actual == 12:
+        # Si es diciembre, el próximo mes es enero del próximo año
+        fin_mes = datetime(año_actual + 1, 1, 1) - timedelta(seconds=1)
+    else:
+        # Para otros meses, simplemente sumamos 1 al mes actual
+        fin_mes = datetime(año_actual, mes_actual + 1, 1) - timedelta(seconds=1)
+
     # Filtrar las asistencias del usuario para el mes y año actual
     asistencias_mes = Aistencia.query.filter(
         Aistencia.dni == dni,
-        Aistencia.fecha.between(
-            datetime(año_actual, mes_actual, 1),
-            datetime(año_actual, mes_actual + 1, 1) - timedelta(seconds=1)
-        )
+        Aistencia.fecha.between(inicio_mes, fin_mes)
     ).order_by(Aistencia.fecha, Aistencia.hora).all()
 
     horas_acumuladas = timedelta()
@@ -1481,6 +1555,7 @@ def calcular_horas_y_minutos_acumulados(dni):
     total_minutos = int((horas_acumuladas.total_seconds() % 3600) // 60)
 
     return f"{total_horas} horas y {total_minutos} minutos"
+
 #----------------------------------------------ASISTENCIAS ojo mal escrito------------------------------------------
 @app.route('/asistencia', methods=['GET', 'POST'])
 def asistencia():
@@ -1493,13 +1568,11 @@ def asistencia():
     client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
 
     print(client_ip)
-    print("esta es la IP")
-    if not (current_user.is_authenticated and current_user.rol == "admin"):
+    print("Esta es la IP")
+    if not (current_user.is_authenticated and (current_user.rol == "admin" or current_user.rol == "oficialsemana")):
         if client_ip not in INSTITUTION_IP:
-            # Si la IP no coincide, se niega el acceso
-            return redirect(url_for("error_red"))
+            return redirect(url_for("error_red"))  # Redirige si la IP no es válida
         print(client_ip)
-
 
     if request.method == 'POST':
         dni = request.form.get('dni')
@@ -1509,15 +1582,19 @@ def asistencia():
             flash('No se puede registrar la asistencia. El DNI no está registrado.')
             return redirect(url_for("acces"))
 
-
         if not current_user.is_authenticated:
-        # Obtener el último registro de asistencia del usuario
+            # Obtener el último registro de asistencia del usuario
             ultimo_registro = Aistencia.query.filter_by(dni=dni).order_by(
-            Aistencia.id_asistencia.desc()).first()
-        # Verificar si el último registro fue "INGRESO" y la nueva solicitud es también "INGRESO"
+                Aistencia.id_asistencia.desc()).first()
+
+            # Verificar si el último registro fue "INGRESO" y la nueva solicitud es también "INGRESO"
             if ultimo_registro and ultimo_registro.tipo_registro == "INGRESO" and request.form.get(
                     'tipo_registro') == "INGRESO":
                 flash('Debe registrar una SALIDA antes de registrar un nuevo INGRESO.')
+                return redirect(url_for("asistencia"))
+            if ultimo_registro and ultimo_registro.tipo_registro == "SALIDA" and request.form.get(
+                    'tipo_registro') == "SALIDA":
+                flash('Debe registrar un INGRESO antes de registrar una nueva SALIDA.')
                 return redirect(url_for("asistencia"))
 
         tipo_registro = request.form.get('tipo_registro')
@@ -1527,9 +1604,7 @@ def asistencia():
             flash('No se requiere actividad para registros de SALIDA.')
             return redirect(url_for("asistencia"))
 
-
-
-        # Si el usuario está logueado como "sistema", usar la fecha y hora manual del formulario
+        # Si el usuario está logueado como "admin", usar la fecha y hora manual del formulario
         if current_user.is_authenticated and current_user.rol == "admin":
             fecha_manual = request.form.get('fecha')
             hora_manual = request.form.get('hora')
@@ -1541,11 +1616,17 @@ def asistencia():
                 fecha=datetime.strptime(fecha_manual, '%Y-%m-%d').date()
             )
         else:
+            # Sumar un minuto a la hora si es un INGRESO
+            if tipo_registro == "INGRESO":
+                hora_mas_un_minuto = (hora_actual_buenos_aires + timedelta(minutes=1)).strftime('%H:%M')
+            else:
+                hora_mas_un_minuto = hora_actual_str
+
             asistencia = Aistencia(
                 dni=dni,
                 tipo_registro=tipo_registro,
                 actividad=actividad,
-                hora=hora_actual_str,
+                hora=hora_mas_un_minuto,
                 fecha=fecha_actual
             )
 
@@ -1553,7 +1634,6 @@ def asistencia():
         db.session.commit()
         flash('Registro cargado exitosamente')
         return redirect(url_for("asistencia"))
-
 
     # Calcular la fecha y hora de hace 24 horas
     hace_24_horas = fecha_actual - timedelta(days=1)
@@ -1587,6 +1667,7 @@ def asistencia():
 
     return render_template('asistencia.html', asistencias=asistencias_ingreso,
                            bravo=bomberos, asistencias_general=asistencia_general)
+
 #----------------------------------------------
 @app.route('/editar_asistencia/<int:id>', methods=['GET', 'POST'])
 def editar_asistencia(id):
@@ -1596,6 +1677,7 @@ def editar_asistencia(id):
         # Actualizar los datos del registro de asistencia
         asistencia.dni = request.form['dni']
         asistencia.tipo_registro = request.form['tipo_registro']
+        asistencia.actividad = request.form['actividad']
 
         # Actualizar el campo de fecha
         fecha_manual = request.form.get('fecha')
@@ -1716,7 +1798,6 @@ def automotores():
 
 
 @app.route('/comunicaciones', methods=['GET', 'POST'])
-@login_required
 def centralistas():
     tz_buenos_aires = pytz.timezone('America/Argentina/Buenos_Aires')
     fecha_actual = datetime.now(tz_buenos_aires).date()
@@ -1743,10 +1824,10 @@ def centralistas():
         ultimo_registro = Centralistas_horarios.query.filter_by(dni=dni).order_by(
             Centralistas_horarios.id_asistencia.desc()).first()
 
-        if ultimo_registro and ultimo_registro.tipo_registro == "INGRESO" and request.form.get('tipo_registro') == "INGRESO":
-            flash('Debe registrar una SALIDA antes de registrar un nuevo INGRESO.')
-            return redirect(url_for("centralistas"))
-
+     #   if ultimo_registro and ultimo_registro.tipo_registro == "INGRESO" and request.form.get('tipo_registro') == "INGRESO":
+     #       flash('Debe registrar una SALIDA antes de registrar un nuevo INGRESO.')
+     #       return redirect(url_for("centralistas"))
+#
         tipo_registro = request.form.get('tipo_registro')
 
         # Asistencia según el rol del usuario
@@ -1910,6 +1991,7 @@ def editar_salida(id):
             salida.hora = datetime.strptime(request.form['hora'], '%H:%M').time()
             salida.unidad = request.form['unidad']
             salida.tipo_alarma = request.form['tipo_alarma']
+            salida.numero_alarma = int(request.form['numero_alarma'])
             salida.a_cargo = request.form['a_cargo']
             salida.chofer = request.form['chofer']
             salida.dotacion = request.form['dotacion']
@@ -1973,6 +2055,7 @@ def editar_llegada(id):
         #llegada.hora_salida = datetime.strptime(request.form.get('hora_salida'), '%H:%M').time()
         #llegada.hora_llegada = datetime.strptime(request.form.get('hora_llegada'), '%H:%M').time()
         llegada.novedades = request.form.get('novedades')
+        llegada.unidad = request.form.get('unidad')
 
         try:
             db.session.commit()
@@ -1989,25 +2072,49 @@ def editar_llegada(id):
 #-------------------------------------------------------------------------------------------
 @app.route('/asistencia_dia_semana')
 def asistencia_dia_semana():
+    fecha_hace_7_dias = datetime.now() - timedelta(days=7)
+
+    # Consultar la cantidad de ingresos por bombero en la última semana
+    asistencias_por_bombero = (
+        db.session.query(
+            Aistencia.dni.label("bombero"),
+            func.count(Aistencia.id_asistencia).label("cantidad")
+        )
+        .filter(Aistencia.fecha >= fecha_hace_7_dias)
+        .filter(Aistencia.tipo_registro == "INGRESO")  # Solo registros de tipo "INGRESO"
+        .group_by(Aistencia.dni)
+        .order_by(func.count(Aistencia.id_asistencia).desc())  # Ordenado por más ingresos
+        .all()
+    )
+
+    # Convertir los resultados a un formato JSON para el gráfico
+    data = {
+        "labels": [registro[0] for registro in asistencias_por_bombero],  # DNI de los bomberos
+        "values": [registro[1] for registro in asistencias_por_bombero]   # Cantidad de ingresos
+    }
+
+    return jsonify(data)
+#----------------------------------------------------------------
+@app.route('/asistencia_por_actividad')
+def asistencia_por_actividad():
     # Filtra asistencias de los últimos 7 días
     fecha_hace_7_dias = datetime.now() - timedelta(days=7)
-    asistencias_por_dia = (
+    asistencias_por_actividad = (
         db.session.query(
-            extract('dow', Aistencia.fecha).label("dia_semana"),  # Día de la semana
+            Aistencia.actividad.label("actividad"),  # Tipo de actividad
             func.count(Aistencia.id_asistencia).label("cantidad")
         )
         .filter(Aistencia.fecha >= fecha_hace_7_dias)
         .filter(Aistencia.tipo_registro == "INGRESO")  # Solo asistencias de tipo "INGRESO"
-        .group_by("dia_semana")
-        .order_by("dia_semana")
+        .group_by("actividad")
+        .order_by("cantidad")
         .all()
     )
 
     # Convierte los resultados a un formato JSON para el gráfico
-    dias_semana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
     data = {
-        "labels": [dias_semana[registro[0]] for registro in asistencias_por_dia],
-        "values": [registro[1] for registro in asistencias_por_dia]
+        "labels": [registro[0] for registro in asistencias_por_actividad],
+        "values": [registro[1] for registro in asistencias_por_actividad]
     }
     return jsonify(data)
 
@@ -2017,99 +2124,100 @@ def error_red():
     return render_template('403.html')
 
 #------------------------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------------------------
 @app.route('/control_materiales')
 @login_required
 def control_materiales():
     return render_template('control_materiales.html')
 #------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------
-@app.route('/materiales_r1', methods=['GET', 'POST'])
-@login_required
-def materiales_r1():
-    tz_buenos_aires = pytz.timezone('America/Argentina/Buenos_Aires')
-
-    fecha_actual = datetime.now(tz_buenos_aires).date()
-
-    # Obtener la hora actual en Buenos Aires
-    hora_actual_utc = datetime.now(timezone('UTC'))
-    hora_actual_buenos_aires = hora_actual_utc.astimezone(app.config['TIMEZONE'])
-
-    # Convertir la hora a un objeto 'time' de Python
-    hora_actual_str = hora_actual_buenos_aires.strftime('%H:%M')
-    hora_actual_obj = datetime.strptime(hora_actual_str, '%H:%M').time()
-
-    if request.method == 'POST':
-        if 'materiales_r1' in request.form:
-            materiales = MaterialesR1(
-                numero_legajo=current_user.numero_legajo,
-                fecha=fecha_actual,
-                hora=hora_actual_obj,
-                observaciones=request.form.get('observaciones'),
-                cinta_de_vallado=request.form.get('cinta_de_vallado'),
-                alcohol_en_gel=request.form.get('alcohol_en_gel'),
-                llave_de_ascensor=request.form.get('llave_de_ascensor'),
-                herramienta_multiproposito_manual=request.form.get('herramienta_multiproposito_manual'),
-                bateria_luz=request.form.get('bateria_luz'),
-                mapa_vcp=request.form.get('mapa_vcp'),
-                llave_del_11=request.form.get('llave_del_11'),
-                par_de_guantes_de_rescate=request.form.get('par_de_guantes_de_rescate'),
-                kit_balizas=request.form.get('kit_balizas'),
-                extintor_1k=request.form.get('extintor_1k'),
-                tubo_de_oxigeno=request.form.get('tubo_de_oxigeno'),
-                gato=request.form.get('gato'),
-                caja_guantes_nitrilo=request.form.get('caja_guantes_nitrilo'),
-
-                luz_de_escena=request.form.get('luz_de_escena'),
-                conos=request.form.get('conos'),
-                colcha=request.form.get('colcha'),
-                estabilizadores=request.form.get('estabilizadores'),
-                bolso_cubre_parantes=request.form.get('bolso_cubre_parantes'),
-                cojinetes_inflables=request.form.get('cojinetes_inflables'),
-                consola_de_comando_dual=request.form.get('consola_de_comando_dual'),
-                bolso_con_las_mangueras=request.form.get('bolso_con_las_mangueras'),
-                tubo=request.form.get('tubo'),
-                mochila_de_juguetes=request.form.get('mochila_de_juguetes'),
-                bolso_prehospitalario=request.form.get('bolso_prehospitalario'),
-                bolso_de_trauma=request.form.get('bolso_de_trauma'),
-                bolso_de_parto=request.form.get('bolso_de_parto'),
-                chaleco_extraccion_adulto=request.form.get('chaleco_extraccion_adulto'),
-                chaleco_extraccion_pediatric=request.form.get('chaleco_extraccion_pediatric'),
-                bolso_de_ferulas_semi_rigidas=request.form.get('bolso_de_ferulas_semi_rigidas'),
-                bolso_de_airbag=request.form.get('bolso_de_airbag'),
-                valija_de_cubre_airbag=request.form.get('valija_de_cubre_airbag'),
-                equipos_de_bioseguridad=request.form.get('equipos_de_bioseguridad'),
-                sierra_sable=request.form.get('sierra_sable'),
-
-                techo_escalera=request.form.get('techo_escalera'),
-                tablas_espinal_largas=request.form.get('tablas_espinal_largas'),
-                masa=request.form.get('masa'),
-                hooligans=request.form.get('hooligans'),
-                trancha_mediana=request.form.get('trancha_mediana'),
-                cunas=request.form.get('cunas'),
-                cuña_escalonada=request.form.get('cuña_escalonada'),
-                tabla_espinal_mediana=request.form.get('tabla_espinal_mediana'),
-                tabla_espinal_chica=request.form.get('tabla_espinal_chica'),
-                holomatro=request.form.get('holomastro'),
-                expansor=request.form.get('expansor'),
-                multipropósito=request.form.get('multipropósito'),
-                cizalla=request.form.get('cizalla'),
-                ram=request.form.get('ram'),
-                bolsa_de_aserrin=request.form.get('bolsa_de_aserrin'),
-                barreta_chica=request.form.get('barreta_chica'),
-                extintor_5k=request.form.get('extintor_5k'),
-                bidon_nafta=request.form.get('bidon_nafta')
-            )
-
-            db.session.add(materiales)
-            db.session.commit()
-            flash('Registro de materiales R1 realizado exitosamente.')
-            return redirect(url_for('materiales_r1'))
-
-    materialesr1 = MaterialesR1.query.all()
-
-    return render_template('materiales_r1.html',materialesr1=materialesr1)
-
-
+#@app.route('/materiales_r1', methods=['GET', 'POST'])
+#@login_required
+#def materiales_r1():
+#    tz_buenos_aires = pytz.timezone('America/Argentina/Buenos_Aires')
+#
+#    fecha_actual = datetime.now(tz_buenos_aires).date()
+#
+#    # Obtener la hora actual en Buenos Aires
+#    hora_actual_utc = datetime.now(timezone('UTC'))
+#    hora_actual_buenos_aires = hora_actual_utc.astimezone(app.config['TIMEZONE'])
+#
+#    # Convertir la hora a un objeto 'time' de Python
+#    hora_actual_str = hora_actual_buenos_aires.strftime('%H:%M')
+#    hora_actual_obj = datetime.strptime(hora_actual_str, '%H:%M').time()
+#
+#    if request.method == 'POST':
+#        if 'materiales_r1' in request.form:
+#            materiales = MaterialesR1(
+#                numero_legajo=current_user.numero_legajo,
+#                fecha=fecha_actual,
+#                hora=hora_actual_obj,
+#                observaciones=request.form.get('observaciones'),
+#                cinta_de_vallado=request.form.get('cinta_de_vallado'),
+#                alcohol_en_gel=request.form.get('alcohol_en_gel'),
+#                llave_de_ascensor=request.form.get('llave_de_ascensor'),
+#                herramienta_multiproposito_manual=request.form.get('herramienta_multiproposito_manual'),
+#                bateria_luz=request.form.get('bateria_luz'),
+#                mapa_vcp=request.form.get('mapa_vcp'),
+#                llave_del_11=request.form.get('llave_del_11'),
+#                par_de_guantes_de_rescate=request.form.get('par_de_guantes_de_rescate'),
+#                kit_balizas=request.form.get('kit_balizas'),
+#                extintor_1k=request.form.get('extintor_1k'),
+#                tubo_de_oxigeno=request.form.get('tubo_de_oxigeno'),
+#                gato=request.form.get('gato'),
+#                caja_guantes_nitrilo=request.form.get('caja_guantes_nitrilo'),
+#
+#                luz_de_escena=request.form.get('luz_de_escena'),
+#                conos=request.form.get('conos'),
+#                colcha=request.form.get('colcha'),
+#                estabilizadores=request.form.get('estabilizadores'),
+#                bolso_cubre_parantes=request.form.get('bolso_cubre_parantes'),
+#                cojinetes_inflables=request.form.get('cojinetes_inflables'),
+#                consola_de_comando_dual=request.form.get('consola_de_comando_dual'),
+#                bolso_con_las_mangueras=request.form.get('bolso_con_las_mangueras'),
+#                tubo=request.form.get('tubo'),
+#                mochila_de_juguetes=request.form.get('mochila_de_juguetes'),
+#                bolso_prehospitalario=request.form.get('bolso_prehospitalario'),
+#                bolso_de_trauma=request.form.get('bolso_de_trauma'),
+#                bolso_de_parto=request.form.get('bolso_de_parto'),
+#                chaleco_extraccion_adulto=request.form.get('chaleco_extraccion_adulto'),
+#                chaleco_extraccion_pediatric=request.form.get('chaleco_extraccion_pediatric'),
+#                bolso_de_ferulas_semi_rigidas=request.form.get('bolso_de_ferulas_semi_rigidas'),
+#                bolso_de_airbag=request.form.get('bolso_de_airbag'),
+#                valija_de_cubre_airbag=request.form.get('valija_de_cubre_airbag'),
+#                equipos_de_bioseguridad=request.form.get('equipos_de_bioseguridad'),
+#                sierra_sable=request.form.get('sierra_sable'),
+#
+#                techo_escalera=request.form.get('techo_escalera'),
+#                tablas_espinal_largas=request.form.get('tablas_espinal_largas'),
+#                masa=request.form.get('masa'),
+#                hooligans=request.form.get('hooligans'),
+#                trancha_mediana=request.form.get('trancha_mediana'),
+#                cunas=request.form.get('cunas'),
+#                cuña_escalonada=request.form.get('cuña_escalonada'),
+#                tabla_espinal_mediana=request.form.get('tabla_espinal_mediana'),
+#                tabla_espinal_chica=request.form.get('tabla_espinal_chica'),
+#                holomatro=request.form.get('holomastro'),
+#                expansor=request.form.get('expansor'),
+#                multipropósito=request.form.get('multipropósito'),
+#                cizalla=request.form.get('cizalla'),
+#                ram=request.form.get('ram'),
+#                bolsa_de_aserrin=request.form.get('bolsa_de_aserrin'),
+#                barreta_chica=request.form.get('barreta_chica'),
+#                extintor_5k=request.form.get('extintor_5k'),
+#                bidon_nafta=request.form.get('bidon_nafta')
+#            )
+#
+#            db.session.add(materiales)
+#            db.session.commit()
+#            flash('Registro de materiales R1 realizado exitosamente.')
+#            return redirect(url_for('materiales_r1'))
+#
+#    materialesr1 = MaterialesR1.query.all()
+#
+#    return render_template('materiales_r1.html',materialesr1=materialesr1)
+#
 #------------------------------------------------------------------------------------------------
 @app.route('/control_bolso_r1', methods=['GET', 'POST'])
 @login_required
@@ -2140,155 +2248,135 @@ def control_bolso_r1():
         )
         db.session.add(nuevo_registro)
         db.session.commit()
+        flash('Registro de materiales R1 realizado exitosamente.')
 
         return redirect(url_for('control_bolso_r1'))
 
     registros = ControlBolsoR1.query.order_by(ControlBolsoR1.fecha.desc(), ControlBolsoR1.hora.desc()).all()
     return render_template('control_bolso_r1.html', registros=registros)
+#--------------
 #------------------------------------------------------------------------------------------------
 
-@app.route('/materiales_b3', methods=['GET', 'POST'])
-@login_required
-def materiales_b3():
-    tz_buenos_aires = pytz.timezone('America/Argentina/Buenos_Aires')
 
-    fecha_actual = datetime.now(tz_buenos_aires).date()
 
-    # Obtener la hora actual en Buenos Aires
-    hora_actual_utc = datetime.now(timezone('UTC'))
-    hora_actual_buenos_aires = hora_actual_utc.astimezone(app.config['TIMEZONE'])
-
-    # Convertir la hora a un objeto 'time' de Python
-    hora_actual_str = hora_actual_buenos_aires.strftime('%H:%M')
-    hora_actual_obj = datetime.strptime(hora_actual_str, '%H:%M').time()
-
-    if request.method == 'POST':
-
-        observaciones = request.form.get('observaciones')
-        camara_termica = request.form.get('camara_termica')
-        pistola_termica = request.form.get('pistola_termica')
-        reflector_portatil = request.form.get('reflector_portatil')
-        cinta_de_vallado = request.form.get('cinta_de_vallado')
-        alcohol_en_gel = request.form.get('alcohol_en_gel')
-        matafuego_5kg = request.form.get('matafuego_5kg')
-        kit_balizas = request.form.get('kit_balizas')
-        plano_de_vcp = request.form.get('plano_de_vcp')
-        lanza_nh_2 = request.form.get('lanza_nh_2')
-        lanzas_nh_1medio = request.form.get('lanzas_nh_1medio')  # Cambio de nombre
-        filtro_manguerote = request.form.get('filtro_manguerote')
-        llave_stz_manguerote = request.form.get('llave_stz_manguerote')
-        llave_nh = request.form.get('llave_nh')
-        halligan = request.form.get('halligan')
-        era_con_mascara = request.form.get('era_con_mascara')
-        y_stz = request.form.get('y_stz')
-        conos = request.form.get('conos')
-        acople_dinnem_stz = request.form.get('acople_dinnem_stz')
-        reductor_stz_ww_2medio_a_1medio = request.form.get('reductor_stz_ww_2medio_a_1medio')
-        reductor_stz_a_nh_1medio = request.form.get('reductor_stz_a_nh_1medio')
-        reductor_stz_a_nh_1 = request.form.get('reductor_stz_a_nh_1')
-        reductor_stz_2_a_stz_1medio = request.form.get('reductor_stz_2_a_stz_1medio')
-        reductor_stz_2_a_nh_1medio = request.form.get('reductor_stz_2_a_nh_1medio')
-        reductor_stz_2_a_nh_1 = request.form.get('reductor_stz_2_a_nh_1')
-        reductor_stz_2_a_stz_1 = request.form.get('reductor_stz_2_a_stz_1')
-        acople_din_stz = request.form.get('acople_din_stz')
-        acople_stz_a_nh_2 = request.form.get('acople_stz_a_nh_2')
-        llave_stz = request.form.get('llave_stz')
-        desvanadera = request.form.get('desvanadera')
-        pertiga = request.form.get('pertiga')
-        manguerote = request.form.get('manguerote')
-        escalera = request.form.get('escalera')
-        linea_nh_1medio = request.form.get('linea_nh_1medio')
-        linea_nh_2 = request.form.get('linea_nh_2')
-        linea_stz_1medio = request.form.get('linea_stz_1medio')
-        linea_stz_2 = request.form.get('linea_stz_2')
-        bolso_prehospitalario = request.form.get('bolso_prehospitalario')
-        columna_hidrante = request.form.get('columna_hidrante')
-        trancha = request.form.get('trancha')
-
-        nuevo_registro = MaterialesB3(
-            fecha=fecha_actual,
-            hora=hora_actual_obj,
-            numero_legajo=current_user.numero_legajo,
-            observaciones=observaciones,
-            camara_termica=camara_termica,
-            pistola_termica=pistola_termica,
-            reflector_portatil=reflector_portatil,
-            cinta_de_vallado=cinta_de_vallado,
-            alcohol_en_gel=alcohol_en_gel,
-            matafuego_5kg=matafuego_5kg,
-            kit_balizas=kit_balizas,
-            plano_de_vcp=plano_de_vcp,
-            lanza_nh_2=lanza_nh_2,
-            lanzas_nh_1medio=lanzas_nh_1medio,
-            filtro_manguerote=filtro_manguerote,
-            llave_stz_manguerote=llave_stz_manguerote,
-            llave_nh=llave_nh,
-            halligan=halligan,
-            era_con_mascara=era_con_mascara,
-            y_stz=y_stz,
-            conos=conos,
-            acople_dinnem_stz=acople_dinnem_stz,
-            reductor_stz_ww_2medio_a_1medio=reductor_stz_ww_2medio_a_1medio,
-            reductor_stz_a_nh_1medio=reductor_stz_a_nh_1medio,
-            reductor_stz_a_nh_1=reductor_stz_a_nh_1,
-            reductor_stz_2_a_stz_1medio=reductor_stz_2_a_stz_1medio,
-            reductor_stz_2_a_nh_1medio=reductor_stz_2_a_nh_1medio,
-            reductor_stz_2_a_nh_1=reductor_stz_2_a_nh_1,
-            reductor_stz_2_a_stz_1=reductor_stz_2_a_stz_1,
-            acople_din_stz=acople_din_stz,
-            acople_stz_a_nh_2=acople_stz_a_nh_2,
-            llave_stz=llave_stz,
-            desvanadera=desvanadera,
-            pertiga=pertiga,
-            manguerote=manguerote,
-            escalera=escalera,
-            linea_nh_1medio=linea_nh_1medio,
-            linea_nh_2=linea_nh_2,
-            linea_stz_1medio=linea_stz_1medio,
-            linea_stz_2=linea_stz_2,
-            bolso_prehospitalario=bolso_prehospitalario,
-            columna_hidrante=columna_hidrante,
-            trancha=trancha
-        )
-
-        try:
-            db.session.add(nuevo_registro)
-            db.session.commit()
-            flash('Registro guardado exitosamente.', 'success')
-        except Exception as e:
-            db.session.rollback()
-            flash(f'Error al guardar el registro: {str(e)}', 'danger')
-
-        return redirect(url_for('materiales_b3'))
-
-    registros = MaterialesB3.query.all()
-    return render_template('materiales_b3.html', registros=registros)
-
+#@app.route('/materiales_b3', methods=['GET', 'POST'])
+#@login_required
+#def materiales_b3():
+#    tz_buenos_aires = pytz.timezone('America/Argentina/Buenos_Aires')
+#
+#    fecha_actual = datetime.now(tz_buenos_aires).date()
+#
+#    # Obtener la hora actual en Buenos Aires
+#    hora_actual_utc = datetime.now(timezone('UTC'))
+#    hora_actual_buenos_aires = hora_actual_utc.astimezone(app.config['TIMEZONE'])
+#
+#    # Convertir la hora a un objeto 'time' de Python
+#    hora_actual_str = hora_actual_buenos_aires.strftime('%H:%M')
+#    hora_actual_obj = datetime.strptime(hora_actual_str, '%H:%M').time()
+#
+#    if request.method == 'POST':
+#
+#        observaciones = request.form.get('observaciones')
+#        camara_termica = request.form.get('camara_termica')
+#        pistola_termica = request.form.get('pistola_termica')
+#        reflector_portatil = request.form.get('reflector_portatil')
+#        cinta_de_vallado = request.form.get('cinta_de_vallado')
+#        alcohol_en_gel = request.form.get('alcohol_en_gel')
+#        matafuego_5kg = request.form.get('matafuego_5kg')
+#        kit_balizas = request.form.get('kit_balizas')
+#        plano_de_vcp = request.form.get('plano_de_vcp')
+#        lanza_nh_2 = request.form.get('lanza_nh_2')
+#        lanzas_nh_1medio = request.form.get('lanzas_nh_1medio')  # Cambio de nombre
+#        filtro_manguerote = request.form.get('filtro_manguerote')
+#        llave_stz_manguerote = request.form.get('llave_stz_manguerote')
+#        llave_nh = request.form.get('llave_nh')
+#        halligan = request.form.get('halligan')
+#        era_con_mascara = request.form.get('era_con_mascara')
+#        y_stz = request.form.get('y_stz')
+#        conos = request.form.get('conos')
+#        acople_dinnem_stz = request.form.get('acople_dinnem_stz')
+#        reductor_stz_ww_2medio_a_1medio = request.form.get('reductor_stz_ww_2medio_a_1medio')
+#        reductor_stz_a_nh_1medio = request.form.get('reductor_stz_a_nh_1medio')
+#        reductor_stz_a_nh_1 = request.form.get('reductor_stz_a_nh_1')
+#        reductor_stz_2_a_stz_1medio = request.form.get('reductor_stz_2_a_stz_1medio')
+#        reductor_stz_2_a_nh_1medio = request.form.get('reductor_stz_2_a_nh_1medio')
+#        reductor_stz_2_a_nh_1 = request.form.get('reductor_stz_2_a_nh_1')
+#        reductor_stz_2_a_stz_1 = request.form.get('reductor_stz_2_a_stz_1')
+#        acople_din_stz = request.form.get('acople_din_stz')
+#        acople_stz_a_nh_2 = request.form.get('acople_stz_a_nh_2')
+#        llave_stz = request.form.get('llave_stz')
+#        desvanadera = request.form.get('desvanadera')
+#        pertiga = request.form.get('pertiga')
+#        manguerote = request.form.get('manguerote')
+#        escalera = request.form.get('escalera')
+#        linea_nh_1medio = request.form.get('linea_nh_1medio')
+#        linea_nh_2 = request.form.get('linea_nh_2')
+#        linea_stz_1medio = request.form.get('linea_stz_1medio')
+#        linea_stz_2 = request.form.get('linea_stz_2')
+#        bolso_prehospitalario = request.form.get('bolso_prehospitalario')
+#        columna_hidrante = request.form.get('columna_hidrante')
+#        trancha = request.form.get('trancha')
+#
+#        nuevo_registro = MaterialesB3(
+#            fecha=fecha_actual,
+#            hora=hora_actual_obj,
+#            numero_legajo=current_user.numero_legajo,
+#            observaciones=observaciones,
+#            camara_termica=camara_termica,
+#            pistola_termica=pistola_termica,
+#            reflector_portatil=reflector_portatil,
+#            cinta_de_vallado=cinta_de_vallado,
+#            alcohol_en_gel=alcohol_en_gel,
+#            matafuego_5kg=matafuego_5kg,
+#            kit_balizas=kit_balizas,
+#            plano_de_vcp=plano_de_vcp,
+#            lanza_nh_2=lanza_nh_2,
+#            lanzas_nh_1medio=lanzas_nh_1medio,
+#            filtro_manguerote=filtro_manguerote,
+#            llave_stz_manguerote=llave_stz_manguerote,
+#            llave_nh=llave_nh,
+#            halligan=halligan,
+#            era_con_mascara=era_con_mascara,
+#            y_stz=y_stz,
+#            conos=conos,
+#            acople_dinnem_stz=acople_dinnem_stz,
+#            reductor_stz_ww_2medio_a_1medio=reductor_stz_ww_2medio_a_1medio,
+#            reductor_stz_a_nh_1medio=reductor_stz_a_nh_1medio,
+#            reductor_stz_a_nh_1=reductor_stz_a_nh_1,
+#            reductor_stz_2_a_stz_1medio=reductor_stz_2_a_stz_1medio,
+#            reductor_stz_2_a_nh_1medio=reductor_stz_2_a_nh_1medio,
+#            reductor_stz_2_a_nh_1=reductor_stz_2_a_nh_1,
+#            reductor_stz_2_a_stz_1=reductor_stz_2_a_stz_1,
+#            acople_din_stz=acople_din_stz,
+#            acople_stz_a_nh_2=acople_stz_a_nh_2,
+#            llave_stz=llave_stz,
+#            desvanadera=desvanadera,
+#            pertiga=pertiga,
+#            manguerote=manguerote,
+#            escalera=escalera,
+#            linea_nh_1medio=linea_nh_1medio,
+#            linea_nh_2=linea_nh_2,
+#            linea_stz_1medio=linea_stz_1medio,
+#            linea_stz_2=linea_stz_2,
+#            bolso_prehospitalario=bolso_prehospitalario,
+#            columna_hidrante=columna_hidrante,
+#            trancha=trancha
+#        )
+#
+#        try:
+#            db.session.add(nuevo_registro)
+#            db.session.commit()
+#            flash('Registro guardado exitosamente.', 'success')
+#        except Exception as e:
+#            db.session.rollback()
+#            flash(f'Error al guardar el registro: {str(e)}', 'danger')
+#
+#        return redirect(url_for('materiales_b3'))
+#
+#    registros = MaterialesB3.query.all()
+#    return render_template('materiales_b3.html', registros=registros)
+#
 #------------------------------------------------------------------------------------------------
-@app.route('/asistencia_por_actividad')
-def asistencia_por_actividad():
-    # Filtra asistencias de los últimos 7 días
-    fecha_hace_7_dias = datetime.now() - timedelta(days=7)
-    asistencias_por_actividad = (
-        db.session.query(
-            Aistencia.actividad.label("actividad"),  # Tipo de actividad
-            func.count(Aistencia.id_asistencia).label("cantidad")
-        )
-        .filter(Aistencia.fecha >= fecha_hace_7_dias)
-        .filter(Aistencia.tipo_registro == "INGRESO")  # Solo asistencias de tipo "INGRESO"
-        .group_by("actividad")
-        .order_by("cantidad")
-        .all()
-    )
-
-    # Convierte los resultados a un formato JSON para el gráfico
-    data = {
-        "labels": [registro[0] for registro in asistencias_por_actividad],
-        "values": [registro[1] for registro in asistencias_por_actividad]
-    }
-    return jsonify(data)
-#------------------------------------------------------------------------------------------------
-#----------------------------------CONTROL BOLSO B3--------------------------------------------------------------
 @app.route('/control_bolso_b3', methods=['GET', 'POST'])
 @login_required
 def control_bolso_b3():
@@ -2324,7 +2412,7 @@ def control_bolso_b3():
 
     registros = ControlBolsoB3.query.order_by(ControlBolsoB3.fecha.desc(), ControlBolsoB3.hora.desc()).all()
     return render_template('control_bolso_b3.html', registros=registros)
-#-------------------------MATERIALES BF1----------------------------------------------------
+#------------------------------------------------------------------------------------------------
 @app.route('/materialesBF1', methods=['GET', 'POST'])
 @login_required
 def materialesBF1():
@@ -2404,7 +2492,7 @@ def materialesF2():
 
     registros = MaterialesF2.query.order_by(MaterialesF2.fecha.desc(), MaterialesF2.hora.desc()).all()
     return render_template('materialesF2.html', registros=registros)
-#-------------------------------------B4-----------------------------------------
+#------------------------------------------B4-------------------------------------------------------
 @app.route('/materialesB4', methods=['GET', 'POST'])
 @login_required
 def materialesB4():
@@ -2427,7 +2515,7 @@ def materialesB4():
         colaborador2 = request.form['colaborador1']
         observaciones = request.form.get('observaciones', '')
 
-        nuevo_registro = MaterialesF2(
+        nuevo_registro = MaterialesB4(
             fecha=fecha_actual,
             hora=hora_actual_obj,
             numero_legajo=numero_legajo,
@@ -2445,7 +2533,6 @@ def materialesB4():
     registros = MaterialesB4.query.order_by(MaterialesB4.fecha.desc(), MaterialesB4.hora.desc()).all()
     return render_template('materialesB4.html', registros=registros)
 
-#------------------------------------------------------------------------------
 #-------------------------------------------B2-----------------------------------------------------
 @app.route('/materialesB2', methods=['GET', 'POST'])
 @login_required
@@ -2486,6 +2573,50 @@ def materialesB2():
 
     registros = MaterialesB2.query.order_by(MaterialesB2.fecha.desc(), MaterialesB2.hora.desc()).all()
     return render_template('materialesB2.html', registros=registros)
-#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------
+@app.route('/materialesr1', methods=['GET', 'POST'])
+@login_required
+def materialesR1():
+    tz_buenos_aires = pytz.timezone('America/Argentina/Buenos_Aires')
+
+    fecha_actual = datetime.now(tz_buenos_aires).date()
+
+    # Obtener la hora actual en Buenos Aires
+    hora_actual_utc = datetime.now(timezone('UTC'))
+    hora_actual_buenos_aires = hora_actual_utc.astimezone(app.config['TIMEZONE'])
+
+    # Convertir la hora a un objeto 'time' de Python
+    hora_actual_str = hora_actual_buenos_aires.strftime('%H:%M')
+    hora_actual_obj = datetime.strptime(hora_actual_str, '%H:%M').time()
+
+    if request.method == 'POST':
+        numero_legajo = current_user.numero_legajo
+        estado_materiales = request.form['estado_bolso']  # 'OK' o 'X'
+        colaborador1=request.form['colaborador1']
+        colaborador2 = request.form['colaborador2']
+        observaciones = request.form.get('observaciones', '')
+
+        nuevo_registro = Materiales_R1(
+            fecha=fecha_actual,
+            hora=hora_actual_obj,
+            numero_legajo=numero_legajo,
+            estado_materiales=estado_materiales,
+            colaborador1=colaborador1,
+            colaborador2=colaborador2,
+            observaciones=observaciones
+        )
+        db.session.add(nuevo_registro)
+        db.session.commit()
+        flash('Registro de materiales R1 realizado exitosamente.')
+
+        return redirect(url_for('materialesR1'))
+
+    registros = Materiales_R1.query.order_by(Materiales_R1.fecha.desc(), Materiales_R1.hora.desc()).all()
+    return render_template('materialesR1.html', registros=registros)
+#------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
     app.run(debug=True, port=8080)  # Cambia 8080 al puerto que prefieras
