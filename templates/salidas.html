@@ -44,6 +44,7 @@
                     <option value="F3">F3</option>
                     <option value="R1">R1</option>
                     <option value="R8">R8</option>
+                    <option value="LS1">LS1</option>
 
                 </select>
     </div>
@@ -92,13 +93,17 @@
         <option value="TRAMITES">TRAMITES</option>
         <option value="PATRULLAJE">PATRULLAJE</option>
         <option value="CAPACITACIONES">CAPACITACIONES</option>
-        <option value="LOGISITCA">LOGISITCA</option>
+        <option value="LOGISITCA">LOGISTICA</option>
         <option value="MATAFUEGOS">MATAFUEGOS</option>
         <option value="INSPECCIONES">INSPECCIONES</option>
         <option value="CARGA_COMBUSTIBLE">CARGA COMBUSTIBLE</option>
         <option value="OTROS">OTROS</option>
 
     </select>
+</div>
+<div class="form-group" id="campo-observaciones" style="display: none;">
+  <label for="observaciones">Observaciones</label>
+  <textarea class="form-control" name="observaciones" id="observaciones" rows="3">{{ salida.observaciones if salida else '' }}</textarea>
 </div>
 
 
@@ -112,9 +117,58 @@
 
 
     <div class="form-group">
+    <label for="a_cargo">A Cargo</label>
+    <select class="form-control" name="a_cargo" id="a_cargo" required>
+        <option value="" disabled selected>Seleccione un bombero</option>
+        <!-- Sargentos -->
+        <option value="Sargento Perez">Sargento Perez</option>
+        <option value="Sargento Avari">Sargento Avari</option>
+        <option value="Sargento Speroni">Sargento Speroni</option>
+        <option value="Sargento Vogel">Sargento Vogel</option>
+        <!-- Cabos 1° -->
+        <option value="Cabo 1° Rivero">Cabo 1° Rivero</option>
+        <option value="Cabo 1° Petruzzi">Cabo 1° Petruzzi</option>
+        <option value="Cabo 1° Ludueña">Cabo 1° Ludueña</option>
+        <option value="Cabo 1° Torletti">Cabo 1° Torletti</option>
+        <option value="Cabo 1° Menendez">Cabo 1° Menendez</option>
+        <!-- Cabos -->
+        <option value="Cabo Cabrera">Cabo Cabrera</option>
+        <option value="Cabo Minicucci">Cabo Minicucci</option>
+        <option value="Cabo Zingoni V.">Cabo Zingoni V.</option>
+        <option value="Cabo Didier">Cabo Didier</option>
+        <!-- Bomberos -->
+        <option value="Bombero Gimenez">Bombero Gimenez</option>
+        <option value="Bombero Gonzalez">Bombero Gonzalez</option>
+        <option value="Bombero Pittuelli">Bombero Pittuelli</option>
+        <option value="Bombero Sanchez">Bombero Sanchez</option>
+        <option value="Bombero Zingoni">Bombero Zingoni</option>
+        <option value="Bombero Altamirano">Bombero Altamirano</option>
+        <option value="Bombero Paganoni">Bombero Paganoni</option>
+        <option value="Bombero Quevedo">Bombero Quevedo</option>
+        <option value="Bombero Villarreal">Bombero Villarreal</option>
+        <option value="Bombero Fernandez Barbero">Bombero Fernandez Barbero</option>
+        <option value="Bombero Fleita">Bombero Fleita</option>
+        <option value="Bombero Manganiello">Bombero Manganiello</option>
+        <option value="Bombero Kossoy">Bombero Kossoy</option>
+        <option value="Bombero Melian">Bombero Melian</option>
+        <option value="Bombero Nardi">Bombero Nardi</option>
+        <option value="Bombero Nuñez">Bombero Nuñez</option>
+        <option value="Bombero Soria">Bombero Soria</option>
+        <option value="Bombero Tapia">Bombero Tapia</option>
+        <option value="Bombero Zuliani">Bombero Zuliani</option>
+        <option value="Bombero Ponce">Bombero Ponce</option>
+        <option value="Bombero Armesto">Bombero Armesto</option>
+        <option value="Bombero Arguello">Bombero Arguello</option>
+        <option value="Bombero Didier">Bombero Didier</option>
+        <option value="Bombero Murúa">Bombero Murúa</option>
+        <option value="Bombero Pensa">Bombero Pensa</option>
+        <option value="Bombero Viviano">Bombero Viviano</option>
+        <option value="Bombero Zarandon">Bombero Zarandon</option>
+        <option value="Bombero Rivarola">Bombero Rivarola</option>
+    </select>
+</div>
 
-        <input type="text" class="form-control" name="a_cargo" placeholder="A Cargo" required>
-    </div>
+
     <div class="form-group">
 
         <input type="text" class="form-control" name="chofer" placeholder="Chofer" required>
@@ -138,9 +192,57 @@
     </div>
 
     <div class="form-group">
+    <label for="jefe_guardia">Jefe de Guardia</label>
+    <select class="form-control" name="jefe_guardia" id="jefe_guardia" required>
+        <option value="" disabled selected>Seleccione un jefe de guardia</option>
+        <!-- Sargentos -->
+        <option value="Sargento Perez">Sargento Perez</option>
+        <option value="Sargento Avari">Sargento Avari</option>
+        <option value="Sargento Speroni">Sargento Speroni</option>
+        <option value="Sargento Vogel">Sargento Vogel</option>
+        <!-- Cabos 1° -->
+        <option value="Cabo 1° Rivero">Cabo 1° Rivero</option>
+        <option value="Cabo 1° Petruzzi">Cabo 1° Petruzzi</option>
+        <option value="Cabo 1° Ludueña">Cabo 1° Ludueña</option>
+        <option value="Cabo 1° Torletti">Cabo 1° Torletti</option>
+        <option value="Cabo 1° Menendez">Cabo 1° Menendez</option>
+        <!-- Cabos -->
+        <option value="Cabo Cabrera">Cabo Cabrera</option>
+        <option value="Cabo Minicucci">Cabo Minicucci</option>
+        <option value="Cabo Zingoni V.">Cabo Zingoni V.</option>
+        <option value="Cabo Didier">Cabo Didier</option>
+        <!-- Bomberos -->
+        <option value="Bombero Gimenez">Bombero Gimenez</option>
+        <option value="Bombero Gonzalez">Bombero Gonzalez</option>
+        <option value="Bombero Pittuelli">Bombero Pittuelli</option>
+        <option value="Bombero Sanchez">Bombero Sanchez</option>
+        <option value="Bombero Zingoni">Bombero Zingoni</option>
+        <option value="Bombero Altamirano">Bombero Altamirano</option>
+        <option value="Bombero Paganoni">Bombero Paganoni</option>
+        <option value="Bombero Quevedo">Bombero Quevedo</option>
+        <option value="Bombero Villarreal">Bombero Villarreal</option>
+        <option value="Bombero Fernandez Barbero">Bombero Fernandez Barbero</option>
+        <option value="Bombero Fleita">Bombero Fleita</option>
+        <option value="Bombero Manganiello">Bombero Manganiello</option>
+        <option value="Bombero Kossoy">Bombero Kossoy</option>
+        <option value="Bombero Melian">Bombero Melian</option>
+        <option value="Bombero Nardi">Bombero Nardi</option>
+        <option value="Bombero Nuñez">Bombero Nuñez</option>
+        <option value="Bombero Soria">Bombero Soria</option>
+        <option value="Bombero Tapia">Bombero Tapia</option>
+        <option value="Bombero Zuliani">Bombero Zuliani</option>
+        <option value="Bombero Ponce">Bombero Ponce</option>
+        <option value="Bombero Armesto">Bombero Armesto</option>
+        <option value="Bombero Arguello">Bombero Arguello</option>
+        <option value="Bombero Didier">Bombero Didier</option>
+        <option value="Bombero Murúa">Bombero Murúa</option>
+        <option value="Bombero Pensa">Bombero Pensa</option>
+        <option value="Bombero Viviano">Bombero Viviano</option>
+        <option value="Bombero Zarandon">Bombero Zarandon</option>
+        <option value="Bombero Rivarola">Bombero Rivarola</option>
+    </select>
+</div>
 
-        <input type="text" class="form-control" name="jefe_guardia" placeholder="Jefe de guardia" required>
-    </div>
 
     <button type="submit" class="btn btn-primary">Registrar Salida</button>
 </form>
@@ -191,6 +293,7 @@
     <table class="table tabla_bomberos table-responsive" id="TableSalidas">
     <thead>
         <tr>
+            <th>Id</th>
             <th>Fecha</th>
             <th>Hora</th>
             <th>Unidad</th>
@@ -203,6 +306,7 @@
             <th>Operador</th>
             <th>Bros. en Base</th>
             <th>jefe de guardia</th>
+            <th>Observaciones</th>
             <th>Copiar</th>
             <th>Editar</th>
 
@@ -211,6 +315,7 @@
     <tbody>
         {% for salida in salidas %}
         <tr>
+            <td>{{ salida.id_salida }}</td>
             <td>{{ salida.fecha }}</td>
             <td>{{ salida.hora }}</td>
             <td>{{ salida.unidad }}</td>
@@ -223,6 +328,7 @@
             <td>{{ salida.operador }}</td>
             <td>{{ salida.bros_base }}</td>
             <td>{{ salida.jefe_guardia }}</td>
+            <td>{{ salida.observaciones }}</td>
             <td>
                 <button class="btn btn-primary copiar-boton"
                         data-hora="{{ salida.hora }}"
@@ -272,11 +378,11 @@
             const tipo_alarma = this.getAttribute('data-tipo_alarma');
 
             const formato = `
-                BB. VV. VCP
+                SALIDA: BB.VV. VCP
                 MOVIL: ${unidad}
                 HORA: ${hora}
-                CHOFER: ${chofer}
                 TIPO DE ALARMA: ${tipo_alarma}
+                CHOFER: ${chofer}
                 A CARGO: ${aCargo}
                 DOTACION: ${dotacion}
                 DESTINO: ${qth}
@@ -309,6 +415,27 @@
             h2.classList.toggle('cambio-color');
         }, 1000);
 </script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const tipoAlarmaSelect = document.getElementById("tipo_alarma");
+    const campoObs = document.getElementById("campo-observaciones");
+
+    function mostrarCampoObservaciones() {
+      const tipo = tipoAlarmaSelect.value.toLowerCase();
+      if (tipo.includes("trámite") || tipo === "tramites") {
+        campoObs.style.display = "block";
+      } else {
+        campoObs.style.display = "none";
+      }
+    }
+
+    tipoAlarmaSelect.addEventListener("change", mostrarCampoObservaciones);
+    mostrarCampoObservaciones(); // Ejecutar por si hay valor preseleccionado
+  });
+</script>
+
+
 
 {% endblock %}
 

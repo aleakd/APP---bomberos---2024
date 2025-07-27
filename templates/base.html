@@ -71,7 +71,14 @@
           {% endif %}
           {% if current_user.is_authenticated %}
 
-
+        <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('notificaciones') }}">
+        🔔 Notificaciones
+        {% if notificaciones_no_leidas > 0 %}
+            <span class="badge bg-danger">{{ notificaciones_no_leidas }}</span>
+        {% endif %}
+    </a>
+</li>>
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('acces') }}">Menu</a>
           </li>

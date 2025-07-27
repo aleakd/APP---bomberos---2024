@@ -42,6 +42,7 @@
             <option value="F3">F3</option>
             <option value="R1">R1</option>
             <option value="R8">R8</option>
+            <option value="LS1">LS1</option>
         </select>
     </div>
     <div class="form-group">
@@ -52,6 +53,15 @@
         <label for="hora_llegada">Hora de Llegada</label>
         <input type="time" class="form-control" name="hora_llegada" required>
     </div>
+
+    <div class="form-group">
+    <label for="numero_alarma">Número de Alarma</label>
+    <input type="text" class="form-control" name="numero_alarma" placeholder="Ej: 128/24">
+</div>
+    <div class="form-group">
+        <label for="a_cargo">A Cargo</label>
+        <input type="text" class="form-control" name="a_cargo" placeholder="Apellido y nombre o jerarquía"></div>
+
     <div class="form-group">
 
         <textarea class="form-control" name="novedades" placeholder="Escribir novedades" required></textarea>
@@ -70,6 +80,8 @@
                 <th>Unidad</th>
                 <th>Hora de Salida</th>
                 <th>Hora de Llegada</th>
+                <th>N° Alarma</th>
+                <th>A Cargo</th>
                 <th>Novedades</th>
                 <th>Editar</th>
                 <th>Copiar</th>
@@ -83,6 +95,8 @@
                 <td>{{ llegada.unidad }}</td>
                 <td>{{ llegada.hora_salida }}</td>
                 <td>{{ llegada.hora_llegada }}</td>
+                <td>{{ llegada.numero_alarma }}</td>
+                <td>{{ llegada.a_cargo }}</td>
                 <td>{{ llegada.novedades }}</td>
                 <td>
                     <a href="{{ url_for('editar_llegada', id=llegada.id_llegada) }}" class="btn btn-warning">Editar</a>

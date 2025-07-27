@@ -8,17 +8,14 @@
 </audio>
 
 !-->
-<div class="portada_asistencia">
+<!--<div class="portada_asistencia">
     <h1 class="titulo">Asistencias:</h1>
 <video autoplay loop muted id="videoFondo">
   <source src="/static/videos/misionbbvvvcp.mp4" type="video/mp4">
 
   Tu navegador no soporta la etiqueta de video.
 </video>
-</div>
-
-
-
+</div>-->
 
 <script>
   function confirmSubmit() {
@@ -47,8 +44,8 @@
 <div class="row">
       <div class="col-lg-6 col-md-12">
 
-           <h3 class="text-center titulo_form_index">FORMULARIO DE ASISTENCIAS</h3>
-        <form class="form_ins" action="{{ url_for('asistencia') }}" method="post" enctype="multipart/form-data" onsubmit="return confirmSubmit();">
+           <h3 class="text-center titulo_form_index titulo">FORMULARIO DE ASISTENCIAS</h3>
+        <form class="form_ins form_kitforestal" action="{{ url_for('asistencia') }}" method="post" enctype="multipart/form-data" onsubmit="return confirmSubmit();">
         <input type="number" class="form-control" name="dni" placeholder="DNI" required="required" />
 
         <select class="form-control" id="tipo_registro" name="tipo_registro" placeholder="TIPO DE REGISTRO" required="required">
@@ -62,8 +59,9 @@
 
          <select class="form-control" id="actividad" name="actividad" placeholder="ACTIVIDAD" required="required">
     <option value="" disabled selected>ACTIVIDAD</option>
-    <option value="Guardia Semana">Guardia Semana</option>
-    <option value="Guardia Obligatoria">Guardia Obligatoria</option>
+    <option value="Patrulla">Patrulla</option>
+    <option value="Guardia Obligatoria">Guardia Obligatoria 24 hs</option>
+    <option value="Guardia Semanal 12hs">Guardia Semanal 12hs</option>
     <option value="Capacitacion">Capacitación</option>
     <option value="Reunion">Reunión</option>
     <option value="Refuerzo de Guardia">Refuerzo de Guardia</option>
@@ -74,6 +72,9 @@
     <option value="Inspecciones">Inspecciones</option>
     <option value="Matafuegos">Matafuegos</option>
     <option value="Tareas de área">Tareas de área</option>
+    <option value="Acto/Ceremonia">Acto/Ceremonia</option>
+    <option value="Off. de semana">Oficial de semana</option>
+    <option value="Aspirantes">Aspirantes</option>
 </select>
 
 
@@ -85,7 +86,7 @@
 
     <div class="col-lg-6 col-md-12">
 <table class="tabla_agentes" id="asistenciatablauser">
-    <h2>Bomberos en Base:</h2>
+    <h2 class='titulo'>Personal en Base:</h2>
         <thead>
         <tr>
             <th>DNI Registrado</th>
@@ -125,7 +126,7 @@
 
 </div>
 
-<div class="box">
+<!--<div class="box">
     <canvas id="graficoAsistenciaPorDia" width="400" height="200"></canvas>
 
 <script>
@@ -162,25 +163,62 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 
+</div> -->
+
+<!--<div class="box">
+    <canvas id="graficoAsistenciaPorBombero" width="400" height="200"></canvas>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    fetch("{{ url_for('asistencia_dia_semana') }}")
+        .then(response => response.json())
+        .then(data => {
+            const ctx = document.getElementById('graficoAsistenciaPorBombero').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,  // DNI de los bomberos
+                    datasets: [{
+                        label: 'Ingresos por Bombero (Última Semana)',
+                        data: data.values,  // Cantidad de ingresos
+                        backgroundColor: 'rgb(75, 250, 49)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+        });
+});
+</script>
 </div>
 
+-->
 {% if current_user.rol == 'admin' %}
 
 <h3 class="text-center titulo_form_index">FORMULARIO DE ASISTENCIAS</h3>
         <form class="form_ins" action="{{ url_for('asistencia') }}" method="post" enctype="multipart/form-data" onsubmit="return confirmSubmit();">
         <input type="number" class="form-control" name="dni" placeholder="DNI" required="required" />
 
-        <select class="form-control" name="tipo_registro" placeholder="TIPO DE REGISTRO" required="required">
+        <select class="form-control" id="tipo_registro2" name="tipo_registro" placeholder="TIPO DE REGISTRO" required="required">
               <option value="" disabled selected>TIPO DE REGISTRO</option>
             <option value="INGRESO">INGRESO</option>
             <option value="SALIDA">SALIDA</option>
             <input type="date" name="fecha" id="fecha" required>
             <input type="time" name="hora" id="hora" required>
 
-                    <select class="form-control" name="actividad" placeholder="ACTIVIDAD" required="required">
+                    <select class="form-control" id="actividad2" name="actividad" placeholder="ACTIVIDAD" required="required">
     <option value="" disabled selected>ACTIVIDAD</option>
-    <option value="Guardia Semana">Guardia Semana</option>
-    <option value="Guardia Obligatoria">Guardia Obligatoria</option>
+    <option value="Patrulla">Patrulla</option>
+    <option value="Guardia Obligatoria">Guardia Obligatoria 24 hs</option>
+    <option value="Guardia Semanal 12hs">Guardia Semanal 12hs</option>
     <option value="Capacitacion">Capacitación</option>
     <option value="Reunion">Reunión</option>
     <option value="Refuerzo de Guardia">Refuerzo de Guardia</option>
@@ -191,6 +229,8 @@ document.addEventListener("DOMContentLoaded", function() {
     <option value="Inspecciones">Inspecciones</option>
     <option value="Matafuegos">Matafuegos</option>
     <option value="Tareas de área">Tareas de área</option>
+    <option value="Off. de semana">Oficial de semana</option>
+    <option value="Aspirantes">Aspirantes</option>
 </select>
 
 
@@ -212,6 +252,7 @@ document.addEventListener("DOMContentLoaded", function() {
             <th>Apellido</th>
             <th>Nombre</th>
             <th>Tipo de registro</th>
+            <th>Actividad</th>
             <th>Fecha</th>
             <th>Hora</th>
             <th>Editar</th>
@@ -230,6 +271,7 @@ document.addEventListener("DOMContentLoaded", function() {
             <td>{{ agte.apellido }}</td>
             <td>{{ agte.nombre }}</td>
             <td>{{ asistencia.tipo_registro }}</td>
+            <td>{{ asistencia.actividad }}</td>
             <td>{{ asistencia.fecha }}</td>
             <td>{{ asistencia.hora }}</td>
             <td>
@@ -294,6 +336,52 @@ document.addEventListener("DOMContentLoaded", function() {
 
 {% endif %}
 
+
+
+<h2>Cantidad segun Actividad</h2>
+<div class="box">
+    <canvas id="graficoAsistenciaPorActividad" width="400" height="200"></canvas>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Obtener los datos desde la ruta de Flask
+    fetch("{{ url_for('asistencia_por_actividad') }}")
+        .then(response => response.json())
+        .then(data => {
+            const ctx = document.getElementById('graficoAsistenciaPorActividad').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Asistencias por Actividad',
+                        data: data.values,
+                        backgroundColor: 'rgb(1, 0, 255)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        });
+});
+</script>
+
+
+
+
+
 <script>
     $(document).ready(function () {
         $('#tablaasistencia_general').DataTable();
@@ -326,48 +414,25 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 </script>
 
-
-html_code = """
-<div class="box">
-    <canvas id="graficoAsistenciaPorActividad" width="400" height="200"></canvas>
-</div>
-
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    // Obtener los datos desde la ruta de Flask
-    fetch("{{ url_for('asistencia_por_actividad') }}")
-        .then(response => response.json())
-        .then(data => {
-            const ctx = document.getElementById('graficoAsistenciaPorActividad').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: data.labels,
-                    datasets: [{
-                        label: 'Asistencias por Actividad',
-                        data: data.values,
-                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
-                            }
-                        }
-                    }
-                }
-            });
-        });
-});
-</script>
-"""
+    document.addEventListener("DOMContentLoaded", function () {
+        const tipoRegistro = document.getElementById("tipo_registro2");
+        const actividad = document.getElementById("actividad2");
 
-print(html_code)
+        tipoRegistro.addEventListener("change", function () {
+            if (tipoRegistro.value === "SALIDA") {
+                actividad.value = ""; // Limpia el campo
+                actividad.disabled = true; // Desactiva el campo
+                actividad.removeAttribute("required"); // Elimina el requisito de ser obligatorio
+            } else {
+                actividad.disabled = false; // Habilita el campo
+                actividad.setAttribute("required", "required"); // Lo hace obligatorio nuevamente
+            }
+        });
+    });
+</script>
+
+
+
 
 {% endblock %}

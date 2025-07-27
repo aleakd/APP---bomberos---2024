@@ -14,9 +14,27 @@
             <option value="B2">B2</option>
             <option value="B3">B3</option>
             <option value="B4">B4</option>
-            <!-- Agregar más opciones según sea necesario -->
+            <option value="BF1">BF1</option>
+            <option value="BR1">BR1</option>
+            <option value="E1">E1</option>
+            <option value="F2">F2</option>
+            <option value="F3">F3</option>
+            <option value="R1">R1</option>
+            <option value="R8">R8</option>
+            <option value="LS1">LS1</option>
         </select>
     </div>
+
+    <div class="form-group">
+        <label for="numero_alarma">Número de Alarma</label>
+        <input type="text" class="form-control" name="numero_alarma" value="{{ llegada.numero_alarma or '' }}">
+    </div>
+
+    <div class="form-group">
+        <label for="a_cargo">A Cargo</label>
+        <input type="text" class="form-control" name="a_cargo" value="{{ llegada.a_cargo or '' }}">
+    </div>
+
     <div class="form-group">
         <label for="hora_salida">Hora de Salida</label>
         <input type="time" class="form-control" name="hora_salida" value="{{ llegada.hora_salida }}" required>

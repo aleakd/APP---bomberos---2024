@@ -41,7 +41,7 @@
                     <option value="Familiar">Familiar</option>
                     <option value="Salud">Salud</option>
                     <option value="Otro">Otro</option>
-                    <option value="Devoluvion">Devoluicion</option>
+                    <option value="Devolucion">Devoluicion</option>
                 </select>
             </div>
         </div>
@@ -72,7 +72,55 @@
             </div>
             <div class="col-md-4">
                 <label for="jefe_guardia">jefe de guardia</label>
-                <input type="text" name="jefe_guardia" class="form-control" placeholder="Jefe de guardia">
+                <select class="form-control" name="jefe_guardia" id="jefe_guardia" required>
+                    <option value="" disabled selected>Seleccione un bombero</option>
+                    <!-- Sargentos -->
+                    <option value="Sargento Perez">Sargento Perez</option>
+                    <option value="Sargento Avari">Sargento Avari</option>
+                    <option value="Sargento Speroni">Sargento Speroni</option>
+                    <option value="Sargento Vogel">Sargento Vogel</option>
+                    <!-- Cabos 1° -->
+                    <option value="Cabo 1° Rivero">Cabo 1° Rivero</option>
+                    <option value="Cabo 1° Petruzzi">Cabo 1° Petruzzi</option>
+                    <option value="Cabo 1° Ludueña">Cabo 1° Ludueña</option>
+                    <option value="Cabo 1° Torletti">Cabo 1° Torletti</option>
+                    <option value="Cabo 1° Menendez">Cabo 1° Menendez</option>
+                    <!-- Cabos -->
+                    <option value="Cabo Cabrera">Cabo Cabrera</option>
+                    <option value="Cabo Minicucci">Cabo Minicucci</option>
+                    <option value="Cabo Zingoni V.">Cabo Zingoni V.</option>
+                    <option value="Cabo Didier">Cabo Didier</option>
+                    <!-- Bomberos -->
+                    <option value="Bombero Gimenez">Bombero Gimenez</option>
+                    <option value="Bombero Gonzalez">Bombero Gonzalez</option>
+                    <option value="Bombero Pittuelli">Bombero Pittuelli</option>
+                    <option value="Bombero Sanchez">Bombero Sanchez</option>
+                    <option value="Bombero Zingoni">Bombero Zingoni</option>
+                    <option value="Bombero Altamirano">Bombero Altamirano</option>
+                    <option value="Bombero Paganoni">Bombero Paganoni</option>
+                    <option value="Bombero Quevedo">Bombero Quevedo</option>
+                    <option value="Bombero Villarreal">Bombero Villarreal</option>
+                    <option value="Bombero Fernandez Barbero">Bombero Fernandez Barbero</option>
+                    <option value="Bombero Fleita">Bombero Fleita</option>
+                    <option value="Bombero Manganiello">Bombero Manganiello</option>
+                    <option value="Bombero Kossoy">Bombero Kossoy</option>
+                    <option value="Bombero Melian">Bombero Melian</option>
+                    <option value="Bombero Nardi">Bombero Nardi</option>
+                    <option value="Bombero Nuñez">Bombero Nuñez</option>
+                    <option value="Bombero Soria">Bombero Soria</option>
+                    <option value="Bombero Tapia">Bombero Tapia</option>
+                    <option value="Bombero Zuliani">Bombero Zuliani</option>
+                    <option value="Bombero Ponce">Bombero Ponce</option>
+                    <option value="Bombero Armesto">Bombero Armesto</option>
+                    <option value="Bombero Arguello">Bombero Arguello</option>
+                    <option value="Bombero Didier">Bombero Didier</option>
+                    <option value="Bombero Murúa">Bombero Murúa</option>
+                    <option value="Bombero Pensa">Bombero Pensa</option>
+                    <option value="Bombero Viviano">Bombero Viviano</option>
+                    <option value="Bombero Zarandon">Bombero Zarandon</option>
+                    <option value="Bombero Rivarola">Bombero Rivarola</option>
+                </select>
+
             </div>
         </div>
 
@@ -84,7 +132,7 @@
     <hr>
 
     <h4 class="mb-3">Historial de Cambios</h4>
-    <table class="table table-bordered table-hover table-responsive" id="tablacambiosguardia">
+    <table class="table table-bordered table-hover table-responsive tabla_bomberos" id="tablacambiosguardia">
         <thead>
             <tr>
                 <th>ID</th>
@@ -119,7 +167,6 @@
                 <td>{{ c.hora.strftime('%H:%M') }}</td>
                 <td>{{ c.tipo_solicitud }}</td>
                 <td>{{ usuarios.get(c.legajo_solicitante, 'Desconocido') }} ({{ c.legajo_solicitante }})</td>
-
                 <td>{{ c.motivo }}</td>
                 <td>{{ c.fecha_ausencia }}</td>
                 <td>{{ c.jefe_guardia }}</td>
@@ -129,11 +176,11 @@
                 <td>{{ c.id_cambio_original or '-' }}</td>
                 <td>{{ c.estado_confirmacion.value }}</td>
                  {% if current_user.rol == 'admin' or current_user.rol == 'jefe_guardia' %}
-                 <td>
-    <a href="{{ url_for('confirmar_cobertura', id_cambio=c.id) }}" class="btn btn-primary btn-sm">
-        Confirmar Cobertura
-    </a>
-</td>
+                <td>
+                        <a href="{{ url_for('confirmar_cobertura', id_cambio=c.id) }}" class="btn btn-primary btn-sm">
+                        Confirmar Cobertura
+                        </a>
+                </td>
 
 
                 {% else %}
@@ -146,15 +193,18 @@
     class="btn btn-primary copiar-cambio-guardia"
     data-tipo_solicitud="{{ c.tipo_solicitud }}"
     data-legajo_solicitante="{{ c.legajo_solicitante }}"
+    data-apellido_solicitante="{{ usuarios.get(c.legajo_solicitante, 'Desconocido') }}"
     data-motivo="{{ c.motivo }}"
     data-fecha_ausencia="{{ c.fecha_ausencia }}"
     data-jefe_guardia="{{ c.jefe_guardia }}"
     data-hora_desde="{{ c.hora_desde }}"
     data-hora_hasta="{{ c.hora_hasta }}"
     data-legajo_quien_cubre="{{ c.legajo_quien_cubre }}"
+    data-apellido_quien_cubre="{{ usuarios.get(c.legajo_quien_cubre, 'Desconocido') }}"
 >
     Copiar Información
 </button>
+
 
 </td>
 {% if current_user.rol == 'admin'%}
@@ -179,18 +229,20 @@
             const horaDesde = this.getAttribute('data-hora_desde');
             const horaHasta = this.getAttribute('data-hora_hasta');
             const legajoQuienCubre = this.getAttribute('data-legajo_quien_cubre');
+            const apellidoSolicitante = this.getAttribute('data-apellido_solicitante');
+            const apellidoQuienCubre = this.getAttribute('data-apellido_quien_cubre');
 
             const formato = `
 🛡️ Registro de Cambio de Guardia
 - Tipo de Solicitud: ${tipoSolicitud}
-- Legajo Solicitante: ${legajoSolicitante}
+- Legajo Solicitante: ${legajoSolicitante} (${apellidoSolicitante})
 - Motivo: ${motivo}
 - Fecha de Ausencia: ${fechaAusencia}
 - Jefe de Guardia: ${jefeguardia}
 - Desde: ${horaDesde}
 - Hasta: ${horaHasta}
-- Cubre Legajo: ${legajoQuienCubre}
-            `;
+- Cubre Legajo: ${legajoQuienCubre} (${apellidoQuienCubre})
+`;
 
             navigator.clipboard.writeText(formato.trim()).then(() => {
                 alert('Información copiada al portapapeles');

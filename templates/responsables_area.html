@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Administrar Responsables de Área</h2>
+    <form method="POST" class="mb-4">
+        <div class="row">
+            <div class="col-md-6">
+                <label for="area">Área</label>
+                <select name="area" class="form-control" required>
+                    <option disabled selected>Seleccionar Área</option>
+                    <option>Jefatura</option>
+                    <option>Operaciones</option>
+                    <option>Materiales & Equipo</option>
+                    <option>Logistica</option>
+                    <option>Capacitacion</option>
+                    <option>Prehospitalario</option>
+                    <option>Documentacion</option>
+                    <option>Automotores</option>
+                    <option>Infraestructura</option>
+                    <option>Protocolo</option>
+                    <option>Sistemas</option>
+                    <option>Comunicaciones</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="usuario_id">Usuario Responsable</label>
+                <select name="usuario_id" class="form-control" required>
+                    <option disabled selected>Seleccionar Usuario</option>
+                    {% for u in usuarios %}
+                    <option value="{{ u.id }}">{{ u.name }} ({{ u.numero_legajo }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Asignar Responsable</button>
+    </form>
+
+    <hr>
+    <h4>Listado de Responsables</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Área</th>
+                <th>Responsable</th>
+                <th>Email</th>
+                <th>Legajo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in responsables %}
+            <tr>
+                <td>{{ r.area }}</td>
+                <td>{{ r.usuario.name }}</td>
+                <td>{{ r.usuario.email }}</td>
+                <td>{{ r.usuario.numero_legajo }}</td>
+                <td>
+                    <form action="{{ url_for('eliminar_responsable', id=r.id) }}" method="post" onsubmit="return confirm('¿Eliminar responsable?');">
+                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

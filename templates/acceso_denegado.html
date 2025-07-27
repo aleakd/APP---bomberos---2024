@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container text-center mt-5">
+    <img src="{{ url_for('static', filename='img/iiff.jpg') }}" alt="Acceso Denegado" class="img-fluid" style="max-width: 500px;">
+    <h2 class="mt-4 text-danger">⚠️ Acceso Denegado</h2>
+    <p class="lead">Para acceder a esta sección necesitas iniciar sesión.</p>
+
+    <a href="{{ url_for('index') }}" class="btn btn-primary mt-3">Ir al Login</a>
+</div>
+{% endblock %}

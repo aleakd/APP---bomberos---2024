@@ -9,11 +9,17 @@
 <div class="row">
 
        <div class="col-md-6">
-           <a href="{{ url_for('control_materiales') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/legajos.jpg') }}'); background-size: cover;">control Materiales</a>
+           <a href="{{ url_for('control_materiales') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/controlequipo.jpg') }}'); background-size: cover;">Control de Materiales</a>
        </div>
+       <div class="col-md-6">
+        <a href="{{ url_for('talles') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/legajos.jpg') }}'); background-size: cover;">Talles</a>
+    </div>
 
 
 </div>
+
+
+
 
 <h1 class="">Materiales y equipo</h1>
 <!-- Tabla Indumentaria Provista -->
@@ -119,14 +125,8 @@
     <p>No hay Registro.</p>
 {% endif %}
 
-<div class="row">
-    <div class="col-md-6">
-        <a href="{{ url_for('talles') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/legajos.jpg') }}'); background-size: cover;">Talles</a>
-    </div>
 
 
-
-</div>
 
 
 

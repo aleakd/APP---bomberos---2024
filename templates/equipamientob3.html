@@ -4,6 +4,15 @@
 <div class="container mt-4">
     <h2>Control de Materiales - B3</h2>
 
+
+<a href="{{ url_for('control_materiales') }}" class="btn btn-secondary mt-3">Volver a Control de Materiales</a>
+
+<div class="row">
+            <div class="col-md-6">
+               <a href="{{ url_for('control_bolso_b3') }}" class="btn btn-info boton" style="background-image: url('{{ url_for('static', filename='img/bolsoimag.jpg') }}'); background-size: cover;">Bolso Prehospitalario</a>
+           </div>
+
+
 <div class="container">
     {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -20,7 +29,7 @@
 
     <!-- Imagen del bolso con lista de contenido -->
     <div class="text-center mb-3">
-        <img src="{{ url_for('static', filename='img/') }}" alt="Materiales r1" class="img-fluid">
+        <img src="{{ url_for('static', filename='img/materialesb3.jpg') }}" alt="Materiales r1" class="img-fluid">
     </div>
 
 
@@ -68,7 +77,7 @@
                 <td>{{ registro.fecha }}</td>
                 <td>{{ registro.hora }}</td>
                 <td>{{ registro.numero_legajo }}</td>
-                <td>{{ registro.estado_bolso }}</td>
+                <td>{{ registro.estado_materiales }}</td>
                 <td>{{ registro.colaborador1 }}</td>
                 <td>{{ registro.colaborador2 }}</td>
                 <td>{{ registro.observaciones }}</td>
