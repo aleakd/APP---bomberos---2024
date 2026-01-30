@@ -17,6 +17,55 @@
 </video>
 </div>-->
 
+<!-- CARROUSEL -->
+<div class="container my-4" id="novedades">
+  <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+
+    <!-- Indicadores -->
+    <div class="carousel-indicators">
+      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Novedad 1"></button>
+      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Novedad 2"></button>
+      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Novedad 3"></button>
+    </div>
+
+    <!-- Slides -->
+    <div class="carousel-inner rounded shadow-lg">
+      <div class="carousel-item active">
+        <img src="/static/img/NOVEDAD_1.jpg" class="d-block w-100 img-carrusel" alt="Novedad 1">
+        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
+          <h5>Área Materiales & Equipos</h5>
+          <p>Lavado de Epp.</p>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <img src="/static/img/NOVEDAD_2.jpg" class="d-block w-100 img-carrusel" alt="Novedad 2">
+        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
+          <h5>Área sistemas</h5>
+          <p>Control de registros de asistencias</p>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <img src="/static/img/NOVEDAD_3.jpg" class="d-block w-100 img-carrusel" alt="Novedad 3">
+        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
+          <h5>Título Novedad 3</h5>
+          <p>Descripción corta de la novedad 3.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controles -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Anterior</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Siguiente</span>
+    </button>
+  </div>
+</div>
+
+
 <script>
   function confirmSubmit() {
 
@@ -42,47 +91,49 @@
 
 
 <div class="row">
-      <div class="col-lg-6 col-md-12">
+    <div class="col-lg-6 col-md-12">
+        <h3 class="text-center titulo_form_index titulo">FORMULARIO DE ASISTENCIAS</h3>
 
-           <h3 class="text-center titulo_form_index titulo">FORMULARIO DE ASISTENCIAS</h3>
+        {% if mostrar_formulario %}
         <form class="form_ins form_kitforestal" action="{{ url_for('asistencia') }}" method="post" enctype="multipart/form-data" onsubmit="return confirmSubmit();">
-        <input type="number" class="form-control" name="dni" placeholder="DNI" required="required" />
+            <input type="number" class="form-control" name="dni" placeholder="DNI" required="required" />
 
-        <select class="form-control" id="tipo_registro" name="tipo_registro" placeholder="TIPO DE REGISTRO" required="required">
-              <option value="" disabled selected>TIPO DE REGISTRO</option>
-            <option value="INGRESO">INGRESO</option>
-            <option value="SALIDA">SALIDA</option>
+            <select class="form-control" id="tipo_registro" name="tipo_registro" required="required">
+                <option value="" disabled selected>TIPO DE REGISTRO</option>
+                <option value="INGRESO">INGRESO</option>
+                <option value="SALIDA">SALIDA</option>
+            </select>
 
-        </select>
+            <select class="form-control" id="actividad" name="actividad" required="required">
+                <option value="" disabled selected>ACTIVIDAD</option>
+                <!-- Opciones de actividades... -->
+                <option value="Patrulla">Patrulla</option>
+                <option value="Guardia Obligatoria">Guardia Obligatoria 24 hs</option>
+                <option value="Guardia Semanal 12hs">Guardia Semanal 12hs</option>
+                <option value="Capacitacion">Capacitación</option>
+                <option value="Reunion">Reunión</option>
+                <option value="Refuerzo de Guardia">Refuerzo de Guardia</option>
+                <option value="Convocatoria">Convocatoria</option>
+                <option value="Orden de Servicio">Orden de Servicio</option>
+                <option value="Practica">Práctica</option>
+                <option value="Colaboracion fuera de juri">Colaboración Fuera de Jurisdicción</option>
+                <option value="Inspecciones">Inspecciones</option>
+                <option value="Matafuegos">Matafuegos</option>
+                <option value="Tareas de área">Tareas de área</option>
+                <option value="Acto/Ceremonia">Acto/Ceremonia</option>
+                <option value="Off. de semana">Oficial de semana</option>
+                <option value="Aspirantes">Aspirantes</option>
+            </select>
 
-
-
-         <select class="form-control" id="actividad" name="actividad" placeholder="ACTIVIDAD" required="required">
-    <option value="" disabled selected>ACTIVIDAD</option>
-    <option value="Patrulla">Patrulla</option>
-    <option value="Guardia Obligatoria">Guardia Obligatoria 24 hs</option>
-    <option value="Guardia Semanal 12hs">Guardia Semanal 12hs</option>
-    <option value="Capacitacion">Capacitación</option>
-    <option value="Reunion">Reunión</option>
-    <option value="Refuerzo de Guardia">Refuerzo de Guardia</option>
-    <option value="Convocatoria">Convocatoria</option>
-    <option value="Orden de Servicio">Orden de Servicio</option>
-    <option value="Practica">Práctica</option>
-    <option value="Colaboracion fuera de juri">Colaboración Fuera de Jurisdicción</option>
-    <option value="Inspecciones">Inspecciones</option>
-    <option value="Matafuegos">Matafuegos</option>
-    <option value="Tareas de área">Tareas de área</option>
-    <option value="Acto/Ceremonia">Acto/Ceremonia</option>
-    <option value="Off. de semana">Oficial de semana</option>
-    <option value="Aspirantes">Aspirantes</option>
-</select>
-
-
-
-         <button type="submit" name="parte_salida" class="btn btn-primary btn-lg">REGISTRAR ASISTENCIA</button>
+            <button type="submit" name="parte_salida" class="btn btn-primary btn-lg">REGISTRAR ASISTENCIA</button>
         </form>
-
-      </div>
+        {% else %}
+        <div class="alert alert-warning text-center mt-4">
+            <h5>⚠️ Solo podés registrar tu asistencia si estás conectado a la red del cuartel.</h5>
+            <p>Contactá al administrador si necesitás registrar tu asistencia desde otra red.</p>
+        </div>
+        {% endif %}
+    </div>
 
     <div class="col-lg-6 col-md-12">
 <table class="tabla_agentes" id="asistenciatablauser">

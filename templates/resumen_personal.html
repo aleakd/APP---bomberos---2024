@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1 class="titulo">Resumen mensual de asistencias – {{ mes }}</h1>
+
+<hr>
+
+<!-- ============================= -->
+<!-- HORAS POR ACTIVIDAD -->
+<!-- ============================= -->
+<div class="horas_actividad container">
+<h3 class="titulo">Horas trabajadas por actividad</h3>
+
+<table class="table table-striped table-hover" id="horas_actividad">
+    <thead>
+        <tr>
+            <th>DNI</th>
+            <th>Apellido</th>
+            <th>Nombre</th>
+            <th>Actividad</th>
+            <th>Horas</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for h in horas_por_actividad %}
+        <tr>
+            <td>{{ h.dni }}</td>
+            <td>{{ h.apellido }}</td>
+            <td>{{ h.nombre }}</td>
+            <td>{{ h.actividad or 'Sin actividad' }}</td>
+            <td>{{ "%.2f"|format(h.horas_trabajadas) }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5" class="text-center text-muted">
+                No hay registros para este período
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+<hr>
+
+<!-- ============================= -->
+<!-- HORAS TOTALES POR PERSONA -->
+<!-- ============================= -->
+<div class="horas_persona container">
+
+<h3 class="titulo">Horas totales por persona</h3>
+
+<table class="table table-bordered table-hover" id="horas_persona">
+    <thead class="table-light">
+        <tr>
+            <th>DNI</th>
+            <th>Apellido</th>
+            <th>Total horas</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for t in horas_totales %}
+        <tr {% if t.total_horas < 0 %} class="table-danger" title="Horas negativas: revisar registros" {% endif %}>
+            <td>{{ t.dni }}</td>
+            <td>{{ t.apellido }}</td>
+            <td>{{ "%.2f"|format(t.total_horas) }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="3" class="text-center text-muted">
+                No hay datos calculados
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+<p class="text-muted">
+    🔴 Las filas en rojo indican un cálculo inválido (posible error de ingreso/salida).
+</p>
+
+<hr>
+
+<!-- ============================= -->
+<!-- CONTROL INGRESO / SALIDA -->
+<!-- ============================= -->
+<div class="control_registros container">
+<h3 class="titulo">Control de registros (Ingresos vs Salidas)</h3>
+
+<table class="table table-sm table-bordered" id="control_registros">
+    <thead class="table-warning">
+        <tr>
+            <th>Apellido</th>
+            <th>Ingresos</th>
+            <th>Salidas</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in control %}
+        <tr {% if c.ingresos != c.salidas %} class="table-danger" {% endif %}>
+            <td>{{ c.apellido }}</td>
+            <td>{{ c.ingresos }}</td>
+            <td>{{ c.salidas }}</td>
+            <td>
+                {% if c.ingresos != c.salidas %}
+                    ⚠️ Inconsistente
+                {% else %}
+                    ✅ Correcto
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4" class="text-center text-muted">
+                No hay registros para controlar
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+<p class="text-muted">
+    ⚠️ Un registro inconsistente indica que falta un INGRESO o una SALIDA.
+</p>
+
+<hr>
+
+<!-- ============================= -->
+<!-- DETALLE COMPLETO -->
+<!-- ============================= -->
+<div class="detalle_registros">
+<h3 class="titulo">Detalle completo de registros</h3>
+
+<table class="table table-sm table-striped" id="detalle_registros">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Apellido</th>
+            <th>DNI</th>
+            <th>Tipo</th>
+            <th>Actividad</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for d in detalle %}
+        <tr>
+            <td>{{ d.id_asistencia }}</td>
+            <td>{{ d.apellido }}</td>
+            <td>{{ d.dni }}</td>
+            <td>{{ d.tipo_registro }}</td>
+            <td>{{ d.actividad or '-' }}</td>
+            <td>{{ d.fecha }}</td>
+            <td>{{ d.hora }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="7" class="text-center text-muted">
+                Sin registros detallados
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<hr>
+</div>
+<a href="{{ url_for('asistencia') }}" class="btn btn-dark">
+    ⬅ Volver a asistencias
+</a>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#horas_actividad').DataTable();
+        $('#horas_persona').DataTable();
+        $('#control_registros').DataTable();
+        $('#detalle_registros').DataTable();
+    });
+</script>
+
+{% endblock %}

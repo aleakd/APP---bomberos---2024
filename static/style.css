@@ -1,5 +1,5 @@
 body {
-background:#c4dfee;
+background:#ebe6f5;
 text-align:center;
 font-family:"Oxygen";
 }
@@ -36,13 +36,20 @@ background-image: url('/static/img/portlic.jpg');
 
 
 .portada_asistencia {
+    background-image: url('/static/img/EPP.jpg');
+    background-size: contain; /* Ajusta para que se vea toda la imagen */
+    background-repeat: no-repeat; /* Evita que se repita */
+    background-position: center;
+    background-attachment: scroll; /* O 'fixed' si querés que quede fija al hacer scroll */
+
+    padding: 10rem;
     position: relative;
     width: 100%;
     height: 80vh; /* O el tamaño que necesites */
     overflow: hidden;
 }
 .portada_asistencia h1{
-color:white;
+color:red;
 }
 
 
@@ -242,7 +249,7 @@ color:black;
 }
 
 .usuario_online {
-    color: #f11610;
+    color: #41f01e;
     margin-top: 2%;
     font-family: "Lora";
     font-size: 3rem;
@@ -269,15 +276,14 @@ color:#34E207;
 
 
 form {
-background-color:#ACB9B9;
+background-color:#B0B0B0;
 margin:2% 20%;
-border: 9px solid #FDFDFD;
+border: 9px solid #451052;
 padding: 20px;
 width: 70%;
 border-radius: 5px;
 box-shadow: 3px 6px 110px #ccc;
 }
-
 
 
 /* Estilos para los campos del formulario */
@@ -292,10 +298,10 @@ box-sizing: border-box;
 
 /* Estilos para el botón del formulario */
 button[type=submit] {
-background-color:#3B693D;
+background-color:#59F05E;
 color: white;
 padding: 20px 20px;
-border: 1px solid black;
+border: 2px solid black;
 border-radius: 4px;
 cursor: pointer;
 font-size:1rem;
@@ -439,13 +445,6 @@ width:23rem;
 width:18rem;
 }
 
-form{
-background-color:#ACB9B9;
-border: 9px solid #FDFDFD;
-width: 80%;
-border-radius: 5px;
-box-shadow: 3px 6px 110px #ccc;
-}
 
 
 .container {
@@ -513,22 +512,22 @@ box-shadow: 3px 6px 110px #ccc;
 }
 
 
- .form_automotores label {
-            font-size: 1.2em; /* Ajusta el tamaño de fuente según lo desees */
-            font-weight: bold; /* Pone el texto en negrita */
+.form_automotores label {
+    font-size: 1.2em; /* Ajusta el tamaño de fuente según lo desees */
+    font-weight: bold; /* Pone el texto en negrita */
         }
 
- .etiquetaaa{
+.etiquetaaa{
  font-size:22px;
  font-weight:bold;
  }
 
 
- .form_automotores{
- background-color:#ef9139;
+.form_automotores{
+background-color:#ef9139;
  }
 
-  #tablaautomotores th{
+#tablaautomotores th{
  background-color:#ef9139;
  color:black;
  }
@@ -586,3 +585,20 @@ video {
 
 
 
+
+.img-carrusel {
+    height: 250px; /* altura base en celulares */
+    object-fit: cover; /* recorta para llenar */
+  }
+
+  @media (min-width: 768px) {
+    .img-carrusel {
+      height: 400px; /* tablets */
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .img-carrusel {
+      height: 550px; /* pantallas grandes */
+    }
+  }

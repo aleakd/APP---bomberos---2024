@@ -15,7 +15,8 @@ import os
 from werkzeug.utils import secure_filename
 from datetime import datetime, date, timedelta
 from fpdf import FPDF
-
+from openpyxl import Workbook
+from io import BytesIO
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
 
@@ -44,6 +45,7 @@ def replace_backslash(value):
     return value.replace('\\', '/')
 
 app.jinja_env.filters['replace_backslash'] = replace_backslash
+
 
 
 
@@ -220,7 +222,10 @@ class Salida(db.Model):
     numero_alarma = db.Column(db.Integer)
     a_cargo = db.Column(db.String(100), nullable=False)
     chofer = db.Column(db.String(100), nullable=False)
-    dotacion = db.Column(db.Text, nullable=False)
+    dotacion = db.Column(db.Text, nullable=True)
+    dotacion2 = db.Column(db.Text, nullable=True)
+    dotacion3 = db.Column(db.Text, nullable=True)
+    dotacion4 = db.Column(db.Text, nullable=True)
     qth = db.Column(db.String(255), nullable=False)
     operador = db.Column(db.String(100), nullable=False)
     bros_base = db.Column(db.String(100), nullable=False)
@@ -239,7 +244,7 @@ class Llegada(db.Model):
     numero_alarma = db.Column(db.Integer)
     a_cargo = db.Column(db.String(100), nullable=True)
 
-
+"""
 class MaterialesR1(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     fecha = db.Column(db.Date, nullable=False)
@@ -298,7 +303,8 @@ class MaterialesR1(db.Model):
     barreta_chica = db.Column(db.String(10), nullable=True)
     extintor_5k = db.Column(db.String(10), nullable=True)
     bidon_nafta = db.Column(db.String(10), nullable=True)
-
+"""
+"""
 class MaterialesB3(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     fecha = db.Column(db.Date, nullable=False)
@@ -344,7 +350,7 @@ class MaterialesB3(db.Model):
     bolso_prehospitalario = db.Column(db.String(10), nullable=True)
     columna_hidrante = db.Column(db.String(10), nullable=True)
     trancha = db.Column(db.String(10), nullable=True)
-
+"""
 
 
 class ControlBolsoR1(db.Model):
@@ -418,6 +424,18 @@ class Equipamiento_B3(db.Model):
 
 class Equipamiento_R1(db.Model):
     __tablename__ = 'Equipamiento_R1'
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.Date, nullable=False)
+    hora = db.Column(db.Time, nullable=False)
+    numero_legajo = db.Column(db.String(10), nullable=False)
+    estado_materiales = db.Column(db.String(10), nullable=False)  # 'OK' o 'X'
+    colaborador1 = db.Column(db.String(10), nullable=False)
+    colaborador2 = db.Column(db.String(10), nullable=False)
+    observaciones = db.Column(db.Text, nullable=True)
+
+
+class MaterialesF3(db.Model):
+    __tablename__ = 'MaterialesF3'
     id = db.Column(db.Integer, primary_key=True)
     fecha = db.Column(db.Date, nullable=False)
     hora = db.Column(db.Time, nullable=False)
@@ -536,11 +554,11 @@ def index():
             return redirect(url_for("acces"))
     return render_template("index.html")
 
-
 @login_manager.unauthorized_handler
 def unauthorized():
     # Esta función se llama cuando un usuario no logueado intenta acceder a una ruta protegida
     return render_template('acceso_denegado.html'), 403
+
 #----------------------------------------------#---PAGINA DEL MENU-------------------------------------------
 @app.route('/acces')
 @login_required
@@ -1289,12 +1307,25 @@ def parte_novedades():
             return redirect(url_for('parte_novedades'))
 
     # Mostrar historial
-    if current_user.rol in ['admin', 'jefe_guardia']:
+    if current_user.rol in ['admin', '']:
         partes = ParteNovedades.query.order_by(ParteNovedades.id.desc()).all()
-    else:
-            partes = ParteNovedades.query.filter_by(numero_legajo=current_user.numero_legajo).order_by(ParteNovedades.id.desc()).all()
-    return render_template("parte_novedades.html", partes=partes)
 
+    elif current_user.numero_legajo in [564, 529]:
+        partes = (ParteNovedades.query
+                  .filter(
+                      (ParteNovedades.numero_legajo == current_user.numero_legajo) |
+                      (ParteNovedades.destino == "Operaciones")
+                  )
+                  .order_by(ParteNovedades.id.desc())
+                  .all())
+
+    else:
+        partes = (ParteNovedades.query
+                  .filter_by(numero_legajo=current_user.numero_legajo)
+                  .order_by(ParteNovedades.id.desc())
+                  .all())
+
+    return render_template("parte_novedades.html", partes=partes)
 #------------------------------------PARTE APROBACION-------------------------------------------------------
 @app.route('/parte_aprobado/<int:id_cambio>', methods=['GET', 'POST'])
 @login_required
@@ -1592,21 +1623,28 @@ def calcular_horas_y_minutos_acumulados(dni):
 @app.route('/asistencia', methods=['GET', 'POST'])
 def asistencia():
     tz_buenos_aires = pytz.timezone('America/Argentina/Buenos_Aires')
-
     fecha_actual = datetime.now(tz_buenos_aires).date()
+
     hora_actual_utc = datetime.now(timezone('UTC'))
     hora_actual_buenos_aires = hora_actual_utc.astimezone(app.config['TIMEZONE'])
     hora_actual_str = hora_actual_buenos_aires.strftime('%H:%M')
-    client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
 
-    print(client_ip)
-    print("Esta es la IP")
-    if not (current_user.is_authenticated and (current_user.rol == "admin" or current_user.rol == "jefe_guardia")):
-        if client_ip not in INSTITUTION_IP:
-            return redirect(url_for("error_red"))  # Redirige si la IP no es válida
-        print(client_ip)
+    client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    print(f"IP detectada: {client_ip}")
+
+    # Variable para controlar si se muestra el formulario
+    mostrar_formulario = False
+    if current_user.is_authenticated and (current_user.rol == "admin" or current_user.rol == "jefe_guardia"):
+        mostrar_formulario = True
+    elif client_ip in INSTITUTION_IP:
+        mostrar_formulario = True
 
     if request.method == 'POST':
+        # Si no tiene permiso para enviar el formulario, redirige
+        if not mostrar_formulario:
+            flash("No tenés permiso para registrar asistencia desde esta red.", "danger")
+            return redirect(url_for("asistencia"))
+
         dni = request.form.get('dni')
         agente_existente = Bomberos.query.filter_by(dni=dni).first()
 
@@ -1615,17 +1653,13 @@ def asistencia():
             return redirect(url_for("acces"))
 
         if not current_user.is_authenticated:
-            # Obtener el último registro de asistencia del usuario
             ultimo_registro = Aistencia.query.filter_by(dni=dni).order_by(
                 Aistencia.id_asistencia.desc()).first()
 
-            # Verificar si el último registro fue "INGRESO" y la nueva solicitud es también "INGRESO"
-            if ultimo_registro and ultimo_registro.tipo_registro == "INGRESO" and request.form.get(
-                    'tipo_registro') == "INGRESO":
+            if ultimo_registro and ultimo_registro.tipo_registro == "INGRESO" and request.form.get('tipo_registro') == "INGRESO":
                 flash('Debe registrar una SALIDA antes de registrar un nuevo INGRESO.')
                 return redirect(url_for("asistencia"))
-            if ultimo_registro and ultimo_registro.tipo_registro == "SALIDA" and request.form.get(
-                    'tipo_registro') == "SALIDA":
+            if ultimo_registro and ultimo_registro.tipo_registro == "SALIDA" and request.form.get('tipo_registro') == "SALIDA":
                 flash('Debe registrar un INGRESO antes de registrar una nueva SALIDA.')
                 return redirect(url_for("asistencia"))
 
@@ -1636,7 +1670,6 @@ def asistencia():
             flash('No se requiere actividad para registros de SALIDA.')
             return redirect(url_for("asistencia"))
 
-        # Si el usuario está logueado como "admin", usar la fecha y hora manual del formulario
         if current_user.is_authenticated and current_user.rol == "admin":
             fecha_manual = request.form.get('fecha')
             hora_manual = request.form.get('hora')
@@ -1648,7 +1681,6 @@ def asistencia():
                 fecha=datetime.strptime(fecha_manual, '%Y-%m-%d').date()
             )
         else:
-            # Sumar un minuto a la hora si es un INGRESO
             if tipo_registro == "INGRESO":
                 hora_mas_un_minuto = (hora_actual_buenos_aires + timedelta(minutes=3)).strftime('%H:%M')
             else:
@@ -1657,17 +1689,16 @@ def asistencia():
             asistencia = Aistencia(
                 dni=dni,
                 tipo_registro=tipo_registro,
-                actividad=actividad,
+                actividad=actividad if tipo_registro != "SALIDA" else None,
                 hora=hora_mas_un_minuto,
                 fecha=fecha_actual
             )
 
         db.session.add(asistencia)
         db.session.commit()
-        flash('Registro cargado exitosamente')
+        flash('✅ Registro cargado exitosamente.')
         return redirect(url_for("asistencia"))
 
-    # Calcular la fecha y hora de hace 24 horas
     hace_24_horas = fecha_actual - timedelta(days=1)
 
     subquery = db.session.query(
@@ -1683,22 +1714,22 @@ def asistencia():
     ).all()
 
     if current_user.is_authenticated and current_user.rol == "admin":
-        # Admin ve todos los registros de asistencia
         asistencia_general = Aistencia.query.all()
     elif current_user.is_authenticated:
-        # Usuario no administrador ve solo sus registros basados en legajo_numero
         asistencia_general = db.session.query(Aistencia).join(Bomberos, Bomberos.dni == Aistencia.dni).filter(
             Bomberos.legajo_numero == current_user.numero_legajo
         ).all()
     else:
-        # Usuario no autenticado no ve registros
         asistencia_general = []
 
-    # Obtener lista de bomberos para otros propósitos
     bomberos = Bomberos.query.order_by(Bomberos.legajo_numero).all()
 
-    return render_template('asistencia.html', asistencias=asistencias_ingreso,
-                           bravo=bomberos, asistencias_general=asistencia_general)
+    return render_template('asistencia.html',
+                           asistencias=asistencias_ingreso,
+                           bravo=bomberos,
+                           asistencias_general=asistencia_general,
+                           mostrar_formulario=mostrar_formulario)
+
 
 #----------------------------------------------
 @app.route('/editar_asistencia/<int:id>', methods=['GET', 'POST'])
@@ -1815,7 +1846,7 @@ def automotores():
 
             db.session.add(control_kit)
             db.session.commit()
-            flash('Control del kit forestal registrado exitosamente.')
+            flash('✅Control del kit forestal registrado exitosamente.')
 
         return redirect(url_for('automotores'))
 
@@ -1863,7 +1894,7 @@ def centralistas():
         tipo_registro = request.form.get('tipo_registro')
 
         # Asistencia según el rol del usuario
-        if current_user.is_authenticated and current_user.rol == "admin":
+        if current_user.is_authenticated and current_user.rol == "admin" and current_user.numero_legajo != 422222:
             fecha_manual = request.form.get('fecha')
             hora_manual = request.form.get('hora')
             asistencia = Centralistas_horarios(
@@ -1871,7 +1902,7 @@ def centralistas():
                 tipo_registro=tipo_registro,
                 hora=hora_manual,
                 fecha=datetime.strptime(fecha_manual, '%Y-%m-%d').date()
-            )
+        )
         else:
             asistencia = Centralistas_horarios(
                 dni=dni,
@@ -1882,7 +1913,7 @@ def centralistas():
 
         db.session.add(asistencia)
         db.session.commit()
-        flash('Registro cargado exitosamente')
+        flash('✅ Registro cargado exitosamente')
         return redirect(url_for("centralistas"))
 
     # Ejecutar la consulta SQL para obtener las horas trabajadas por mes para cada centralista
@@ -1952,48 +1983,156 @@ def centralistas():
 
 
 
-#-------------------------------------------------------------------------------------------
+#--------------------------ELIMINAR HORAS CENTRAL-----------------------------------------------------------------
+@app.route('/eliminar_centralista/<int:id>', methods=['POST'])
+@login_required
+def eliminar_centralista(id):
+    # Control de permisos
+    if current_user.rol not in ['admin', 'automotor']:
+        flash('⛔ No tenés permisos para eliminar este registro.', 'danger')
+        return redirect(url_for('centralistas'))
+
+    registro = Centralistas_horarios.query.get_or_404(id)
+
+    try:
+        db.session.delete(registro)
+        db.session.commit()
+        flash('✅ Registro de comunicaciones eliminado correctamente.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('❌ Error al eliminar el registro.', 'danger')
+
+    return redirect(url_for('centralistas'))
+#----------------------------------VER HORARIOS CENTRAL---------------------------------------------------------
+@app.route('/resumen_centralistas')
+@login_required
+def resumen_centralistas():
+
+    if current_user.rol not in ['admin', '']:
+        flash('⛔ No tenés permisos para acceder a este resumen.', 'danger')
+        return redirect(url_for('centralistas'))
+
+    tz = pytz.timezone('America/Argentina/Buenos_Aires')
+    hoy = datetime.now(tz)
+
+    primer_dia_mes_actual = hoy.replace(day=1)
+    ultimo_dia_mes_anterior = primer_dia_mes_actual - timedelta(days=1)
+
+    anio = ultimo_dia_mes_anterior.strftime('%Y')
+    mes = ultimo_dia_mes_anterior.strftime('%m')
+    nombre_mes = ultimo_dia_mes_anterior.strftime('%B %Y')
+
+    query = text("""
+        WITH RegistrosCentralistas AS (
+            SELECT 
+                ch.dni,
+                b.apellido,
+                ch.fecha || ' ' || ch.hora AS fecha_hora,
+                ch.tipo_registro,
+                LAG(ch.fecha || ' ' || ch.hora) OVER (PARTITION BY ch.dni ORDER BY ch.fecha, ch.hora) AS fecha_hora_anterior,
+                LAG(ch.tipo_registro) OVER (PARTITION BY ch.dni ORDER BY ch.fecha, ch.hora) AS tipo_registro_anterior
+            FROM Centralistas_horarios ch
+            JOIN Bomberos b ON ch.dni = b.dni
+            WHERE strftime('%Y', ch.fecha) = :anio
+              AND strftime('%m', ch.fecha) = :mes
+        )
+        SELECT 
+            dni,
+            apellido,
+            CAST(
+                SUM(
+                    CASE 
+                        WHEN tipo_registro = 'SALIDA' AND tipo_registro_anterior = 'INGRESO'
+                        THEN (JULIANDAY(fecha_hora) - JULIANDAY(fecha_hora_anterior)) * 24
+                        ELSE 0
+                    END
+                ) AS INTEGER
+            ) AS horas,
+            CAST(
+                SUM(
+                    CASE 
+                        WHEN tipo_registro = 'SALIDA' AND tipo_registro_anterior = 'INGRESO'
+                        THEN (JULIANDAY(fecha_hora) - JULIANDAY(fecha_hora_anterior)) * 24 * 60
+                        ELSE 0
+                    END
+                ) % 60 AS INTEGER
+            ) AS minutos
+        FROM RegistrosCentralistas
+        GROUP BY dni, apellido
+        ORDER BY apellido
+    """)
+
+    resultados = db.session.execute(query, {'anio': anio, 'mes': mes}).fetchall()
+
+    return render_template(
+        'resumen_centralistas.html',
+        resumen=resultados,
+        mes=nombre_mes
+    )
+
 #-------------------------------------------------------------------------------------------
 @app.route('/salidas', methods=['GET', 'POST'])
 @login_required
 def salidas():
     if request.method == 'POST':
-        fecha = datetime.strptime(request.form['fecha'], '%Y-%m-%d').date()
-        hora = datetime.strptime(request.form['hora'], '%H:%M').time()
-        unidad = request.form['unidad']
-        tipo_alarma = request.form['tipo_alarma']
-        numero_alarma = request.form['numero_alarma']
-        a_cargo = request.form['a_cargo']
-        chofer = request.form['chofer']
-        dotacion = request.form['dotacion']
-        qth = request.form['qth']
-        operador = request.form['operador']
-        bros_base = request.form['bros_base']
-        jefe_guardia = request.form['jefe_guardia']
-        observaciones = request.form.get('observaciones', '')  # Agregar esta línea
-        nueva_salida = Salida(fecha=fecha, hora=hora,
-                              unidad=unidad,
-                              tipo_alarma=tipo_alarma,
-                              numero_alarma=numero_alarma,
-                              a_cargo=a_cargo,
-                              chofer=chofer,
-                              dotacion=dotacion,
-                              qth=qth,
-                              operador=operador,
-                              bros_base=bros_base,
-                              jefe_guardia=jefe_guardia,
-                              observaciones=observaciones)
-        db.session.add(nueva_salida)
-        db.session.commit()
+        try:
+            fecha = datetime.strptime(request.form['fecha'], '%Y-%m-%d').date()
+            hora = datetime.strptime(request.form['hora'], '%H:%M').time()
+            unidad = request.form['unidad']
+            tipo_alarma = request.form['tipo_alarma']
+            numero_alarma = request.form['numero_alarma']
+            a_cargo = request.form['a_cargo']
+            chofer = request.form['chofer']
 
-        flash('Salida registrada exitosamente', 'success')
-        return redirect(url_for('salidas'))
+            # Usamos .get() y .strip() para evitar errores si el campo está vacío
+            dotacion = request.form.get('dotacion', '').strip() or None
+            dotacion2 = request.form.get('dotacion2', '').strip() or None
+            dotacion3 = request.form.get('dotacion3', '').strip() or None
+            dotacion4 = request.form.get('dotacion4', '').strip() or None
 
-    salidas = Salida.query.all()
+            qth = request.form['qth']
+            operador = request.form['operador']
+            bros_base = request.form['bros_base']
+            jefe_guardia = request.form['jefe_guardia']
+            observaciones = request.form.get('observaciones', '').strip()
+
+            nueva_salida = Salida(
+                fecha=fecha,
+                hora=hora,
+                unidad=unidad,
+                tipo_alarma=tipo_alarma,
+                numero_alarma=numero_alarma,
+                a_cargo=a_cargo,
+                chofer=chofer,
+                dotacion=dotacion,
+                dotacion2=dotacion2,
+                dotacion3=dotacion3,
+                dotacion4=dotacion4,
+                qth=qth,
+                operador=operador,
+                bros_base=bros_base,
+                jefe_guardia=jefe_guardia,
+                observaciones=observaciones
+            )
+
+            db.session.add(nueva_salida)
+            db.session.commit()
+
+            flash('Salida registrada exitosamente ✅', 'success')
+            return redirect(url_for('salidas'))
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f'⚠️ Error al registrar la salida: {e}', 'danger')
+
+    # Consultar las salidas del año actual
+    anio_actual = datetime.now().year
+    salidas = Salida.query.filter(extract('year', Salida.fecha) == anio_actual).all()
+
+    # Contar tipos de alarma
     tipos_alarma = [salida.tipo_alarma for salida in salidas]
     conteo_alarmas = dict(Counter(tipos_alarma))
 
-    # Convertir las claves y valores de conteo_alarmas a listas
     return render_template(
         'salidas.html',
         salidas=salidas,
@@ -2001,51 +2140,55 @@ def salidas():
         conteo_alarmas_data=list(conteo_alarmas.values())
     )
 
-
-
-
+#------------------------------ELIMINAR SALIDAS-------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
+@app.route('/eliminar_salida/<int:id_salida>', methods=['POST'])
+@login_required
+def eliminar_salida(id_salida):
+    salida = Salida.query.get_or_404(id_salida)
+    db.session.delete(salida)
+    db.session.commit()
+    return jsonify({'success': True})
 
 
 #-------------------------------------------------------------------------------------------
-
 @app.route('/salidas/editar/<int:id>', methods=['GET', 'POST'])
 @login_required
 def editar_salida(id):
-    # Buscar la salida en la base de datos
     salida = Salida.query.get_or_404(id)
 
     if request.method == 'POST':
         try:
-            # Convertir la fecha y la hora de los formularios en los objetos correctos
-            #salida.fecha = datetime.strptime(request.form['fecha'], '%Y-%m-%d').date()
-            #salida.hora = datetime.strptime(request.form['hora'], '%H:%M').time()
-
-            # Actualizar los demás campos
             salida.fecha = datetime.strptime(request.form['fecha'], '%Y-%m-%d').date()
             salida.hora = datetime.strptime(request.form['hora'], '%H:%M').time()
             salida.unidad = request.form['unidad']
             salida.tipo_alarma = request.form['tipo_alarma']
-            salida.numero_alarma = int(request.form['numero_alarma'])
+
+            numero_alarma = request.form.get('numero_alarma', '')
+            salida.numero_alarma = int(numero_alarma) if numero_alarma.isdigit() else None
+
             salida.a_cargo = request.form['a_cargo']
             salida.chofer = request.form['chofer']
-            salida.dotacion = request.form['dotacion']
+            salida.dotacion = request.form.get('dotacion', '')
+            salida.dotacion2 = request.form.get('dotacion2', '')
+            salida.dotacion3 = request.form.get('dotacion3', '')
+            salida.dotacion4 = request.form.get('dotacion4', '')
             salida.qth = request.form['qth']
-            salida.operador=request.form['operador']
-            salida.bros_base=request.form['bros_base']
-            salida.jefe_guardia=request.form['jefe_guardia']
+            salida.operador = request.form['operador']
+            salida.bros_base = request.form['bros_base']
+            salida.jefe_guardia = request.form['jefe_guardia']
             salida.observaciones = request.form.get('observaciones', '')
 
-            # Guardar los cambios
             db.session.commit()
-            flash('La salida ha sido actualizada exitosamente', 'success')
+            flash('✅ La salida ha sido actualizada exitosamente', 'success')
             return redirect(url_for('salidas'))
 
         except Exception as e:
             flash(f'Ocurrió un error al actualizar la salida: {str(e)}', 'danger')
             db.session.rollback()
 
-    # Mostrar el formulario con los valores actuales de la salida
     return render_template('editar_salidas.html', salida=salida)
+
 
 #-------------------------------------------------------------------------------------------
 
@@ -2093,6 +2236,7 @@ def editar_llegada(id):
     llegada = Llegada.query.get_or_404(id)
 
     if request.method == 'POST':
+        llegada.fecha = datetime.strptime(request.form['fecha'], '%Y-%m-%d').date()
         llegada.unidad = request.form.get('unidad')
         llegada.numero_alarma = request.form['numero_alarma']
         llegada.a_cargo = request.form['a_cargo']
@@ -2179,7 +2323,8 @@ def error_red():
 def control_materiales():
     return render_template('control_materiales.html')
 #------------------------------------------------------------------------------------------------
-#------------------------------------------------------------------------------------------------
+#---------------------------MATERIALES VIEJO COMENTADO---------------------------------------------------------------------
+"""
 @app.route('/materiales_r1', methods=['GET', 'POST'])
 @login_required
 def materiales_r1():
@@ -2265,7 +2410,7 @@ def materiales_r1():
     materialesr1 = MaterialesR1.query.all()
 
     return render_template('materiales_r1.html',materialesr1=materialesr1)
-
+"""
 #------------------------------------------------------------------------------------------------
 @app.route('/control_bolso_r1', methods=['GET', 'POST'])
 @login_required
@@ -2303,9 +2448,9 @@ def control_bolso_r1():
     registros = ControlBolsoR1.query.order_by(ControlBolsoR1.fecha.desc(), ControlBolsoR1.hora.desc()).all()
     return render_template('control_bolso_r1.html', registros=registros)
 #--------------
-#------------------------------------------------------------------------------------------------
+#-------------------------------MATERIALES VIEJO COMENTADO-----------------------------------------------------------------
 
-
+"""
 
 @app.route('/materiales_b3', methods=['GET', 'POST'])
 @login_required
@@ -2423,7 +2568,7 @@ def materiales_b3():
 
     registros = MaterialesB3.query.all()
     return render_template('materiales_b3.html', registros=registros)
-
+"""
 #------------------------------------------------------------------------------------------------
 @app.route('/control_bolso_b3', methods=['GET', 'POST'])
 @login_required
@@ -2540,6 +2685,50 @@ def materialesF2():
 
     registros = MaterialesF2.query.order_by(MaterialesF2.fecha.desc(), MaterialesF2.hora.desc()).all()
     return render_template('materialesF2.html', registros=registros)
+
+
+#------------------------------------------F3-------------------------------------------------------
+@app.route('/materialesF3', methods=['GET', 'POST'])
+@login_required
+def materialesF3():
+    tz_buenos_aires = pytz.timezone('America/Argentina/Buenos_Aires')
+
+    fecha_actual = datetime.now(tz_buenos_aires).date()
+
+    # Obtener la hora actual en Buenos Aires
+    hora_actual_utc = datetime.now(timezone('UTC'))
+    hora_actual_buenos_aires = hora_actual_utc.astimezone(app.config['TIMEZONE'])
+
+    # Convertir la hora a un objeto 'time' de Python
+    hora_actual_str = hora_actual_buenos_aires.strftime('%H:%M')
+    hora_actual_obj = datetime.strptime(hora_actual_str, '%H:%M').time()
+
+    if request.method == 'POST':
+        numero_legajo = current_user.numero_legajo
+        estado_materiales = request.form['estado_bolso']  # 'OK' o 'X'
+        colaborador1=request.form['colaborador1']
+        colaborador2 = request.form['colaborador2']
+        observaciones = request.form.get('observaciones', '')
+
+        nuevo_registro = MaterialesF3(
+            fecha=fecha_actual,
+            hora=hora_actual_obj,
+            numero_legajo=numero_legajo,
+            estado_materiales=estado_materiales,
+            colaborador1=colaborador1,
+            colaborador2=colaborador2,
+            observaciones=observaciones
+        )
+        db.session.add(nuevo_registro)
+        db.session.commit()
+        flash('Registro de materiales F3 realizado exitosamente.')
+
+        return redirect(url_for('materialesF3'))
+
+    registros = MaterialesF3.query.order_by(MaterialesF3.fecha.desc(), MaterialesF3.hora.desc()).all()
+    return render_template('materialesf3.html', registros=registros)
+
+
 #------------------------------------------B4-------------------------------------------------------
 @app.route('/materialesB4', methods=['GET', 'POST'])
 @login_required
@@ -2757,8 +2946,404 @@ def eliminar_responsable(id):
     flash('Responsable eliminado correctamente.', 'success')
     return redirect(url_for('responsables_area'))
 
+#------------------------------------REPORTE PERSONAL------------------------------------------------------------
+
+
+@app.route('/resumen_personal')
+@login_required
+def resumen_personal():
+
+    # 🔐 Seguridad básica
+    if current_user.rol not in ['admin', 'jefe_guardia']:
+        return redirect(url_for('error_red'))
+
+    # 📅 Calcular mes anterior
+    hoy = datetime.now()
+    primer_dia_mes_actual = hoy.replace(day=1)
+    ultimo_dia_mes_anterior = primer_dia_mes_actual - timedelta(days=1)
+
+    mes_anio = ultimo_dia_mes_anterior.strftime('%Y-%m')
+    mes_legible = ultimo_dia_mes_anterior.strftime('%m/%Y')
+
+    # 🧠 A) Horas por persona y actividad
+    horas_por_actividad = db.session.execute(text("""
+    WITH Pares AS (
+        SELECT 
+            ingreso.dni,
+            b.nombre,
+            b.apellido,
+            ingreso.actividad,
+            datetime(ingreso.fecha || ' ' || ingreso.hora) AS fecha_hora_ingreso,
+            MIN(datetime(salida.fecha || ' ' || salida.hora)) AS fecha_hora_salida
+        FROM 
+            aistencia ingreso
+        LEFT JOIN 
+            aistencia salida 
+            ON ingreso.dni = salida.dni
+            AND ingreso.tipo_registro = 'INGRESO'
+            AND salida.tipo_registro = 'SALIDA'
+            AND datetime(salida.fecha || ' ' || salida.hora) > datetime(ingreso.fecha || ' ' || ingreso.hora)
+        JOIN 
+            bomberos b ON ingreso.dni = b.dni
+        WHERE 
+            ingreso.tipo_registro = 'INGRESO'
+            AND strftime('%Y-%m', ingreso.fecha) = :mes_anio
+        GROUP BY 
+            ingreso.dni, b.nombre, b.apellido, ingreso.actividad, ingreso.fecha, ingreso.hora
+    )
+    SELECT 
+        dni,
+        nombre,
+        apellido,
+        actividad,
+        ROUND(SUM(COALESCE((JULIANDAY(fecha_hora_salida) - JULIANDAY(fecha_hora_ingreso)) * 24, 0)), 2) AS horas_trabajadas
+    FROM 
+        Pares
+    GROUP BY 
+        dni, nombre, apellido, actividad
+    ORDER BY 
+        apellido, actividad
+    """), {'mes_anio': mes_anio}).fetchall()
+
+    # 🧮 B) Horas totales por persona
+    horas_totales = db.session.execute(text("""
+    WITH Pares AS (
+        SELECT 
+            ingreso.dni,
+            b.apellido,
+            datetime(ingreso.fecha || ' ' || ingreso.hora) AS fecha_hora_ingreso,
+            MIN(datetime(salida.fecha || ' ' || salida.hora)) AS fecha_hora_salida
+        FROM 
+            aistencia ingreso
+        LEFT JOIN 
+            aistencia salida 
+            ON ingreso.dni = salida.dni
+            AND ingreso.tipo_registro = 'INGRESO'
+            AND salida.tipo_registro = 'SALIDA'
+            AND datetime(salida.fecha || ' ' || salida.hora) > datetime(ingreso.fecha || ' ' || ingreso.hora)
+        JOIN 
+            bomberos b ON ingreso.dni = b.dni
+        WHERE 
+            ingreso.tipo_registro = 'INGRESO'
+            AND strftime('%Y-%m', ingreso.fecha) = :mes_anio
+        GROUP BY 
+            ingreso.dni, b.apellido, ingreso.fecha, ingreso.hora
+    )
+    SELECT 
+        dni,
+        apellido,
+        ROUND(
+            SUM(
+                CASE 
+                    WHEN fecha_hora_salida IS NOT NULL
+                    THEN (JULIANDAY(fecha_hora_salida) - JULIANDAY(fecha_hora_ingreso)) * 24
+                    ELSE 0
+                END
+            ), 
+        2) AS total_horas
+    FROM 
+        Pares
+    GROUP BY 
+        dni, apellido
+    ORDER BY 
+        total_horas DESC
+    """), {'mes_anio': mes_anio}).fetchall()
+
+    # 🔁 C) Control INGRESO / SALIDA
+    control = db.session.execute(text("""
+    SELECT 
+        a.dni,
+        b.apellido,
+        SUM(CASE WHEN a.tipo_registro = 'INGRESO' THEN 1 ELSE 0 END) AS ingresos,
+        SUM(CASE WHEN a.tipo_registro = 'SALIDA' THEN 1 ELSE 0 END) AS salidas
+    FROM 
+        aistencia a
+    JOIN 
+        bomberos b ON a.dni = b.dni
+    WHERE 
+        strftime('%Y-%m', a.fecha) = :mes_anio
+    GROUP BY 
+        a.dni, b.apellido
+    """), {'mes_anio': mes_anio}).fetchall()
+
+    # 📋 D) Detalle completo
+    detalle = db.session.execute(text("""
+    SELECT 
+        a.id_asistencia,
+        a.dni,
+        b.apellido,
+        a.tipo_registro,
+        a.fecha,
+        a.hora,
+        a.actividad
+    FROM 
+        aistencia a
+    JOIN 
+        bomberos b ON a.dni = b.dni
+    WHERE 
+        strftime('%Y-%m', a.fecha) = :mes_anio
+    ORDER BY 
+        b.apellido, a.fecha, a.hora
+    """), {'mes_anio': mes_anio}).fetchall()
+
+    return render_template(
+        'resumen_personal.html',
+        mes=mes_legible,
+        horas_por_actividad=horas_por_actividad,
+        horas_totales=horas_totales,
+        control=control,
+        detalle=detalle
+    )
+
+#-------------------------------REPORTE SALIDAS-----------------------------------------------------------------
+@app.route('/reporte_salidas')
+@login_required
+def reporte_salidas():
+
+    # 🔐 Seguridad: solo admin
+    if current_user.rol != 'admin':
+        return redirect(url_for('error_red'))
+
+    # 📅 Mes anterior
+    hoy = datetime.now()
+    primer_dia_mes_actual = hoy.replace(day=1)
+    ultimo_dia_mes_anterior = primer_dia_mes_actual - timedelta(days=1)
+
+    anio = ultimo_dia_mes_anterior.strftime('%Y')
+    mes = ultimo_dia_mes_anterior.strftime('%m')
+    mes_anio = ultimo_dia_mes_anterior.strftime('%Y-%m')
+    mes_legible = ultimo_dia_mes_anterior.strftime('%m/%Y')
+
+    # 🧠 A) Cantidad de salidas por tipo de alarma
+    salidas_por_tipo = db.session.execute(text("""
+        SELECT tipo_alarma, COUNT(*) AS total_salidas
+        FROM salida
+        WHERE strftime('%Y-%m', fecha) = :mes_anio
+        GROUP BY tipo_alarma
+        ORDER BY total_salidas DESC
+    """), {'mes_anio': mes_anio}).fetchall()
+
+    # 🧠 B) Participación total por bombero (salidas operativas)
+    participacion_bomberos = db.session.execute(text("""
+        WITH Operativas AS (
+            SELECT *
+            FROM salida
+            WHERE strftime('%Y-%m', fecha) = :mes_anio
+              AND tipo_alarma NOT IN (
+                'TRAMITES','TRÁMITES','TRÁMITES ','TRAMITES ',
+                'TRÁMITES (VOTACIONES)','OTROS','VARIOS',
+                'INSPECCIONES','MATAFUEGOS','LOGISITCA','LOGISTICA',
+                'CARGA_COMBUSTIBLE','CARGA COMBUSTIBLE',
+                'CAPACITACIONES',
+                'VERIFICACION COLUMNA DE HUMO',
+                'VERIFICACIÓN COLUMNA DE HUMO'
+              )
+        ),
+        ParticipacionesRaw AS (
+            SELECT id_salida, a_cargo AS personas FROM Operativas
+            UNION ALL SELECT id_salida, chofer FROM Operativas
+            UNION ALL SELECT id_salida, dotacion FROM Operativas
+            UNION ALL SELECT id_salida, dotacion2 FROM Operativas
+            UNION ALL SELECT id_salida, dotacion3 FROM Operativas
+            UNION ALL SELECT id_salida, dotacion4 FROM Operativas
+        ),
+        Separados AS (
+            SELECT id_salida, TRIM(UPPER(value)) AS bombero
+            FROM ParticipacionesRaw,
+            json_each(
+                '["' ||
+                REPLACE(
+                    REPLACE(
+                        REPLACE(personas,' - ','","'),
+                    '-', '","'),
+                '–','","')
+                || '"]'
+            )
+            WHERE personas IS NOT NULL
+        )
+        SELECT bombero, COUNT(DISTINCT id_salida) AS total_salidas
+        FROM Separados
+        WHERE bombero NOT IN ('', '-', 'N/A')
+        GROUP BY bombero
+        ORDER BY total_salidas DESC
+    """), {'mes_anio': mes_anio}).fetchall()
+
+    # 🧠 C) Bombero + tipo de alarma
+    detalle_bombero_tipo = db.session.execute(text("""
+        WITH Operativas AS (
+            SELECT *
+            FROM salida
+            WHERE strftime('%Y-%m', fecha) = :mes_anio
+              AND tipo_alarma NOT IN (
+                'TRAMITES','LOGISTICA','CAPACITACIONES',
+                'MATAFUEGOS','CARGA COMBUSTIBLE'
+              )
+        ),
+        ParticipacionesRaw AS (
+            SELECT id_salida, tipo_alarma, a_cargo AS personas FROM Operativas WHERE a_cargo IS NOT NULL
+            UNION ALL SELECT id_salida, tipo_alarma, chofer FROM Operativas WHERE chofer IS NOT NULL
+            UNION ALL SELECT id_salida, tipo_alarma, dotacion FROM Operativas WHERE dotacion IS NOT NULL
+            UNION ALL SELECT id_salida, tipo_alarma, dotacion2 FROM Operativas WHERE dotacion2 IS NOT NULL
+            UNION ALL SELECT id_salida, tipo_alarma, dotacion3 FROM Operativas WHERE dotacion3 IS NOT NULL
+            UNION ALL SELECT id_salida, tipo_alarma, dotacion4 FROM Operativas WHERE dotacion4 IS NOT NULL
+        ),
+        Separados AS (
+            SELECT
+                id_salida,
+                tipo_alarma,
+                TRIM(UPPER(value)) AS bombero
+            FROM ParticipacionesRaw,
+            json_each(
+                '["' ||
+                REPLACE(
+                    REPLACE(
+                        REPLACE(personas, ' Y ', '-'),
+                    ',', '-'),
+                '-', '","')
+                || '"]'
+            )
+        )
+        SELECT bombero, tipo_alarma, COUNT(DISTINCT id_salida) AS total_intervenciones
+        FROM Separados
+        WHERE bombero NOT IN ('', '-', 'N/A', '0')
+        GROUP BY bombero, tipo_alarma
+        ORDER BY bombero, total_intervenciones DESC
+    """), {'mes_anio': mes_anio}).fetchall()
+
+    # 🧠 D) Salidas por día de la semana
+    salidas_por_dia = db.session.execute(text("""
+        SELECT 
+          CASE strftime('%w', fecha)
+            WHEN '0' THEN 'Domingo'
+            WHEN '1' THEN 'Lunes'
+            WHEN '2' THEN 'Martes'
+            WHEN '3' THEN 'Miércoles'
+            WHEN '4' THEN 'Jueves'
+            WHEN '5' THEN 'Viernes'
+            WHEN '6' THEN 'Sábado'
+          END AS dia_semana,
+          COUNT(*) AS total_salidas
+        FROM salida
+        WHERE strftime('%Y-%m', fecha) = :mes_anio
+          AND tipo_alarma NOT IN (
+            'TRAMITES','TRÁMITES','TRÁMITES ','TRAMITES ',
+            'TRÁMITES (VOTACIONES)','OTROS','VARIOS',
+            'INSPECCIONES','MATAFUEGOS','LOGISITCA','LOGISTICA',
+            'CARGA_COMBUSTIBLE','CARGA COMBUSTIBLE',
+            'CAPACITACIONES',
+            'VERIFICACION COLUMNA DE HUMO',
+            'VERIFICACIÓN COLUMNA DE HUMO'
+          )
+        GROUP BY dia_semana
+        ORDER BY total_salidas DESC
+    """), {'mes_anio': mes_anio}).fetchall()
+
+    return render_template(
+        'reporte_salidas.html',
+        mes=mes_legible,
+        salidas_por_tipo=salidas_por_tipo,
+        participacion_bomberos=participacion_bomberos,
+        detalle_bombero_tipo=detalle_bombero_tipo,
+        salidas_por_dia=salidas_por_dia
+    )
+
 #------------------------------------------------------------------------------------------------
-#------------------------------------------------------------------------------------------------
-#------------------------------------------------------------------------------------------------
+@app.route('/reporte_salidas_excel')
+@login_required
+def reporte_salidas_excel():
+
+    if current_user.rol != 'admin':
+        return redirect(url_for('error_red'))
+
+    # 📅 Mes anterior
+    hoy = datetime.now()
+    primer_dia_mes_actual = hoy.replace(day=1)
+    ultimo_dia_mes_anterior = primer_dia_mes_actual - timedelta(days=1)
+    mes_anio = ultimo_dia_mes_anterior.strftime('%Y')
+
+    # =============================
+    # CONSULTAS
+    # =============================
+
+    salidas_por_tipo = db.session.execute(text("""
+        SELECT tipo_alarma, COUNT(*) AS total_salidas
+        FROM salida
+        WHERE strftime('%Y', fecha) = :anio
+        GROUP BY tipo_alarma
+        ORDER BY total_salidas DESC
+    """), {'anio': mes_anio}).fetchall()
+
+    participacion_bomberos = db.session.execute(text("""
+        WITH Operativas AS (
+            SELECT *
+            FROM salida
+            WHERE strftime('%Y', fecha) = :anio
+              AND tipo_alarma NOT IN (
+                'TRAMITES','LOGISTICA','CAPACITACIONES',
+                'MATAFUEGOS','CARGA COMBUSTIBLE'
+              )
+        ),
+        ParticipacionesRaw AS (
+            SELECT id_salida, a_cargo AS personas FROM Operativas
+            UNION ALL
+            SELECT id_salida, chofer FROM Operativas
+            UNION ALL
+            SELECT id_salida, dotacion FROM Operativas
+            UNION ALL
+            SELECT id_salida, dotacion2 FROM Operativas
+            UNION ALL
+            SELECT id_salida, dotacion3 FROM Operativas
+            UNION ALL
+            SELECT id_salida, dotacion4 FROM Operativas
+        ),
+        Separados AS (
+            SELECT id_salida, TRIM(value) AS bombero
+            FROM ParticipacionesRaw,
+                 json_each(
+                    '["' || REPLACE(REPLACE(UPPER(personas),' - ','","'),'-','","') || '"]'
+                 )
+            WHERE personas IS NOT NULL
+        )
+        SELECT bombero, COUNT(DISTINCT id_salida) AS total_salidas
+        FROM Separados
+        WHERE bombero NOT IN ('', '-', 'N/A')
+        GROUP BY bombero
+        ORDER BY total_salidas DESC
+    """), {'anio': mes_anio}).fetchall()
+
+    # =============================
+    # CREAR EXCEL
+    # =============================
+
+    wb = Workbook()
+    ws1 = wb.active
+    ws1.title = "Salidas por tipo"
+
+    ws1.append(["Tipo de alarma", "Total salidas"])
+    for r in salidas_por_tipo:
+        ws1.append([r.tipo_alarma, r.total_salidas])
+
+    ws2 = wb.create_sheet("Participación bomberos")
+    ws2.append(["Bombero", "Total salidas"])
+    for r in participacion_bomberos:
+        ws2.append([r.bombero, r.total_salidas])
+
+    # =============================
+    # ENVIAR ARCHIVO
+    # =============================
+
+    archivo = BytesIO()
+    wb.save(archivo)
+    archivo.seek(0)
+
+    nombre_archivo = f"reporte_salidas_{mes_anio}.xlsx"
+
+    return send_file(
+        archivo,
+        download_name=nombre_archivo,
+        as_attachment=True,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+
 if __name__ == '__main__':
     app.run(debug=True, port=8080)  # Cambia 8080 al puerto que prefieras

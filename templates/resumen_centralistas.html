@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2 class="titulo">Resumen de Horas – Centralistas</h2>
+    <h4 class="text-muted">{{ mes }}</h4>
+
+    <table class="table table-bordered table-striped mt-4" id="tabla_resumen">
+        <thead class="table-dark">
+            <tr>
+                <th>DNI</th>
+                <th>Apellido</th>
+                <th>Horas</th>
+                <th>Minutos</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in resumen %}
+            <tr>
+                <td>{{ r.dni }}</td>
+                <td>{{ r.apellido }}</td>
+                <td>{{ r.horas }}</td>
+                <td>{{ r.minutos }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#tabla_resumen').DataTable({
+            paging: false,
+            searching: false,
+            info: false
+        });
+    });
+</script>
+
+{% endblock %}

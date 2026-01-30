@@ -1,69 +1,139 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h3>Editar Salida</h3>
-<form action="{{ url_for('editar_salida', id=salida.id_salida) }}" method="POST">
-    <div class="form-group">
-        <label for="fecha">Fecha</label>
-        <input type="date" name="fecha" id="fecha" class="form-control" value="{{ salida.fecha }}" required>
-    </div>
+<h3 class="mb-3">Editar Salida</h3>
 
-    <div class="form-group">
-        <label for="hora">Hora</label>
-        <input type="time" name="hora" id="hora" class="form-control" value="{{ salida.hora }}" required>
-    </div>
+<form action="{{ url_for('editar_salida', id=salida.id_salida) }}" method="POST" class="p-3 border rounded shadow-sm bg-light">
 
-    <div class="form-group">
-    <select name="unidad" class="form-select" required>
-        <option value="" disabled>Nombre de la Unidad</option>
-        <option value="B2" {% if salida.unidad == 'B2' %}selected{% endif %}>B2</option>
-        <option value="B3" {% if salida.unidad == 'B3' %}selected{% endif %}>B3</option>
-        <option value="B4" {% if salida.unidad == 'B4' %}selected{% endif %}>B4</option>
-        <option value="BF1" {% if salida.unidad == 'BF1' %}selected{% endif %}>BF1</option>
-        <option value="BR1" {% if salida.unidad == 'BR1' %}selected{% endif %}>BR1</option>
-        <option value="E1" {% if salida.unidad == 'E1' %}selected{% endif %}>E1</option>
-        <option value="F2" {% if salida.unidad == 'F2' %}selected{% endif %}>F2</option>
-        <option value="F3" {% if salida.unidad == 'F3' %}selected{% endif %}>F3</option>
-        <option value="R1" {% if salida.unidad == 'R1' %}selected{% endif %}>R1</option>
-        <option value="R8" {% if salida.unidad == 'R8' %}selected{% endif %}>R8</option>
+  <!-- Fecha y hora -->
+  <div class="row mb-3">
+    <div class="col">
+      <label for="fecha">Fecha</label>
+      <input type="date" name="fecha" id="fecha" class="form-control" value="{{ salida.fecha }}" required>
+    </div>
+    <div class="col">
+      <label for="hora">Hora</label>
+      <input type="time" name="hora" id="hora" class="form-control" value="{{ salida.hora }}" required>
+    </div>
+  </div>
+
+  <!-- Unidad -->
+  <div class="form-group mb-3">
+    <label for="unidad">Unidad</label>
+    <select name="unidad" id="unidad" class="form-select" required>
+      <option value="" disabled>Seleccione Unidad</option>
+      {% for unidad in ['B2','B3','B4','BF1','BR1','E1','F2','F3','R1','R8','FIOR','LS1'] %}
+        <option value="{{ unidad }}" {% if salida.unidad == unidad %}selected{% endif %}>{{ unidad }}</option>
+      {% endfor %}
     </select>
-</div>
+  </div>
 
-
-    <div class="form-group">
-        <input type="text" name="tipo_alarma" id="tipo_alarma" class="form-control" value="{{ salida.tipo_alarma }}" placeholder="Tipo de Alarma" required>
+  <!-- Tipo y número de alarma -->
+  <div class="row mb-3">
+    <div class="col">
+      <label for="tipo_alarma">Tipo de Alarma</label>
+      <input type="text" name="tipo_alarma" id="tipo_alarma" class="form-control" value="{{ salida.tipo_alarma }}" required>
     </div>
-
-    <div class="form-group">
-        <input type="text" name="a_cargo" id="a_cargo" class="form-control" value="{{ salida.a_cargo }}" required placeholder="A Cargo">
+    <div class="col">
+      <label for="numero_alarma">Número de Alarma</label>
+      <input type="text" name="numero_alarma" id="numero_alarma" class="form-control" value="{{ salida.numero_alarma or '' }}">
     </div>
+  </div>
 
-    <div class="form-group">
-        <input type="text" name="chofer" id="chofer" class="form-control" value="{{ salida.chofer }}" required placeholder="Chofer">
+  {% set lista_personal = [
+    "Sargento Perez", "Sargento 1° Avari", "Sargento Speroni", "Sargento Vogel",
+    "Cabo 1° Rivero", "Cabo 1° Petruzzi", "Cabo 1° Ludueña", "Cabo 1° Torletti", "Cabo 1° Menendez",
+    "Cabo Cabrera", "Cabo Minicucci", "Cabo Zingoni V.", "Cabo Didier",
+    "Bombero Gimenez", "Bombero Gonzalez", "Bombero Pittuelli", "Bombero Sanchez", "Bombero Zingoni",
+    "Bombero Altamirano", "Bombero Paganoni", "Bombero Quevedo", "Bombero Villarreal",
+    "Bombero Fernandez Barbero", "Bombero Fleita", "Bombero Manganiello", "Bombero Kossoy",
+    "Bombero Melian", "Bombero Nardi", "Bombero Nuñez", "Bombero Soria", "Bombero Tapia",
+    "Bombero Zuliani", "Bombero Ponce", "Bombero Armesto", "Bombero Arguello", "Bombero Didier",
+    "Bombero Murúa", "Bombero Pensa", "Bombero Viviano", "Bombero Zarandon", "Bombero Rivarola",
+    "Bombero Menendez", "Bombero Benavidez"
+  ] %}
+
+  <!-- Personal -->
+  <div class="row mb-3">
+    <div class="col">
+      <label for="a_cargo">A cargo</label>
+      <select name="a_cargo" id="a_cargo" class="form-select" required>
+        <option value="" disabled>Seleccione un jefe</option>
+        {% for persona in lista_personal %}
+          <option value="{{ persona }}" {% if salida.a_cargo == persona %}selected{% endif %}>{{ persona }}</option>
+        {% endfor %}
+      </select>
     </div>
-
-    <div class="form-group">
-        <input type="text" name="dotacion" id="dotacion" class="form-control" value="{{ salida.dotacion }}" required placeholder="Dotacion">
+    <div class="col">
+      <label for="chofer">Chofer</label>
+      <input type="text" name="chofer" id="chofer" class="form-control" value="{{ salida.chofer }}" required>
     </div>
+  </div>
 
-    <div class="form-group">
-        <input type="text" name="qth" id="qth" class="form-control" value="{{ salida.qth }}" required placeholder="QTH">
+  <!-- Dotaciones -->
+  {% for i in range(1,5) %}
+  <div class="mb-3">
+    <label for="dotacion{{ '' if i == 1 else i }}">Dotación {{ i }}</label>
+    <select name="dotacion{{ '' if i == 1 else i }}" id="dotacion{{ '' if i == 1 else i }}" class="form-select">
+      <option value="" selected>Ninguno</option>
+      {% for persona in lista_personal %}
+        <option value="{{ persona }}" {% if salida['dotacion' ~ ('' if i == 1 else i)] == persona %}selected{% endif %}>{{ persona }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  {% endfor %}
+
+  <!-- Ubicación y operadores -->
+  <div class="row mb-3">
+    <div class="col">
+      <label for="qth">QTH</label>
+      <input type="text" name="qth" id="qth" class="form-control" value="{{ salida.qth }}" required>
     </div>
-
-    <div class="form-group">
-        <input type="text" name="operador" id="operador" class="form-control" value="{{ salida.operador }}" required placeholder="OPERADOR">
+    <div class="col">
+      <label for="operador">Operador</label>
+      <input type="text" name="operador" id="operador" class="form-control" value="{{ salida.operador }}" required>
     </div>
+  </div>
 
-    <div class="form-group">
-        <input type="text" name="bros_base" id="bros_base" class="form-control" value="{{ salida.bros_base }}" required placeholder="Bros en base">
+  <!-- Otros campos -->
+  <div class="row mb-3">
+    <div class="col">
+      <label for="bros_base">Bros en base</label>
+      <input type="text" name="bros_base" id="bros_base" class="form-control" value="{{ salida.bros_base }}">
     </div>
-
-    <div class="form-group">
-        <input type="text" name="jefe_guardia" id="jefe_guardia" class="form-control" value="{{ salida.jefe_guardia }}" required placeholder="Jefe de Guardia">
+    <div class="col">
+      <label for="jefe_guardia">Jefe de Guardia</label>
+      <select name="jefe_guardia" id="jefe_guardia" class="form-select" required>
+        <option value="" disabled>Seleccione un jefe de guardia</option>
+        {% for persona in lista_personal %}
+          <option value="{{ persona }}" {% if salida.jefe_guardia == persona %}selected{% endif %}>{{ persona }}</option>
+        {% endfor %}
+      </select>
     </div>
+  </div>
 
-    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+  <!-- Observaciones -->
+  <div class="form-group mb-4" id="campo-observaciones" style="display: none;">
+    <label for="observaciones">Observaciones</label>
+    <textarea name="observaciones" id="observaciones" class="form-control" rows="3">{{ salida.observaciones or '' }}</textarea>
+  </div>
+
+  <!-- Botones -->
+  <div class="d-flex justify-content-between">
     <a href="{{ url_for('salidas') }}" class="btn btn-secondary">Cancelar</a>
+    <button type="submit" class="btn btn-success">💾 Guardar Cambios</button>
+  </div>
 </form>
+
+<script>
+  function mostrarCampoObservaciones() {
+    const tipoAlarma = document.getElementById("tipo_alarma").value.toLowerCase();
+    const campoObs = document.getElementById("campo-observaciones");
+    campoObs.style.display = tipoAlarma.includes("trámite") || tipoAlarma.includes("tramite") ? "block" : "none";
+  }
+
+  document.getElementById("tipo_alarma").addEventListener("input", mostrarCampoObservaciones);
+  window.onload = mostrarCampoObservaciones;
+</script>
 
 {% endblock %}

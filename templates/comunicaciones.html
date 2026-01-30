@@ -133,6 +133,7 @@
             <th>Tipo de registro</th>
             <th>Fecha</th>
             <th>Hora</th>
+            <th>Eliminar</th>
 
 
         </tr>
@@ -149,6 +150,19 @@
             <td>{{ asistencia.tipo_registro }}</td>
             <td>{{ asistencia.fecha }}</td>
             <td>{{ asistencia.hora }}</td>
+            {% if current_user.rol in ['admin', 'automotor'] %}
+            <td>
+                <form action="{{ url_for('eliminar_centralista', id=asistencia.id_asistencia) }}"
+                      method="POST"
+                      onsubmit="return confirm('¿Seguro que deseas eliminar este registro?');">
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        🗑 Eliminar
+                    </button>
+                </form>
+            </td>
+            {% endif %}
+
+
 
 
 

@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1 class="titulo">Reporte de Salidas – {{ mes }}</h1>
+<hr>
+<a href="{{ url_for('reporte_salidas_excel') }}"
+   class="btn btn-success mb-3">
+   📥 Exportar a Excel
+</a>
+
+<!-- ============================= -->
+<!-- GRAFICOS -->
+<!-- ============================= -->
+<div class="container">
+
+  <h4 class="titulo">Salidas por tipo de alarma</h4>
+  <canvas id="graficoTipoAlarma" height="120"></canvas>
+
+  <hr>
+
+  <h4 class="titulo">Salidas por día de la semana</h4>
+  <canvas id="graficoDiaSemana" height="120"></canvas>
+
+</div>
+
+<hr>
+
+<!-- ============================= -->
+<!-- TABLA TIPO DE ALARMA -->
+<!-- ============================= -->
+<div class="container">
+<h3 class="titulo">Detalle por tipo de alarma</h3>
+
+<table class="table table-striped table-hover" id="tabla_tipo">
+    <thead>
+        <tr>
+            <th>Tipo de alarma</th>
+            <th>Total salidas</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for t in salidas_por_tipo %}
+        <tr>
+            <td>{{ t.tipo_alarma }}</td>
+            <td>{{ t.total_salidas }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+
+<hr>
+
+<!-- ============================= -->
+<!-- PARTICIPACIÓN POR BOMBERO -->
+<!-- ============================= -->
+<div class="container">
+<h3 class="titulo">Participación por bombero</h3>
+
+<table class="table table-bordered table-hover" id="tabla_bomberos">
+    <thead class="table-light">
+        <tr>
+            <th>Bombero</th>
+            <th>Total salidas</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for b in participacion_bomberos %}
+        <tr>
+            <td>{{ b.bombero }}</td>
+            <td>{{ b.total_salidas }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+
+<hr>
+
+<!-- ============================= -->
+<!-- BOMBERO x TIPO -->
+<!-- ============================= -->
+<div class="container">
+<h3 class="titulo">Intervenciones por bombero y tipo</h3>
+
+<table class="table table-sm table-striped" id="tabla_bombero_tipo">
+    <thead>
+        <tr>
+            <th>Bombero</th>
+            <th>Tipo de alarma</th>
+            <th>Intervenciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for d in detalle_bombero_tipo %}
+        <tr>
+            <td>{{ d.bombero }}</td>
+            <td>{{ d.tipo_alarma }}</td>
+            <td>{{ d.total_intervenciones }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+
+<hr>
+
+<a href="{{ url_for('salidas') }}" class="btn btn-dark">
+    ⬅ Volver a salidas
+</a>
+
+<!-- ============================= -->
+<!-- LIBRERIAS -->
+<!-- ============================= -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // =============================
+    // DATATABLES (liviano)
+    // =============================
+    $(document).ready(function () {
+
+        const opciones = {
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            order: [],
+            language: {
+                search: "Buscar:",
+                lengthMenu: "Mostrar _MENU_ registros",
+                info: "Mostrando _START_ a _END_ de _TOTAL_",
+                paginate: {
+                    first: "Primero",
+                    last: "Último",
+                    next: "➡",
+                    previous: "⬅"
+                },
+                zeroRecords: "No se encontraron resultados",
+                infoEmpty: "Sin registros disponibles"
+            }
+        };
+
+        $('#tabla_tipo').DataTable(opciones);
+        $('#tabla_bomberos').DataTable(opciones);
+        $('#tabla_bombero_tipo').DataTable(opciones);
+    });
+
+    // =============================
+    // GRAFICO TIPO DE ALARMA
+    // =============================
+    const tipoLabels = {{ salidas_por_tipo | map(attribute='tipo_alarma') | list | tojson }};
+    const tipoData = {{ salidas_por_tipo | map(attribute='total_salidas') | list | tojson }};
+
+    new Chart(document.getElementById('graficoTipoAlarma'), {
+        type: 'bar',
+        data: {
+            labels: tipoLabels,
+            datasets: [{
+                label: 'Cantidad de salidas',
+                data: tipoData
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // =============================
+    // GRAFICO DIA DE SEMANA
+    // =============================
+    const diaLabels = {{ salidas_por_dia | map(attribute='dia_semana') | list | tojson }};
+    const diaData = {{ salidas_por_dia | map(attribute='total_salidas') | list | tojson }};
+
+    new Chart(document.getElementById('graficoDiaSemana'), {
+        type: 'bar',
+        data: {
+            labels: diaLabels,
+            datasets: [{
+                label: 'Salidas',
+                data: diaData
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+</script>
+
+{% endblock %}
