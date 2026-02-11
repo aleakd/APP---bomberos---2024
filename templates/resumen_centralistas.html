@@ -27,6 +27,41 @@
     </table>
 </div>
 
+
+<h3 class="mt-5">Control de Registros</h3>
+
+<table class="table table-bordered table-striped mt-3" id="tabla_control">
+    <thead class="table-dark">
+        <tr>
+            <th>DNI</th>
+            <th>Apellido</th>
+            <th>Ingresos</th>
+            <th>Salidas</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in control %}
+        {% set diferencia = r.total_ingresos - r.total_salidas %}
+        <tr class="{% if diferencia != 0 %}table-danger{% else %}table-success{% endif %}">
+            <td>{{ r.dni }}</td>
+            <td>{{ r.apellido }}</td>
+            <td>{{ r.total_ingresos }}</td>
+            <td>{{ r.total_salidas }}</td>
+            <td>
+                {% if diferencia == 0 %}
+                    ✅ OK
+                {% else %}
+                    ⚠ Diferencia: {{ diferencia }}
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
 <script>
     $(document).ready(function () {
         $('#tabla_resumen').DataTable({
@@ -35,6 +70,12 @@
             info: false
         });
     });
+
+$('#tabla_control').DataTable({
+    paging: false,
+    searching: false,
+    info: false
+});
 </script>
 
 {% endblock %}

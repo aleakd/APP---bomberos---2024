@@ -15,7 +15,11 @@
 
   Tu navegador no soporta la etiqueta de video.
 </video>
-</div>-->
+</div>
+<div class="portada_asistencia">
+    </div>-->
+
+
 
 <!-- CARROUSEL -->
 <div class="container my-4" id="novedades">
@@ -31,10 +35,10 @@
     <!-- Slides -->
     <div class="carousel-inner rounded shadow-lg">
       <div class="carousel-item active">
-        <img src="/static/img/NOVEDAD_1.jpg" class="d-block w-100 img-carrusel" alt="Novedad 1">
+        <img src="/static/img/navidad_enbbvvvcp.png" class="d-block w-100 img-carrusel" alt="Novedad 1">
         <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
           <h5>Área Materiales & Equipos</h5>
-          <p>Lavado de Epp.</p>
+          <p>FELICES FIESTAS PARA TODOS !!!!</p>
         </div>
       </div>
       <div class="carousel-item">
@@ -45,10 +49,13 @@
         </div>
       </div>
       <div class="carousel-item">
-        <img src="/static/img/NOVEDAD_3.jpg" class="d-block w-100 img-carrusel" alt="Novedad 3">
+        <img src="/static/img/gruposguardia.jpeg"
+     class="d-block w-100 img-carrusel"
+     style="object-fit: contain; background-color: #000;"
+     alt="Novedad 3">
         <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
-          <h5>Título Novedad 3</h5>
-          <p>Descripción corta de la novedad 3.</p>
+          <h5>GRUPOS DE GUARDIA</h5>
+          <p></p>
         </div>
       </div>
     </div>
@@ -64,6 +71,7 @@
     </button>
   </div>
 </div>
+
 
 
 <script>
@@ -92,7 +100,7 @@
 
 <div class="row">
     <div class="col-lg-6 col-md-12">
-        <h3 class="text-center titulo_form_index titulo">FORMULARIO DE ASISTENCIAS</h3>
+        <h1 class="text-center titulo_form_index titulo">FORMULARIO DE ASISTENCIAS</h1>
 
         {% if mostrar_formulario %}
         <form class="form_ins form_kitforestal" action="{{ url_for('asistencia') }}" method="post" enctype="multipart/form-data" onsubmit="return confirmSubmit();">
@@ -142,6 +150,7 @@
         <tr>
             <th>DNI Registrado</th>
             <th>Apellido</th>
+            <th>N° Legajo</th>
             <th>Nombre</th>
             <th>Tipo de registro</th>
             <th>Actividad</th>
@@ -153,12 +162,13 @@
         </thead>
         <tbody>
         {% for asistencia in asistencias %}
-        {% for agte in bravo %}
-        {% if asistencia.dni == agte.dni %}
+  {% set agte = bomberos_dict.get(asistencia.dni) %}
+  {% if agte and asistencia.actividad != 'Matafuegos' %}
 
         <tr>
             <td>{{ asistencia.dni }}</td>
             <td>{{ agte.apellido }}</td>
+            <td>{{ agte.legajo_numero }}</td>
             <td>{{ agte.nombre }}</td>
             <td>{{ asistencia.tipo_registro }}</td>
             <td>{{ asistencia.actividad }}</td>
@@ -169,7 +179,8 @@
 
         </tr>
         {% endif %}
-        {% endfor %}
+
+
         {% endfor %}
         </tbody>
     </table>
@@ -177,84 +188,15 @@
 
 </div>
 
-<!--<div class="box">
-    <canvas id="graficoAsistenciaPorDia" width="400" height="200"></canvas>
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    // Obtener los datos desde la ruta de Flask
-    fetch("{{ url_for('asistencia_dia_semana') }}")
-        .then(response => response.json())
-        .then(data => {
-            const ctx = document.getElementById('graficoAsistenciaPorDia').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: data.labels,
-                    datasets: [{
-                        label: 'Asistencias por Día de la Semana',
-                        data: data.values,
-                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
-                            }
-                        }
-                    }
-                }
-            });
-        });
-});
-</script>
-
-</div> -->
-
-<!--<div class="box">
-    <canvas id="graficoAsistenciaPorBombero" width="400" height="200"></canvas>
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    fetch("{{ url_for('asistencia_dia_semana') }}")
-        .then(response => response.json())
-        .then(data => {
-            const ctx = document.getElementById('graficoAsistenciaPorBombero').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: data.labels,  // DNI de los bomberos
-                    datasets: [{
-                        label: 'Ingresos por Bombero (Última Semana)',
-                        data: data.values,  // Cantidad de ingresos
-                        backgroundColor: 'rgb(75, 250, 49)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { stepSize: 1 }
-                        }
-                    }
-                }
-            });
-        });
-});
-</script>
-</div>
-
--->
 {% if current_user.rol == 'admin' %}
+<a href="{{ url_for('resumen_personal') }}"
+   class="btn btn-success mb-3">
+   📥 Resumen Personal
+</a>
 
-<h3 class="text-center titulo_form_index">FORMULARIO DE ASISTENCIAS</h3>
+
+<h1 class="text-center titulo_form_index">FORMULARIO DE ASISTENCIAS</h1>
         <form class="form_ins" action="{{ url_for('asistencia') }}" method="post" enctype="multipart/form-data" onsubmit="return confirmSubmit();">
         <input type="number" class="form-control" name="dni" placeholder="DNI" required="required" />
 
@@ -280,6 +222,8 @@ document.addEventListener("DOMContentLoaded", function() {
     <option value="Inspecciones">Inspecciones</option>
     <option value="Matafuegos">Matafuegos</option>
     <option value="Tareas de área">Tareas de área</option>
+    <option value="Acto/Ceremonia">Acto/Ceremonia</option>
+
     <option value="Off. de semana">Oficial de semana</option>
     <option value="Aspirantes">Aspirantes</option>
 </select>
@@ -314,8 +258,8 @@ document.addEventListener("DOMContentLoaded", function() {
         </thead>
         <tbody>
         {% for asistencia in asistencias_general %}
-        {% for agte in bravo %}
-        {% if asistencia.dni == agte.dni %}
+        {% set agte = bomberos_dict.get(asistencia.dni) %}
+        {% if agte %}
 
         <tr>
             <td>{{ asistencia.dni }}</td>
@@ -341,7 +285,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         </tr>
         {% endif %}
-        {% endfor %}
+
         {% endfor %}
         </tbody>
     </table>
@@ -388,7 +332,7 @@ document.addEventListener("DOMContentLoaded", function() {
 {% endif %}
 
 
-
+<!--
 <h2>Cantidad segun Actividad</h2>
 <div class="box">
     <canvas id="graficoAsistenciaPorActividad" width="400" height="200"></canvas>
@@ -428,6 +372,8 @@ document.addEventListener("DOMContentLoaded", function() {
         });
 });
 </script>
+
+-->
 
 
 

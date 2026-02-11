@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Responder Parte #{{ parte.id }}</h2>
+
+<div class="card p-3 mb-4">
+    <b>Solicitante:</b> {{ parte.nombre_solicitante }}<br>
+    <b>Destino:</b> {{ parte.destino }}<br>
+    <b>Objeto:</b> {{ parte.objeto }}<br>
+    <b>Detalle:</b><br>
+    {{ parte.detalle }}
+</div>
+
+<form method="POST">
+    <label>Escribir devolución</label>
+    <textarea name="devolucion" class="form-control" rows="6" required></textarea>
+    <br>
+    <button class="btn btn-success">Enviar devolución</button>
+</form>
+
+{% endblock %}

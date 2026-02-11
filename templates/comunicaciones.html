@@ -101,6 +101,10 @@
 </div>
 
 {% if current_user.rol == 'admin' %}
+<a href="{{ url_for('resumen_centralistas') }}"
+   class="btn btn-success mb-3">
+   📥 Resumen Centralistas
+</a>
 
 <h3 class="text-center titulo_form_index">FORMULARIO DE ASISTENCIAS</h3>
         <form class="form_ins" action="{{ url_for('centralistas') }}" method="post" enctype="multipart/form-data" onsubmit="return confirmSubmit();">

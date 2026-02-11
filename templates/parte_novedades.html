@@ -1,6 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
 
+<div class="container">
+    {% with messages = get_flashed_messages() %}
+  {% if messages %}
+  <div class="mensaa alert alert-light">
+    <ul class="list-unstyled">
+      {% for message in messages %}
+      <li> <h2 id="miH202">{{ message }}</h2></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  {% endwith %}
+
+</div>
+
 
 <div class="organig">
         <h1 class="titulo">Partes</h1>
@@ -60,7 +75,17 @@
         <label for="destino">Área de Destino</label>
         <select name="area_destino" class="form-control" required>
                 <option value="" disabled selected>Seleccionar Área</option>
-                e
+                <option>Jefatura</option>
+                <option>Operaciones</option>
+                <option>Materiales & Equipo</option>
+                <option>Logistica</option>
+                <option>Capacitacion</option>
+                <option>Prehospitalario</option>
+                <option>Documentacion</option>
+                <option>Automotores</option>
+                <option>Infraestructura</option>
+                <option>Comunicaciones</option>
+                <option>Sistemas</option>
 
             </select>
     </div>
@@ -91,9 +116,12 @@
             <th>Destino</th>
             <th>Objeto</th>
             <th>Detalle</th>
+            <th>Devolucion</th>
+            <th>Responder</th>
             <th>Estado</th>
             <th>Archivo PDF</th>
             {% if current_user.rol == 'admin' or current_user.rol == 'jefe_guardia' %}
+
             <th>Aprobacion</th>
             <th>Eliminar</th>
                 {% endif %}
@@ -110,6 +138,18 @@
             <td>{{ parte.destino }}</td>
             <td>{{ parte.objeto }}</td>
             <td>{{ parte.detalle }}</td>
+            <td>{{ parte.devolucion }}</td>
+            <td>
+            {% if parte.devolucion %}
+                <span class="text-success">Respondido</span>
+            {% else %}
+                <a href="{{ url_for('devolver_parte', id=parte.id) }}"
+                   class="btn btn-warning btn-sm">
+                   Responder
+                </a>
+            {% endif %}
+            </td>
+
             <td>{{ parte.estado_confirmacion.value }}</td>
             <td>
                 {% if parte.archivo_pdf %}
@@ -143,6 +183,12 @@
     $(document).ready(function () {
         $('#tabla_partes').DataTable();
     });
+</script>
+<script>
+        setInterval(function() {
+            var h2 = document.getElementById('miH202');
+            h2.classList.toggle('cambio-color');
+        }, 1000);
 </script>
 
 
